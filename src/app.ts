@@ -1,4 +1,6 @@
 import { app, BrowserWindow } from 'electron'
+import electronReload from 'electron-reload'
+electronReload(__dirname, {})
 app.on('ready', () => {
     const mainWindow = new BrowserWindow({
         width: 800,

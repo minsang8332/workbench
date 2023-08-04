@@ -2,9 +2,9 @@
     "name": "markdown-editor",
     "version": "0.0.1",
     "description": "마크다운 문서 편집기",
-    "main": "index.js",
+    "main": "build/app.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "dev": "concurrently \"tsc -w\" \"electron\""
     },
     "repository": {
         "type": "git",
@@ -18,11 +18,13 @@
     },
     "homepage": "https://github.com/yuu2dev/markdown-editor#readme",
     "devDependencies": {
+        "concurrently": "^8.2.0",
         "typescript": "^5.1.6"
     },
     "dependencies": {
         "dayjs": "^1.11.9",
         "electron": "^25.4.0",
+        "electron-reload": "^2.0.0-alpha.1",
         "lodash": "^4.17.21"
     }
 }
