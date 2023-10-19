@@ -1,15 +1,15 @@
 import Vue from 'vue'
 import App from './App.vue'
-import router from '@/plugins/router'
 import vuetify from '@/plugins/vuetify'
-import AppLoading from '@/lyouts/AppLoading'
+import AppLoading from '@/layouts/AppLoading'
 import AppLayout from '@/layouts/AppLayout'
 import store from './store'
+import router from './router'
 Vue.config.productionTip = false
 const app = new Vue({
     vuetify,
-    router,
     store,
+    router,
     render: (h) => h(App)
 })
 Vue.component('app-loading', AppLoading)

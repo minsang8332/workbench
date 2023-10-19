@@ -1,5 +1,5 @@
 <template>
-    <router-view />
+    <app-layout />
 </template>
 <script>
 export default {
