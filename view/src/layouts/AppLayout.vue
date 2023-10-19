@@ -1,6 +1,9 @@
 <template>
     <v-app>
-        <v-main></v-main>
+        <v-main>
+            <router-view />
+        </v-main>
+        <app-modal v-model="$modal.value" />
     </v-app>
 </template>
 <script>

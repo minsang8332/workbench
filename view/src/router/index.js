@@ -3,9 +3,15 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 const routes = [
     {
-        name: 'root',
         path: '/',
-        children: [],
+        component: () => import('@/layouts/AppLayout.vue'),
+        children: [
+            {
+                name: 'DashBoard',
+                path: '/',
+                component: () => import('@/views/DashBoard.vue'),
+            },
+        ],
     },
 ]
 const router = new VueRouter({
