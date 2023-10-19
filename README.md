@@ -35,5 +35,5 @@ npm run build
 - [] : handler 마크다운 파일 덮어쓰기 (자동저장시 백업 필요)
 - [] : handler 마크다운 자동저장 폴링
 - [] : tool 디버그 및 에러 로그
-- [] : tool 마크다운 gitaction 배포하기
+- [] : tool 마크다운 gitaction 업로드하기
 ```
