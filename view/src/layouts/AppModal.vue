@@ -17,9 +17,8 @@ export default {
         },
     },
     methods: {
-        onInput() {
-            console.log(this.value)
-            this.$emit('input', !this.value)
+        onInput(value) {
+            this.$emit('input', value)
         },
     },
 }

@@ -6,7 +6,7 @@ import AppLayout from '@/layouts/AppLayout'
 import AppModal from '@/layouts/AppModal'
 import store from './store'
 import router from './router'
-import appModalPlugin from '@/plugins/app-modal'
+import appPlugin from '@/plugins/app'
 Vue.config.productionTip = false
 const app = new Vue({
     vuetify,
@@ -17,6 +17,5 @@ const app = new Vue({
 Vue.component('app-loading', AppLoading)
 Vue.component('app-layout', AppLayout)
 Vue.component('app-modal', AppModal)
-// 앱 공통 모달
-Vue.use(appModalPlugin)
+Vue.use(appPlugin)
 app.$mount('#app')

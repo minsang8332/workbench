@@ -2,11 +2,15 @@
     <v-container fluid>
         <v-card flat>
             <v-row no-gutters>
-                <v-col> 대시보드 </v-col>
+                <v-col>
+                    <v-btn @click="$app.modal = !$app.modal"> 모달 </v-btn>
+                </v-col>
             </v-row>
             <v-row no-gutters>
                 <v-col>
-                    <v-btn @click="onTestAppModal"> 공통 모달 열기 </v-btn>
+                    <v-btn @click="$app.drawer = !$app.drawer">
+                        사이드바
+                    </v-btn>
                 </v-col>
             </v-row>
         </v-card>
@@ -15,10 +19,5 @@
 <script>
 export default {
     name: 'DashBoard',
-    methods: {
-        onTestAppModal() {
-            this.$modal.show()
-        },
-    },
 }
 </script>
