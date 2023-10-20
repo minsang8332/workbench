@@ -1,12 +1,14 @@
 import { app, BrowserWindow } from 'electron'
-import electronReload from 'electron-reload'
-electronReload(__dirname, {})
 app.on('ready', () => {
     const mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
+        show: false,
     })
-    mainWindow.loadURL('/')
+    mainWindow.loadURL('http://localhost:8080')
+    mainWindow.webContents.once('dom-ready', () => {
+        mainWindow.show()
+    })
 })
 app.on('activate', () => {
     const windows = BrowserWindow.getAllWindows()
