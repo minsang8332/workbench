@@ -1,8 +1,14 @@
 const path = require('path')
+const dotenv = require('dotenv')
+const { EnvironmentPlugin } = require('webpack')
+const FileManagerPlugin = require('filemanager-webpack-plugin')
 const ElectronReloadPlugin = require('webpack-electron-reload')({
     path: path.join(__dirname, './build/bundle.js'),
 })
 module.exports = (env) => {
+    const config = dotenv.config({
+        path: env.production ? '.env.production' : '.env.development',
+    })
     const commonWebpack = {
         mode: process.env.NODE_ENV,
         module: {
@@ -17,17 +23,56 @@ module.exports = (env) => {
         resolve: {
             extensions: ['.tsx', '.ts', '.js'],
         },
+    }
+    const mainWebpack = Object.assign({}, commonWebpack, {
+        target: 'electron-main',
+        entry: path.resolve(__dirname, 'src', 'main.ts'),
         output: {
             filename: 'bundle.js',
             path: path.resolve(__dirname, 'build'),
         },
-        plugins: [],
-    }
-    const mainWebpack = Object.assign({}, commonWebpack, {
-        target: 'electron-main',
-        entry: './src/app.ts',
-        plugins: [ElectronReloadPlugin()],
+        plugins: [
+            new EnvironmentPlugin({ ...config.parsed }),
+            new FileManagerPlugin({
+                events: {
+                    onStart: {
+                        delete: [path.resolve(__dirname, 'build', 'dist')],
+                    },
+                    onEnd: {
+                        move: [
+                            {
+                                source: path.resolve(
+                                    __dirname,
+                                    'webview',
+                                    'dist'
+                                ),
+                                destination: path.resolve(
+                                    __dirname,
+                                    'build',
+                                    'dist'
+                                ),
+                            },
+                        ],
+                    },
+                },
+            }),
+        ],
     })
-
-    return [mainWebpack]
+    const preloadWebpack = Object.assign({}, commonWebpack, {
+        target: 'electron-preload',
+        entry: path.resolve(__dirname, 'src', 'preload.ts'),
+        output: {
+            filename: 'preload.js',
+            path: path.resolve(__dirname, 'build'),
+        },
+        plugins: [],
+    })
+    const electronReloadPlugin = ElectronReloadPlugin()
+    const webpacks = [mainWebpack, preloadWebpack].map((webpack) => {
+        if (!env.production) {
+            webpack.plugins.push(electronReloadPlugin)
+        }
+        return webpack
+    })
+    return webpacks
 }

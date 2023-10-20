@@ -1,12 +1,30 @@
 {
     "name": "markdown-editor",
     "version": "0.0.1",
-    "description": "마크다운 문서 편집기",
+    "description": "마크다운 편집기",
     "main": "build/bundle.js",
+    "build": {
+        "productName": "markdown-editor",
+        "asar": true,
+        "win": {
+            "target": "nsis"
+        },
+        "nsis": {
+            "shortcutName": "마크다운 편집기"
+        },
+        "files": [
+            "build/**",
+            "package.json"
+        ],
+        "directories": {
+            "buildResources": "./build/"
+        }
+    },
     "scripts": {
-        "serve": "concurrently \"npm run webview\" \"npm run webpack\"",
-        "webpack": "webpack --watch --node-env=development",
-        "webpack:build": "webpack --env=mode=production",
+        "serve": "concurrently \"npm run webview\" \"npm run webpack:watch\"",
+        "build": "npm run webview:build && npm run webpack:build && electron-builder",
+        "webpack:watch": "webpack --watch",
+        "webpack:build": "webpack --env production",
         "webview": "cd webview && npm run serve",
         "webview:build": "cd webview && npm run build"
     },
@@ -22,7 +40,11 @@
     },
     "homepage": "https://github.com/yuu2dev/markdown-editor#readme",
     "devDependencies": {
+        "@types/lodash": "^4.14.200",
         "concurrently": "^8.2.0",
+        "electron": "^27.0.1",
+        "electron-builder": "^24.6.4",
+        "filemanager-webpack-plugin": "^8.0.0",
         "ts-loader": "^9.5.0",
         "typescript": "^5.1.6",
         "webpack": "^5.89.0",
@@ -31,7 +53,6 @@
     "dependencies": {
         "dayjs": "^1.11.9",
         "dotenv": "^16.3.1",
-        "electron": "^25.4.0",
         "lodash": "^4.17.21",
         "webpack-electron-reload": "^1.0.1"
     }

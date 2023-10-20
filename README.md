@@ -1,12 +1,12 @@
 # markdown-editor
 
-> 마크다운 문서를 작성하고 편집할 수 있는 win/mac 전용앱
+> 마크다운 문서를 작성하고 편집할 수 있는 win/mac 앱
 
 ## 설치 및 실행
 
 ```
 // 개발하기
-npm install && npm run dev
+npm install && npm run serve
 
 // 배포하기
 npm run build
