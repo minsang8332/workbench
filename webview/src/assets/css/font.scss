@@ -1,0 +1,25 @@
+@charset "utf-8";
+
+/*
+ * Nanum Gothic (Korean) http://www.google.com/fonts/earlyaccess
+ * @import url(http://fonts.googleapis.com/earlyaccess/nanummyeongjo.css);
+ * @import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+ */
+@font-face {
+    font-family: 'Nanum Gothic';
+    font-style: normal;
+    font-weight: 400;
+    src: url(~@/assets/fonts/NanumGothic-Regular.woff2) format('woff2');
+}
+@font-face {
+    font-family: 'Nanum Gothic Bold';
+    font-style: normal;
+    font-weight: 700;
+    src: url(~@/assets/fonts/NanumGothic-Bold.woff2) format('woff2');
+}
+@font-face {
+    font-family: 'Nanum Gothic ExtraBold';
+    font-style: normal;
+    font-weight: 800;
+    src: url(~@/assets/fonts/NanumGothic-ExtraBold.woff2) format('woff2');
+}

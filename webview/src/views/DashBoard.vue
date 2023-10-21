@@ -9,10 +9,13 @@
             <v-row no-gutters>
                 <v-col>
                     <v-btn @click="$app.drawer = !$app.drawer">
-                        사이드바
+                        <v-icon>fas fa-sync</v-icon>
+                        <v-icon>mdi-refresh</v-icon>
                     </v-btn>
                 </v-col>
             </v-row>
+            <span>보통 글씨</span>
+            <b>굵은 글씨</b>
         </v-card>
     </v-container>
 </template>
@@ -21,3 +24,4 @@ export default {
     name: 'DashBoard',
 }
 </script>
+<style lang="scss" scoped></style>

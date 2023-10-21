@@ -1,4 +1,14 @@
+@import '@/assets/css/font';
 $theme: red;
 *::-webkit-scrollbar {
     display: none;
+}
+p,
+span,
+input {
+    font-family: 'Nanum Gothic';
+}
+b,
+button {
+    font-family: 'Nanum Gothic Bold';
 }

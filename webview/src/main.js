@@ -7,6 +7,7 @@ import AppModal from '@/layouts/AppModal'
 import store from './store'
 import router from './router'
 import appPlugin from '@/plugins/app'
+import './assets/css/app.scss'
 Vue.config.productionTip = false
 const app = new Vue({
     vuetify,

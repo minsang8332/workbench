@@ -31,32 +31,7 @@ module.exports = (env) => {
             filename: 'bundle.js',
             path: path.resolve(__dirname, 'build'),
         },
-        plugins: [
-            new EnvironmentPlugin({ ...config.parsed }),
-            new FileManagerPlugin({
-                events: {
-                    onStart: {
-                        delete: [path.resolve(__dirname, 'build', 'dist')],
-                    },
-                    onEnd: {
-                        move: [
-                            {
-                                source: path.resolve(
-                                    __dirname,
-                                    'webview',
-                                    'dist'
-                                ),
-                                destination: path.resolve(
-                                    __dirname,
-                                    'build',
-                                    'dist'
-                                ),
-                            },
-                        ],
-                    },
-                },
-            }),
-        ],
+        plugins: [new EnvironmentPlugin({ ...config.parsed })],
     })
     const preloadWebpack = Object.assign({}, commonWebpack, {
         target: 'electron-preload',
@@ -67,9 +42,26 @@ module.exports = (env) => {
         },
         plugins: [],
     })
+    const fileManagerPlugin = new FileManagerPlugin({
+        events: {
+            onStart: {
+                delete: [path.resolve(__dirname, 'build', 'dist')],
+            },
+            onEnd: {
+                move: [
+                    {
+                        source: path.resolve(__dirname, 'webview', 'dist'),
+                        destination: path.resolve(__dirname, 'build', 'dist'),
+                    },
+                ],
+            },
+        },
+    })
     const electronReloadPlugin = ElectronReloadPlugin()
     const webpacks = [mainWebpack, preloadWebpack].map((webpack) => {
-        if (!env.production) {
+        if (env.production && webpack.target == 'electron-main') {
+            webpack.plugins.push(fileManagerPlugin)
+        } else {
             webpack.plugins.push(electronReloadPlugin)
         }
         return webpack
