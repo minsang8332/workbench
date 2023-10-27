@@ -6,7 +6,7 @@
 
 ```
 // 개발하기
-npm install && npm run serve
+npm run serve
 
 // 배포하기
 npm run build

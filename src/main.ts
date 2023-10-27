@@ -2,6 +2,7 @@ import { app, BrowserWindow, net, protocol } from 'electron'
 import path from 'path'
 import url from 'url'
 import _ from 'lodash'
+import '@/handler/markdown'
 let mainWindow: BrowserWindow
 if (app.requestSingleInstanceLock() == false) {
     app.quit()
@@ -27,6 +28,7 @@ app.on('ready', () => {
         }
         return net.fetch(filePath)
     })
+
     mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
@@ -42,6 +44,9 @@ app.on('ready', () => {
     mainWindow.loadURL(loadURL)
     mainWindow.webContents.once('dom-ready', () => {
         mainWindow.show()
+        if (app.isPackaged == false) {
+            mainWindow.webContents.openDevTools()
+        }
     })
 })
 app.on('activate', () => {

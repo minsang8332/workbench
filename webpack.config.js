@@ -22,6 +22,9 @@ module.exports = (env) => {
         },
         resolve: {
             extensions: ['.tsx', '.ts', '.js'],
+            alias: {
+                '@': path.resolve(__dirname, './src/'),
+            },
         },
     }
     const mainWebpack = Object.assign({}, commonWebpack, {
