@@ -1,16 +1,22 @@
 {
     "name": "markdown-editor",
     "version": "0.0.1",
-    "description": "마크다운 편집기",
     "main": "build/bundle.js",
     "build": {
-        "productName": "markdown-editor",
+        "productName": "마크다운 편집기",
         "asar": true,
         "win": {
-            "target": "nsis"
+            "target": "nsis",
+            "icon": "./src/assets/favicon.ico"
         },
         "nsis": {
             "shortcutName": "마크다운 편집기"
+        },
+        "mac": {
+            "icon": "./src/assets/favicon.icns"
+        },
+        "dmg": {
+            "icon": "./src/assets/favicon.icns"
         },
         "files": [
             "build/**",

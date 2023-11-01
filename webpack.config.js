@@ -51,6 +51,12 @@ module.exports = (env) => {
                 delete: [path.resolve(__dirname, 'build', 'dist')],
             },
             onEnd: {
+                copy: [
+                    {
+                        source: path.resolve(__dirname, 'src', 'assets'),
+                        destination: path.resolve(__dirname, 'build', 'assets'),
+                    },
+                ],
                 move: [
                     {
                         source: path.resolve(__dirname, 'webview', 'dist'),
@@ -60,14 +66,13 @@ module.exports = (env) => {
             },
         },
     })
+    if (mainWebpack.target == 'electron-main') {
+        mainWebpack.plugins.push(fileManagerPlugin)
+    }
     const electronReloadPlugin = ElectronReloadPlugin()
-    const webpacks = [mainWebpack, preloadWebpack].map((webpack) => {
-        if (env.production && webpack.target == 'electron-main') {
-            webpack.plugins.push(fileManagerPlugin)
-        } else {
-            webpack.plugins.push(electronReloadPlugin)
-        }
-        return webpack
-    })
-    return webpacks
+    if (!env.production) {
+        mainWebpack.plugins.push(electronReloadPlugin)
+    }
+    // preloadWebpack.plugins.push(electronReloadPlugin)
+    return [mainWebpack, preloadWebpack]
 }

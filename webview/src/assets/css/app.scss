@@ -1,5 +1,6 @@
 @import '@/assets/css/font';
-$theme: red;
+$theme: #6ec5ff;
+$dark: #313131;
 *::-webkit-scrollbar {
     display: none;
 }
@@ -7,8 +8,42 @@ p,
 span,
 input {
     font-family: 'Nanum Gothic';
+    color: $dark;
 }
 b,
 button {
     font-family: 'Nanum Gothic Bold';
+    color: $dark;
 }
+// s: 슬라이드 트랜지션
+.slide-enter-active {
+    -moz-transition-duration: 0.3s;
+    -webkit-transition-duration: 0.3s;
+    -o-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+    -moz-transition-timing-function: ease-in;
+    -webkit-transition-timing-function: ease-in;
+    -o-transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
+}
+.slide-leave-active {
+    -moz-transition-duration: 0.3s;
+    -webkit-transition-duration: 0.3s;
+    -o-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+    -moz-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+    -webkit-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+    -o-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+    transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+}
+.slide-enter-to,
+.slide-leave {
+    max-height: 100px;
+    overflow: hidden;
+}
+.slide-enter,
+.slide-leave-to {
+    overflow: hidden;
+    max-height: 0;
+}
+// e: 슬라이드 트랜지션

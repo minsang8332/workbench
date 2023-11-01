@@ -1,4 +1,4 @@
-import { app, BrowserWindow, net, protocol } from 'electron'
+import { app, BrowserWindow, net, protocol, nativeImage } from 'electron'
 import path from 'path'
 import url from 'url'
 import _ from 'lodash'
@@ -28,7 +28,8 @@ app.on('ready', () => {
         }
         return net.fetch(filePath)
     })
-
+    const icon = path.join(__dirname, 'assets', 'favicon.png')
+    app.dock.setIcon(nativeImage.createFromPath(icon))
     mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
@@ -36,6 +37,8 @@ app.on('ready', () => {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
         },
+        title: app.getName(),
+        icon,
         show: false,
     })
     const loadURL = app.isPackaged
