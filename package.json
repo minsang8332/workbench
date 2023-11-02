@@ -1,29 +1,23 @@
 {
     "name": "markdown-editor",
+    "description": "마크다운 편집기",
     "version": "0.0.1",
     "main": "build/bundle.js",
     "build": {
         "productName": "마크다운 편집기",
         "asar": true,
         "win": {
-            "target": "nsis",
-            "icon": "./src/assets/favicon.ico"
+            "target": "nsis"
         },
         "nsis": {
             "shortcutName": "마크다운 편집기"
-        },
-        "mac": {
-            "icon": "./src/assets/favicon.icns"
-        },
-        "dmg": {
-            "icon": "./src/assets/favicon.icns"
         },
         "files": [
             "build/**",
             "package.json"
         ],
         "directories": {
-            "buildResources": "./build/"
+            "buildResources": "build/assets"
         }
     },
     "scripts": {
@@ -33,7 +27,8 @@
         "webpack:watch": "webpack --watch",
         "webpack:build": "webpack --env production",
         "webview": "cd webview && npm run serve",
-        "webview:build": "cd webview && npm run build"
+        "webview:build": "cd webview && npm run build",
+        "icon": "electron-icon-builder --input=./src/assets/favicon.png --output=./src/assets -f"
     },
     "repository": {
         "type": "git",
@@ -51,6 +46,7 @@
         "concurrently": "^8.2.0",
         "electron": "^27.0.1",
         "electron-builder": "^24.6.4",
+        "electron-icon-builder": "^2.0.1",
         "filemanager-webpack-plugin": "^8.0.0",
         "ts-loader": "^9.5.0",
         "typescript": "^5.1.6",

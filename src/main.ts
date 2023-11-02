@@ -28,7 +28,7 @@ app.on('ready', () => {
         }
         return net.fetch(filePath)
     })
-    const icon = path.join(__dirname, 'assets', 'favicon.png')
+    const icon = path.join(__dirname, 'assets', 'icons', 'png', '1024x1024.png')
     if (app.dock && process.platform == 'darwin') {
         app.dock.setIcon(nativeImage.createFromPath(icon))
     }
