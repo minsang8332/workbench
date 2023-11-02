@@ -12,8 +12,11 @@ contextBridge.exposeInMainWorld('$native', {
         },
     },
     markdown: {
-        findAll() {
-            return ipcRenderer.invoke('markdown:findAll')
+        get() {
+            return ipcRenderer.invoke('markdown:get')
+        },
+        getFiles() {
+            return ipcRenderer.invoke('markdown:files')
         },
     },
 })

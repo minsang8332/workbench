@@ -1,11 +1,10 @@
 import _ from 'lodash'
 export default {
-    updateMarkdown(state, { markdowns, files } = {}) {
+    updateCategory(state, { category } = {}) {
         _.mergeWith(
             state,
             {
-                markdowns,
-                files,
+                category,
             },
             (a, b) => (b == undefined ? a : b)
         )

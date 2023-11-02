@@ -1,12 +1,9 @@
 import _ from 'lodash'
 import store from '@/store'
-import commonUtil from '@/tools/common'
+import commonTool from '@/tools/common'
 let guard: boolean = false
 const getMarkdown = (id: string) => {
     const markdown = store.get('markdown', id)
-    if (!(markdown instanceof Markdown)) {
-        return false
-    }
     return markdown
 }
 const addMarkdown = (markdown: Markdown): Markdown | false => {
@@ -14,7 +11,7 @@ const addMarkdown = (markdown: Markdown): Markdown | false => {
     if (markdown.id) {
         return editMarkdown(markdown.id)
     }
-    markdown.id = <string>commonUtil.randomHex()
+    markdown.id = <string>commonTool.randomHex()
     const hasOne = store.get('markdown', markdown.id)
     // 생성한 문자가 동일하게 있다면 콜백
     if (hasOne) {
@@ -36,8 +33,8 @@ const editMarkdown = (
         filename?: string | null
     } = {}
 ): Markdown | false => {
-    const markdown: Partial<Markdown> | unknown = store.get('markdown', id)
-    if (!(markdown instanceof Markdown)) {
+    const markdown = <Markdown>store.get('markdown', id)
+    if (!markdown) {
         return false
     }
     if (filename) {
@@ -47,8 +44,8 @@ const editMarkdown = (
     return markdown
 }
 const unsetMarkdown = (id: string): Markdown | false => {
-    const markdown: Partial<Markdown> | unknown = store.get('markdown', id)
-    if (!(markdown instanceof Markdown)) {
+    const markdown = <Markdown>store.get('markdown', id)
+    if (!markdown) {
         return false
     }
     store.unset('markdown', markdown.id)

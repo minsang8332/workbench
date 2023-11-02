@@ -4,8 +4,7 @@ import actions from './actions'
 export default {
     namespaced: true,
     state: {
-        markdowns: [],
-        files: [],
+        category: null,
     },
     getters,
     mutations,

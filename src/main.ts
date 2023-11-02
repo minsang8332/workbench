@@ -2,7 +2,7 @@ import { app, BrowserWindow, net, protocol, nativeImage } from 'electron'
 import path from 'path'
 import url from 'url'
 import _ from 'lodash'
-import '@/handler/markdown'
+import '@/handler'
 let mainWindow: BrowserWindow
 if (app.requestSingleInstanceLock() == false) {
     app.quit()

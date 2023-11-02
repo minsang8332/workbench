@@ -1,10 +1,10 @@
 import _ from 'lodash'
 import store from '@/store'
+import mock from '@/mock/category'
 const getCategory = (): Category | false => {
-    const category = store.get('category')
-    if (!(category instanceof Category)) {
-        return false
-    }
+    /** @Mock 카테고리 */
+    const category = mock.getCategory()
+    // const category = store.get('category')
     return category
 }
 const setCategory = (category: Category) =>

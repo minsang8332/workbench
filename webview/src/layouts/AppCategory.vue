@@ -1,9 +1,15 @@
 <template>
-    <v-card class="app-category" :class="classListAppCategory" flat transparent>
+    <v-card
+        v-if="depth && depth <= 3"
+        class="app-category"
+        :class="classListAppCategory"
+        flat
+        transparent
+    >
         <v-row class="py-1" v-ripple no-gutters @click="show = !show">
             <v-col>
-                <v-row no-gutters>
-                    <v-col v-if="depth" class="text-right" :cols="depth">
+                <v-row no-gutters draggable>
+                    <v-col class="text-right" :cols="depth">
                         <v-icon v-if="!isFile" color="#313131" small>
                             mdi-chevron-right
                         </v-icon>
@@ -63,7 +69,7 @@ export default {
     },
     data() {
         return {
-            show: false,
+            show: true,
         }
     },
     computed: {
@@ -83,15 +89,21 @@ export default {
             let print
             try {
                 const { label, items, filename } = this
-                // 라벨은 없고 파일이 있는 경우
-                if (!_.isNil(label) && this.isFile) {
-                    return filename
+                if (this.isFile) {
+                    if (label) {
+                        print = label
+                    } else if (filename) {
+                        print = filename
+                    }
+                } else {
+                    // 카테고리 인 경우
+                    if (label) {
+                        print = label
+                        if (_.isArray(items)) {
+                            print += `(${items.length})`
+                        }
+                    }
                 }
-                // 라벨이 없고 하위 목록도 없는 경우
-                if (!(_.isString(label) && items && items.length)) {
-                    return print
-                }
-                print = `${label} (${items.length})`
             } catch (e) {
                 console.error(e)
             }

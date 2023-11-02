@@ -15,10 +15,11 @@
                         :key="`drawer-tab-item-${i}`"
                     >
                         <app-category
-                            v-if="tab.value == 'category'"
-                            label="전체"
-                            :depth="1"
-                            :items="items"
+                            v-bind="
+                                isCategory(tab)
+                                    ? getCategory
+                                    : getCategoryByFile
+                            "
                         />
                     </v-tab-item>
                 </v-tabs-items>
@@ -45,9 +46,8 @@
     </v-navigation-drawer>
 </template>
 <script>
-import _ from 'lodash'
+import { mapGetters } from 'vuex'
 import AppCategory from '@/layouts/AppCategory.vue'
-import mock from '@/mock/category'
 export default {
     name: 'AppDrawer',
     components: {
@@ -60,9 +60,8 @@ export default {
         },
     },
     data() {
-        const items = mock.getCategory()
         return {
-            items,
+            items: [],
             selectedTab: null,
             tabs: [
                 {
@@ -77,23 +76,17 @@ export default {
         }
     },
     computed: {
-        selectedTabValue() {
-            let tab = this.selectedTab
-            if (!(_.isNumber(tab) && this.tabs[tab])) {
-                return
-            }
-            tab = this.tabs[tab]
-            if (!(tab && tab.value)) {
-                return
-            }
-            return tab.value
-        },
+        ...mapGetters('category', ['getCategory', 'getCategoryByFile']),
     },
     methods: {
+        isCategory({ value } = {}) {
+            return value == 'category'
+        },
         onInput(value) {
             this.$emit('input', value)
         },
     },
+    mounted() {},
 }
 </script>
 <style lang="scss" scoped>

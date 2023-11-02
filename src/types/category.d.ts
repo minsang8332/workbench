@@ -1,5 +1,5 @@
 type CategoryType = 'category'
-abstract class Category {
+interface Category {
     label: string
     filename?: string
     items: Category[]

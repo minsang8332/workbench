@@ -1,5 +1,5 @@
 type MarkdownType = 'markdown'
-abstract class Markdown {
+interface Markdown {
     id: string
     filename: string
 }
