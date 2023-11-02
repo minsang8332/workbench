@@ -18,7 +18,7 @@
                     <v-icon>fa-solid fa-pencil</v-icon>
                 </v-btn>
             </template>
-            <b>새로운 문서</b>
+            <p class="white--text">새로운 문서</p>
         </v-tooltip>
     </v-speed-dial>
 </template>

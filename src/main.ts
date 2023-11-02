@@ -29,7 +29,9 @@ app.on('ready', () => {
         return net.fetch(filePath)
     })
     const icon = path.join(__dirname, 'assets', 'favicon.png')
-    app.dock.setIcon(nativeImage.createFromPath(icon))
+    if (app.dock && process.platform == 'darwin') {
+        app.dock.setIcon(nativeImage.createFromPath(icon))
+    }
     mainWindow = new BrowserWindow({
         width: 800,
         height: 600,

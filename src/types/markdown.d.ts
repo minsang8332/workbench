@@ -1,7 +1,5 @@
-interface EditMarkdown {
-    filePath?: string | null
-}
+type MarkdownType = 'markdown'
 abstract class Markdown {
     id: string
-    filePath: string
+    filename: string
 }

@@ -10,7 +10,7 @@ ipcMain.handle('markdown:findOne', (event, id: string) => {
     if (!markdown) {
         throw { message: `${id} 에 해당하는 문서를 가져올 수 없습니다.` }
     }
-    const text = documentsUtil.readFile(markdown.filePath)
+    const text = documentsUtil.readFile(markdown.filename)
     return {
         ...markdown,
         text,
@@ -33,10 +33,10 @@ ipcMain.handle('markdown:delete', (event, id: string) => {
     if (!_.isString(id)) {
         throw { message: 'id 값이 유효하지 않습니다.' }
     }
-    const markdown = markdownStore.delMarkdown(id)
+    const markdown = markdownStore.unsetMarkdown(id)
     if (!markdown) {
         throw { message: `${id} 에 해당하는 문서를 삭제 할 수 없습니다.` }
     }
-    documentsUtil.removeFile(markdown.filePath)
+    documentsUtil.removeFile(markdown.filename)
     return markdown
 })

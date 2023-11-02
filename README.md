@@ -5,6 +5,9 @@
 ## 설치 및 실행
 
 ```
+// 패키지 설치하기
+npm run setup
+
 // 개발하기
 npm run serve
 

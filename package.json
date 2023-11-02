@@ -27,6 +27,7 @@
         }
     },
     "scripts": {
+        "setup": "npm install && cd webview && npm install",
         "serve": "concurrently \"npm run webview\" \"npm run webpack:watch\"",
         "build": "npm run webview:build && npm run webpack:build && electron-builder",
         "webpack:watch": "webpack --watch",
