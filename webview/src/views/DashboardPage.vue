@@ -1,11 +1,11 @@
 <template>
     <v-container fluid>
-        <v-card flat></v-card>
+        <v-card flat>Dashboard</v-card>
     </v-container>
 </template>
 <script>
 export default {
-    name: 'DashBoard',
+    name: 'DashboardPage',
 }
 </script>
 <style lang="scss" scoped></style>

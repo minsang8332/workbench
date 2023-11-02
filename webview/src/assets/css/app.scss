@@ -1,6 +1,12 @@
 @import '@/assets/css/font';
 $theme: #6ec5ff;
+$enhancedTheme: #0093f5;
 $dark: #313131;
+:root {
+    --theme-color: #{$theme};
+    --enhanced-theme-color: #{enhancedTheme};
+    --dark-color: #{$dark};
+}
 *::-webkit-scrollbar {
     display: none;
 }

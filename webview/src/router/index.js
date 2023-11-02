@@ -7,9 +7,14 @@ const routes = [
         component: () => import('@/layouts/AppLayout.vue'),
         children: [
             {
-                name: 'DashBoard',
+                name: 'dashboard',
                 path: '/',
-                component: () => import('@/views/DashBoard.vue'),
+                component: () => import('@/views/DashboardPage.vue'),
+            },
+            {
+                name: 'markdown',
+                path: '/markdown',
+                component: () => import('@/views/MarkdownPage.vue'),
             },
         ],
     },

@@ -14,7 +14,14 @@
         </template>
         <v-tooltip left>
             <template v-slot:activator="{ on, attrs }">
-                <v-btn color="green darker-2" fab dark v-bind="attrs" v-on="on">
+                <v-btn
+                    color="green darker-2"
+                    fab
+                    dark
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="onClickNewer"
+                >
                     <v-icon>fa-solid fa-pencil</v-icon>
                 </v-btn>
             </template>
@@ -32,6 +39,11 @@ export default {
         bottom: true,
         transition: 'slide-y-reverse-transition',
     }),
+    methods: {
+        onClickNewer() {
+            this.$router.replace({ name: 'markdown' }).catch((e) => e)
+        },
+    },
 }
 </script>
 <style lang="scss" scoped>
