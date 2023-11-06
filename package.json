@@ -7,7 +7,7 @@
         "productName": "마크다운 편집기",
         "asar": true,
         "win": {
-            "target": "nsis"
+            "target": "msi"
         },
         "nsis": {
             "shortcutName": "마크다운 편집기"
@@ -35,7 +35,7 @@
         "url": "git+https://github.com/yuu2dev/markdown-editor.git"
     },
     "keywords": [],
-    "author": "",
+    "author": "yuu2dev@gmail.com",
     "license": "ISC",
     "bugs": {
         "url": "https://github.com/yuu2dev/markdown-editor/issues"

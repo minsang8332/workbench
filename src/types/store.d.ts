@@ -1,5 +1,10 @@
-type StoreType = CategoryType | MarkdownType
-type TableType = Category | Markdown
+type StoreType = MarkdownType
+type Table = Markdown
 interface StoreTable {
-    [id: string]: TableType
+    [id: string]: Table
+}
+type MarkdownType = 'markdown'
+interface Markdown {
+    path: string
+    isDir: boolean
 }

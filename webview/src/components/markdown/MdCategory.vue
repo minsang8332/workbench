@@ -1,32 +1,46 @@
 <template>
     <v-card
-        v-if="depth && depth <= 3"
-        class="app-category"
+        v-if="depth && depth <= maxDepth"
+        class="md-category"
         :class="classListAppCategory"
         flat
         transparent
     >
-        <v-row class="py-1" v-ripple no-gutters @click="show = !show">
+        <v-row
+            v-ripple
+            no-gutters
+            @mouseup.right="onRightClick"
+            @click="show = !show"
+        >
             <v-col>
                 <v-row no-gutters draggable>
                     <v-col class="text-right" :cols="depth">
-                        <v-icon v-if="!isFile" color="#313131" small>
+                        <v-icon
+                            v-if="isDir"
+                            :color="$app.scss('--dark-color')"
+                            small
+                        >
                             mdi-chevron-right
                         </v-icon>
                     </v-col>
                     <v-col class="text-truncate">
                         <v-icon
-                            v-if="isFile"
+                            v-if="isDir"
                             class="mr-1"
-                            color="#313131"
                             small
+                            :color="$app.scss('--folder-color')"
                         >
-                            fa-regular fa-file
-                        </v-icon>
-                        <v-icon v-else class="mr-1" color="#FFE9A2" small>
                             fa-solid fa-folder
                         </v-icon>
-                        <b class="text-label">{{ printLabel }}</b>
+                        <v-icon
+                            v-else
+                            class="mr-1"
+                            small
+                            :color="$app.scss('--dark-color')"
+                        >
+                            mdi-file-document-outline
+                        </v-icon>
+                        <b class="text-title">{{ printTitle }}</b>
                     </v-col>
                 </v-row>
             </v-col>
@@ -34,7 +48,7 @@
         <transition name="slide">
             <v-row v-if="items && items.length > 0 && show" no-gutters>
                 <v-col>
-                    <app-category
+                    <md-category
                         v-for="(item, i) of items"
                         v-bind="item"
                         :depth="depth + 1"
@@ -48,13 +62,13 @@
 <script>
 import _ from 'lodash'
 export default {
-    name: 'AppCategory',
+    name: 'MdCategory',
     props: {
-        label: {
+        title: {
             type: [String, null],
             default: null,
         },
-        filename: {
+        path: {
             type: [String, null],
             default: null,
         },
@@ -62,9 +76,17 @@ export default {
             type: [Object, Array, null, undefined],
             default: () => [],
         },
+        isDir: {
+            type: [Boolean],
+            default: false,
+        },
         depth: {
             type: [Number],
             default: 1,
+        },
+        maxDepth: {
+            type: [Number],
+            default: 5,
         },
     },
     data() {
@@ -73,9 +95,6 @@ export default {
         }
     },
     computed: {
-        isFile() {
-            return _.isString(this.filename)
-        },
         classListAppCategory() {
             let classList = []
             if (this.isFile) {
@@ -85,24 +104,13 @@ export default {
             }
             return classList
         },
-        printLabel() {
+        printTitle() {
             let print
             try {
-                const { label, items, filename } = this
-                if (this.isFile) {
-                    if (label) {
-                        print = label
-                    } else if (filename) {
-                        print = filename
-                    }
-                } else {
-                    // 카테고리 인 경우
-                    if (label) {
-                        print = label
-                        if (_.isArray(items)) {
-                            print += `(${items.length})`
-                        }
-                    }
+                const { title, items } = this
+                print = title
+                if (_.isArray(items)) {
+                    // print += ` (${items.length})`
                 }
             } catch (e) {
                 console.error(e)
@@ -110,5 +118,21 @@ export default {
             return print
         },
     },
+    methods: {
+        onRightClick(event) {
+            const path = this.path
+            this.$app.showMenu({
+                pageX: event.pageX,
+                pageY: event.pageY,
+                path,
+            })
+        },
+    },
 }
 </script>
+<style scoped lang="scss">
+.text-title {
+    font-size: 13px;
+    font-family: 'D2Coding';
+}
+</style>

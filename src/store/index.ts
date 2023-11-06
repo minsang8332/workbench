@@ -11,7 +11,7 @@ const get = (storeType: StoreType, id?: string) => {
     }
     return storeTable[id]
 }
-const set = (storeType: StoreType, id: string | null, table?: TableType) => {
+const set = (storeType: StoreType, id: string | null, table?: Table) => {
     let storeTable = <StoreTable>store.get(storeType)
     if (id && table && _.has(storeTable, id)) {
         storeTable[id] = table

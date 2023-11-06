@@ -3,20 +3,15 @@ contextBridge.exposeInMainWorld('$native', {
     getVersion() {
         return 1
     },
-    category: {
-        get() {
-            return ipcRenderer.invoke('category:get')
-        },
-        set(payload: Category) {
-            return ipcRenderer.invoke('category:set', payload)
-        },
-    },
     markdown: {
-        get() {
-            return ipcRenderer.invoke('markdown:get')
+        read(payload: object) {
+            return ipcRenderer.invoke('markdown:read', payload)
         },
-        getFiles() {
-            return ipcRenderer.invoke('markdown:files')
+        write(payload: object) {
+            return ipcRenderer.invoke('markdown:write', payload)
+        },
+        remove(payload: object) {
+            return ipcRenderer.invoke('markdown:remove', payload)
         },
     },
 })

@@ -1,47 +1,79 @@
 <template>
     <v-speed-dial
-        v-model="fab"
+        v-model="value"
         class="app-floating-btn"
         :bottom="bottom"
         :right="right"
         :direction="direction"
-        :transition="transition"
+        transition="slide-y-reverse-transition"
     >
         <template v-slot:activator>
-            <v-btn v-model="fab" plain class="btn-afb-main" dark fab>
+            <v-btn v-model="value" plain class="btn-afb-main" dark fab>
                 <v-icon> fa-solid fa-gear </v-icon>
             </v-btn>
         </template>
-        <v-tooltip left>
+        <v-tooltip
+            v-for="(item, i) in items"
+            :key="`app-floating-btn-${i}`"
+            left
+        >
             <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                    color="green darker-2"
                     fab
-                    dark
+                    :color="item.color"
+                    :dark="item.dark"
                     v-bind="attrs"
                     v-on="on"
-                    @click="onClickNewer"
+                    @click="onClickBtn(item)"
                 >
-                    <v-icon>fa-solid fa-pencil</v-icon>
+                    <v-icon>{{ item.icon }}</v-icon>
                 </v-btn>
             </template>
-            <p class="white--text">새로운 문서</p>
+            <p class="white--text">{{ item.desc }}</p>
         </v-tooltip>
     </v-speed-dial>
 </template>
 <script>
 export default {
     name: 'AppFloatingBtn',
-    data: () => ({
-        fab: false,
-        direction: 'top',
-        right: true,
-        bottom: true,
-        transition: 'slide-y-reverse-transition',
-    }),
+    props: {
+        direction: {
+            type: [String, null],
+            default: 'top',
+        },
+        right: {
+            type: [Boolean],
+            default: true,
+        },
+        bottom: {
+            type: [Boolean],
+            default: true,
+        },
+    },
+    data() {
+        const app = this
+        return {
+            value: false,
+            items: [
+                {
+                    desc: '통계 및 추이',
+                    icon: 'mdi-chart-bar',
+                    color: 'green darken-1',
+                    dark: true,
+                    callback() {
+                        app.$router
+                            .replace({ name: 'dashboard' })
+                            .catch((e) => e)
+                    },
+                },
+            ],
+        }
+    },
     methods: {
-        onClickNewer() {
-            this.$router.replace({ name: 'markdown' }).catch((e) => e)
+        onClickBtn({ callback = Function } = {}) {
+            if (callback) {
+                callback()
+            }
         },
     },
 }

@@ -6,10 +6,10 @@ import { mapActions } from 'vuex'
 export default {
     name: 'App',
     methods: {
-        ...mapActions('category', ['loadCategory']),
+        ...mapActions('markdown', ['loadMarkdowns']),
     },
     mounted() {
-        this.loadCategory()
+        this.loadMarkdowns()
     },
 }
 </script>

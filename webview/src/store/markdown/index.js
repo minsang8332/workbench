@@ -5,7 +5,6 @@ export default {
     namespaced: true,
     state: {
         markdowns: [],
-        files: [],
     },
     getters,
     mutations,
