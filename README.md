@@ -28,7 +28,6 @@ npm run build
 
 📌 기능구성
 - [✓] : 마크다운 CRUD 핸들러
-- [] : 카테고리 CRUD 핸들러
 - [] : 마크다운 파일 덮어쓰기 (자동저장시 백업 필요)
 - [] : documents 백업 폴더 및 electron-settings 연동
 - [] : 디버그 및 에러 로그
