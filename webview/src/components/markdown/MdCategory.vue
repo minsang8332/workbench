@@ -1,6 +1,6 @@
 <template>
     <v-card
-        v-if="depth && depth <= maxDepth"
+        v-if="depth >= 0 && depth <= maxDepth"
         class="md-category"
         :class="classListAppCategory"
         flat
@@ -10,11 +10,12 @@
             v-ripple
             no-gutters
             @mouseup.right="onRightClick"
+            @dblclick="onDbClick"
             @click="show = !show"
         >
             <v-col>
                 <v-row no-gutters draggable>
-                    <v-col class="text-right" :cols="depth">
+                    <v-col v-if="depth > 0" class="text-right" :cols="depth">
                         <v-icon
                             v-if="isDir"
                             :color="$app.scss('--dark-color')"
@@ -82,7 +83,7 @@ export default {
         },
         depth: {
             type: [Number],
-            default: 1,
+            default: 0,
         },
         maxDepth: {
             type: [Number],
@@ -119,20 +120,35 @@ export default {
         },
     },
     methods: {
+        // 우측 마우스 클릭시 메뉴 모달
         onRightClick(event) {
-            const path = this.path
+            const { path, isDir } = this
             this.$app.showMenu({
                 pageX: event.pageX,
                 pageY: event.pageY,
                 path,
+                isDir,
             })
+        },
+        // 좌측 더블 클릭시 문서보기
+        onDbClick() {
+            const { path, isDir } = this
+            if (!path) {
+                return
+            }
+            if (isDir) {
+                return
+            }
+            this.$router
+                .replace({ name: 'markdown', params: { path } })
+                .catch((e) => e)
         },
     },
 }
 </script>
 <style scoped lang="scss">
 .text-title {
-    font-size: 13px;
+    font-size: 16px;
     font-family: 'D2Coding';
 }
 </style>

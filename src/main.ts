@@ -28,7 +28,7 @@ app.on('ready', () => {
         }
         return net.fetch(filePath)
     })
-    const icon = path.join(__dirname, 'assets', 'icons', 'png', '1024x1024.png')
+    const icon = path.join(__dirname, 'assets', 'favicon.png')
     if (app.dock && process.platform == 'darwin') {
         app.dock.setIcon(nativeImage.createFromPath(icon))
     }
@@ -40,18 +40,23 @@ app.on('ready', () => {
             contextIsolation: true,
         },
         title: app.getName(),
+        frame: false,
         icon,
         show: false,
     })
     const loadURL = app.isPackaged
         ? 'app://./index.html'
         : 'http://localhost:8080'
+    mainWindow.setMenu(null)
     mainWindow.loadURL(loadURL)
-    mainWindow.webContents.once('dom-ready', () => {
+    mainWindow.webContents.once('did-finish-load', () => {
         mainWindow.show()
         if (app.isPackaged == false) {
             mainWindow.webContents.openDevTools()
         }
+    })
+    mainWindow.on('page-title-updated', (e) => {
+        e.preventDefault()
     })
 })
 app.on('activate', () => {

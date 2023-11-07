@@ -47,17 +47,12 @@ module.exports = (env) => {
     })
     const fileManagerPlugin = new FileManagerPlugin({
         events: {
-            onStart: {
-                delete: [path.resolve(__dirname, 'build', 'dist')],
-            },
             onEnd: {
                 copy: [
                     {
                         source: path.resolve(__dirname, 'src', 'assets'),
                         destination: path.resolve(__dirname, 'build', 'assets'),
                     },
-                ],
-                move: [
                     {
                         source: path.resolve(__dirname, 'webview', 'dist'),
                         destination: path.resolve(__dirname, 'build', 'dist'),

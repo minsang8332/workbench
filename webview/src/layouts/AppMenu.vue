@@ -62,6 +62,10 @@ export default {
             type: [String, null],
             default: null,
         },
+        isDir: {
+            type: [Boolean, null],
+            default: null,
+        },
         pageX: {
             type: [Number],
             default: 0,
@@ -77,7 +81,22 @@ export default {
             selectedItem: null,
             items: [
                 {
-                    name: 'new-markdown',
+                    name: 'add-folder',
+                    desc: '새 폴더',
+                    shortcut: 'N',
+                    icon: 'fa-solid fa-folder',
+                    color: app.$app.scss('--folder-color'),
+                    callback() {
+                        app.$store
+                            .dispatch('markdown/addMarkdownDir', {
+                                path: app.path,
+                            })
+                            .catch((e) => console.error(e))
+                            .finally(app.hide)
+                    },
+                },
+                {
+                    name: 'add',
                     desc: '새 문서',
                     shortcut: 'N',
                     icon: 'mdi-file-document-outline',
@@ -91,8 +110,9 @@ export default {
                             .finally(app.hide)
                     },
                 },
+
                 {
-                    name: 'remove-markdown',
+                    name: 'remove',
                     desc: '삭제',
                     shortcut: 'D',
                     icon: 'mdi-trash-can-outline',
@@ -109,6 +129,19 @@ export default {
                                     .finally(app.hide)
                             )
                             .catch((e) => console.error(e))
+                    },
+                },
+                {
+                    name: 'add-folder',
+                    desc: '새로고침',
+                    shortcut: 'R',
+                    icon: 'mdi-refresh',
+                    color: app.$app.scss('--dark-color'),
+                    callback() {
+                        app.$store
+                            .dispatch('markdown/loadMarkdowns')
+                            .catch((e) => console.error(e))
+                            .finally(app.hide)
                     },
                 },
             ],
@@ -130,7 +163,10 @@ export default {
         },
         getItems() {
             return this.items.filter((item) => {
-                if (item.name == 'remove-markdown' && !this.path) {
+                if (item.name.includes('add') && this.isDir == false) {
+                    return false
+                }
+                if (item.name == 'remove' && !this.path) {
                     return false
                 }
                 return item

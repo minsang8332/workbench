@@ -1,6 +1,7 @@
 <template>
     <v-speed-dial
         v-model="value"
+        @input="onInput"
         class="app-floating-btn"
         :bottom="bottom"
         :right="right"
@@ -20,8 +21,8 @@
             <template v-slot:activator="{ on, attrs }">
                 <v-btn
                     fab
+                    dark
                     :color="item.color"
-                    :dark="item.dark"
                     v-bind="attrs"
                     v-on="on"
                     @click="onClickBtn(item)"
@@ -59,7 +60,6 @@ export default {
                     desc: '통계 및 추이',
                     icon: 'mdi-chart-bar',
                     color: 'green darken-1',
-                    dark: true,
                     callback() {
                         app.$router
                             .replace({ name: 'dashboard' })
@@ -74,6 +74,9 @@ export default {
             if (callback) {
                 callback()
             }
+        },
+        onInput(value) {
+            this.$emit('input', value)
         },
     },
 }

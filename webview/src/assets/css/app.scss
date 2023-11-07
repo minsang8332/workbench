@@ -30,6 +30,9 @@ ul {
     list-style: none;
     padding-left: unset !important;
 }
+code {
+    background-color: unset !important;
+}
 // slide 트랜지션
 .slide-enter-active {
     -moz-transition-duration: 0.3s;

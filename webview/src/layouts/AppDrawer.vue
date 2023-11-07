@@ -19,12 +19,13 @@
                                 title="전체"
                                 is-dir
                                 :items="getCategories"
+                                class="pa-2"
                             />
                         </v-tab-item>
                     </v-tabs-items>
                 </v-col>
             </v-row>
-            <v-row class="row-drawer-tabs" center-active grow no-gutters>
+            <v-row class="row-drawer-tabs" no-gutters>
                 <v-col>
                     <v-divider />
                     <v-tabs

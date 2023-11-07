@@ -13,8 +13,9 @@ const routes = [
             },
             {
                 name: 'markdown',
-                path: '/markdown',
+                path: '/markdown/:path',
                 component: () => import('@/views/MarkdownPage.vue'),
+                props: true,
             },
         ],
     },

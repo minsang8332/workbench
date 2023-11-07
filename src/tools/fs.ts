@@ -1,8 +1,8 @@
 import _ from 'lodash'
 import fs from 'fs-extra'
 import path from 'path'
+import dayjs from 'dayjs'
 import { app } from 'electron'
-import commonTool from '@/tools/common'
 const getMdDir = () =>
     path.resolve(app.getPath('documents'), app.getName(), 'markdown')
 const ensureDir = (dir = '') => fs.ensureDirSync(dir, { mode: 0o2775 })
@@ -46,6 +46,17 @@ const readDirs = async (
     }
     return markdowns
 }
+const readFile = async (
+    dir = '',
+    {
+        rootDir,
+    }: {
+        rootDir: string
+    }
+) => {
+    const target = path.join(rootDir, dir)
+    return fs.readFileSync(target, 'utf8')
+}
 const writeFile = (
     dir: string | null,
     {
@@ -66,24 +77,43 @@ const writeFile = (
         if (_.isNil(dir)) {
             dir = '/'
         }
-        let dirname = path.join(rootDir, dir)
-        if (fs.lstatSync(dirname).isFile()) {
-            dirname = path.dirname(dirname)
-        }
-        if (!dirname) {
+        let tarDir = path.join(rootDir, dir)
+        if (!isSubdir(rootDir, tarDir)) {
             throw `유효하지 않은 경로 입니다. (${dir})`
         }
-        if (!_.isString(filename)) {
-            filename = commonTool.randomHex()
+        if (fs.lstatSync(tarDir).isDirectory()) {
+            tarDir = path.join(
+                tarDir,
+                `새 문서_${dayjs().format('YYYYMMDDHHmmss')}${ext}`
+            )
         }
-        if (filename && _.isString(ext)) {
-            filename += ext
+        fs.writeFileSync(tarDir, data)
+    } catch (e) {
+        console.error(e)
+    }
+}
+const writeDir = (
+    dir: string | null,
+    {
+        dirname,
+        rootDir,
+    }: {
+        dirname?: string
+        rootDir: string
+    }
+) => {
+    try {
+        if (_.isNil(dir)) {
+            dir = '/'
         }
-        const target = path.join(dirname, filename)
-        if (overwrite == false && fs.existsSync(target)) {
-            throw `이미 존재하는 파일입니다. (${dir})`
+        let target = path.join(rootDir, dir)
+        if (_.isString(dirname)) {
+            target = path.join(rootDir, dir, dirname)
         }
-        fs.writeFileSync(target, data)
+        if (!isSubdir(rootDir, target)) {
+            throw `${dirname} 디렉토리를 생성할 수 없습니다.`
+        }
+        fs.ensureDir(target)
     } catch (e) {
         console.error(e)
     }
@@ -101,15 +131,25 @@ const removeFile = (
             dir = '/'
         }
         const target = path.join(rootDir, dir)
-        fs.rmSync(target, { recursive: true, force: true })
+        fs.mkdirSync(target)
     } catch (e) {
         console.error(e)
     }
 }
+const isSubdir = async (parent: string, child: string) => {
+    const rel = path.relative(
+        await fs.promises.realpath(parent),
+        await fs.promises.realpath(child)
+    )
+    return rel && !rel.includes('..')
+}
 export default {
+    isSubdir,
     getMdDir,
     ensureDir,
     readDirs,
+    readFile,
+    writeDir,
     writeFile,
     removeFile,
 }
