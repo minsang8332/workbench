@@ -43,8 +43,12 @@ ipcMain.handle(
     }
 )
 // 문서 삭제
-ipcMain.handle('markdown:remove', (event, { path = '/' } = {}) => {
-    fsTool.removeFile(path, { rootDir })
+ipcMain.handle('markdown:remove', async (event, { path = '/' } = {}) => {
+    try {
+        await fsTool.remove(path, { rootDir })
+    } catch (e) {
+        console.error(e)
+    }
 })
 // 문서함 열기
 ipcMain.on('markdown:open-dir', () => shell.openPath(rootDir))

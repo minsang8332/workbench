@@ -3,6 +3,7 @@
         <v-card
             class="card-markdown-page fill-height"
             flat
+            :color="$app.scss('--theme-color-2')"
             outlined
             @mousemove="onMouseMove"
         >
@@ -164,7 +165,7 @@ export default {
             left: 0;
             height: 100%;
             width: 4px;
-            border-left: 1px solid #c3c3c3;
+            border-left: 1px solid var(--theme-color-2);
             cursor: col-resize;
             .btn-md-resizer {
                 position: absolute;

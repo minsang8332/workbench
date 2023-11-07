@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-        <v-card flat>Dashboard</v-card>
+        <v-card flat></v-card>
     </v-container>
 </template>
 <script>

@@ -1,11 +1,15 @@
 @import '@/assets/css/font';
-$theme: #4700ff;
-$theme2: #0093f5;
+$themeColor1: #247ba0;
+$themeColor2: #70c1b3;
+$themeColor3: #b2dbbf;
+
 $dark: #313131;
 $folder: #ffe9a2;
 :root {
-    --theme-color: #{$theme};
-    --theme-color-2: #{$theme2};
+    --theme-color: #{$themeColor1};
+    --theme-color-1: #{$themeColor1};
+    --theme-color-2: #{$themeColor2};
+    --theme-color-3: #{$themeColor3};
     --dark-color: #{$dark};
     --folder-color: #{$folder};
 }
@@ -76,8 +80,21 @@ code {
 }
 // 색상
 .bg-theme {
-    background: $theme;
+    background: var(--theme-color);
 }
 .fill-width {
     width: 100%;
+}
+.skip-native-drag {
+    -webkit-app-region: no-drag;
+}
+.native-drag {
+    -webkit-app-region: drag;
+}
+.bg-theme-linear {
+    background: linear-gradient(
+        90deg,
+        var(--theme-color-1) 0%,
+        var(--theme-color-2) 100%
+    );
 }

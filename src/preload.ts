@@ -1,5 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron'
 contextBridge.exposeInMainWorld('$native', {
+    exit() {
+        ipcRenderer.send('exit')
+    },
     getVersion() {
         return 1
     },

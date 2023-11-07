@@ -7,7 +7,7 @@
         class="app-drawer"
         @input="onInput"
     >
-        <v-card class="card-app-drawer" flat transparent>
+        <v-card class="card-app-drawer" tile flat outlined>
             <v-row class="row-category" no-gutters>
                 <v-col>
                     <v-tabs-items v-model="selectedTab">
@@ -100,6 +100,10 @@ export default {
     .card-app-drawer {
         position: relative;
         height: 100%;
+        border-top: 1px solid var(--theme-color-1);
+        border-bottom: 1px solid var(--theme-color-1);
+        border-left: 4px solid var(--theme-color-1);
+        border-right: 4px solid var(--theme-color-1);
         .row-category {
             height: calc(100vh - 96px);
             overflow: scroll;
@@ -110,7 +114,7 @@ export default {
             width: 100%;
             .drawer-tabs {
                 .active {
-                    background-color: var(--theme-color);
+                    background-color: var(--theme-color-1);
                     opacity: 0.9;
                     span {
                         color: #fff;

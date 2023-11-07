@@ -148,7 +148,7 @@ export default {
 </script>
 <style scoped lang="scss">
 .text-title {
-    font-size: 16px;
-    font-family: 'D2Coding';
+    font-size: 14px;
+    // font-family: 'NanumGothic SemiBold';
 }
 </style>

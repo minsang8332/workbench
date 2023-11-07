@@ -10,40 +10,33 @@ const readDirs = async (
     dir = '/',
     { onlyFile = false, onlyFolder = false } = {}
 ) => {
-    let markdowns: Markdown[] = []
-    try {
-        const search = async (target = '/') => {
-            const stats = fs.lstatSync(target)
-            let isDir = false
-            if (stats.isDirectory()) {
-                isDir = true
-                const files = fs.readdirSync(target)
-                await Promise.all(
-                    files.map((file) => search(path.join(target, file)))
-                )
-                if (onlyFile) {
-                    return
-                }
-            } else {
-                if (onlyFolder) {
-                    return
-                }
-                if (path.extname(target) != '.md') {
-                    return
-                }
+    const markdowns: Markdown[] = []
+    const search = async (target = '/') => {
+        const stats = fs.lstatSync(target)
+        let isDir = false
+        if (stats.isDirectory()) {
+            isDir = true
+            const files = fs.readdirSync(target)
+            await Promise.all(
+                files.map((file) => search(path.join(target, file)))
+            )
+            if (onlyFile) {
+                return
             }
-            markdowns.push({
-                path: target.replace(dir, '').replace(/\\/g, '/'),
-                isDir,
-            })
+        } else {
+            if (onlyFolder) {
+                return
+            }
+            if (path.extname(target) != '.md') {
+                return
+            }
         }
-        await search(dir)
-        markdowns = markdowns.map((md) => {
-            return md
+        markdowns.push({
+            path: target.replace(dir, '').replace(/\\/g, '/'),
+            isDir,
         })
-    } catch (e) {
-        console.error(e)
     }
+    await search(dir)
     return markdowns
 }
 const readFile = async (
@@ -73,24 +66,23 @@ const writeFile = (
         overwrite?: boolean
     }
 ) => {
-    try {
-        if (_.isNil(dir)) {
-            dir = '/'
-        }
-        let tarDir = path.join(rootDir, dir)
-        if (!isSubdir(rootDir, tarDir)) {
-            throw `유효하지 않은 경로 입니다. (${dir})`
-        }
-        if (fs.lstatSync(tarDir).isDirectory()) {
-            tarDir = path.join(
-                tarDir,
-                `새 문서_${dayjs().format('YYYYMMDDHHmmss')}${ext}`
-            )
-        }
-        fs.writeFileSync(tarDir, data)
-    } catch (e) {
-        console.error(e)
+    if (_.isNil(dir)) {
+        dir = '/'
     }
+    let tarDir = path.join(rootDir, dir)
+    if (!isSubdir(rootDir, tarDir)) {
+        throw { message: `유효하지 않은 경로 입니다. (${dir})` }
+    }
+    /**
+     * @TODO 핸들러에서 처리하도록 리팩토링 할 것
+     */
+    if (fs.lstatSync(tarDir).isDirectory()) {
+        tarDir = path.join(
+            tarDir,
+            `새 문서_${dayjs().format('YYYYMMDDHHmmss')}${ext}`
+        )
+    }
+    fs.writeFileSync(tarDir, data)
 }
 const writeDir = (
     dir: string | null,
@@ -102,23 +94,19 @@ const writeDir = (
         rootDir: string
     }
 ) => {
-    try {
-        if (_.isNil(dir)) {
-            dir = '/'
-        }
-        let target = path.join(rootDir, dir)
-        if (_.isString(dirname)) {
-            target = path.join(rootDir, dir, dirname)
-        }
-        if (!isSubdir(rootDir, target)) {
-            throw `${dirname} 디렉토리를 생성할 수 없습니다.`
-        }
-        fs.ensureDir(target)
-    } catch (e) {
-        console.error(e)
+    if (_.isNil(dir)) {
+        dir = '/'
     }
+    let target = path.join(rootDir, dir)
+    if (_.isString(dirname)) {
+        target = path.join(rootDir, dir, dirname)
+    }
+    if (!isSubdir(rootDir, target)) {
+        throw { message: `${dirname} 디렉토리를 생성할 수 없습니다.` }
+    }
+    fs.ensureDir(target)
 }
-const removeFile = (
+const remove = async (
     dir: string | null,
     {
         rootDir,
@@ -126,15 +114,14 @@ const removeFile = (
         rootDir: string
     }
 ) => {
-    try {
-        if (_.isNil(dir)) {
-            dir = '/'
-        }
-        const target = path.join(rootDir, dir)
-        fs.mkdirSync(target)
-    } catch (e) {
-        console.error(e)
+    if (_.isNil(dir)) {
+        dir = '/'
     }
+    const target = path.join(rootDir, dir)
+    if (!isSubdir(rootDir, target)) {
+        throw { message: '경로를 삭제할 수 없습니다.' }
+    }
+    await fs.rm(target, { recursive: true, force: true })
 }
 const isSubdir = async (parent: string, child: string) => {
     const rel = path.relative(
@@ -151,5 +138,5 @@ export default {
     readFile,
     writeDir,
     writeFile,
-    removeFile,
+    remove,
 }

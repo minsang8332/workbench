@@ -9,9 +9,21 @@
         transition="slide-y-reverse-transition"
     >
         <template v-slot:activator>
-            <v-btn v-model="value" plain class="btn-afb-main" dark fab>
-                <v-icon> fa-solid fa-gear </v-icon>
-            </v-btn>
+            <v-tooltip left>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                        v-model="value"
+                        :color="$app.scss('--theme-color-2')"
+                        dark
+                        fab
+                        v-bind="attrs"
+                        v-on="on"
+                    >
+                        <v-icon>fa-solid fa-gear</v-icon>
+                    </v-btn>
+                </template>
+                <p class="white--text">환경설정</p>
+            </v-tooltip>
         </template>
         <v-tooltip
             v-for="(item, i) in items"
@@ -82,11 +94,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import '@/assets/css/app.scss';
 .app-floating-btn {
     text-align: right;
-    .btn-afb-main {
-        background: $theme !important;
-    }
 }
 </style>

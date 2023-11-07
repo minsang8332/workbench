@@ -1,6 +1,6 @@
 <template>
     <v-app-bar
-        class="app-header"
+        class="app-header native-drag bg-theme-linear"
         app
         dense
         hide-overlay
@@ -9,7 +9,14 @@
     >
         <v-row no-gutters>
             <v-col>
-                <v-btn text fab dark plain @click="$app.drawer = !$app.drawer">
+                <v-btn
+                    class="skip-native-drag"
+                    text
+                    tile
+                    dark
+                    plain
+                    @click="$app.drawer = !$app.drawer"
+                >
                     <v-icon>fa-solid fa-bars</v-icon>
                 </v-btn>
             </v-col>
@@ -17,8 +24,9 @@
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
+                            class="skip-native-drag"
                             text
-                            fab
+                            tile
                             dark
                             v-bind="attrs"
                             v-on="on"
@@ -27,7 +35,23 @@
                             <v-icon>fa-solid fa-folder</v-icon>
                         </v-btn>
                     </template>
-                    <p class="white--text">문서 열람</p>
+                    <p class="white--text">저장공간</p>
+                </v-tooltip>
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            class="skip-native-drag"
+                            text
+                            tile
+                            dark
+                            v-bind="attrs"
+                            v-on="on"
+                            @click="onPowerOff"
+                        >
+                            <v-icon>fa-solid fa-power-off</v-icon>
+                        </v-btn>
+                    </template>
+                    <p class="white--text">종료하기</p>
                 </v-tooltip>
             </v-col>
         </v-row>
@@ -40,12 +64,13 @@ export default {
         onOpenDir() {
             this.$store.dispatch('markdown/openMarkdownDir')
         },
+        onPowerOff() {
+            this.$store.dispatch('app/powerOff')
+        },
     },
 }
 </script>
 <style lang="scss" scoped>
-@import '@/assets/css/app.scss';
 .app-header {
-    background: $theme !important;
 }
 </style>
