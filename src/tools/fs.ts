@@ -6,7 +6,7 @@ import { app } from 'electron'
 const getMdDir = () =>
     path.resolve(app.getPath('documents'), app.getName(), 'markdown')
 const ensureDir = (dir = '') => fs.ensureDirSync(dir, { mode: 0o2775 })
-const readDirs = async (
+const readDirsTree = async (
     dir = '/',
     { onlyFile = false, onlyFolder = false } = {}
 ) => {
@@ -34,6 +34,8 @@ const readDirs = async (
         markdowns.push({
             path: target.replace(dir, '').replace(/\\/g, '/'),
             isDir,
+            createdAt: stats.birthtime,
+            updatedAt: stats.mtime,
         })
     }
     await search(dir)
@@ -57,7 +59,6 @@ const writeFile = (
         rootDir,
         filename,
         ext,
-        overwrite = false,
     }: {
         data: string
         rootDir: string
@@ -73,16 +74,12 @@ const writeFile = (
     if (!isSubdir(rootDir, tarDir)) {
         throw { message: `유효하지 않은 경로 입니다. (${dir})` }
     }
-    /**
-     * @TODO 핸들러에서 처리하도록 리팩토링 할 것
-     */
     if (fs.lstatSync(tarDir).isDirectory()) {
-        tarDir = path.join(
-            tarDir,
-            `새 문서_${dayjs().format('YYYYMMDDHHmmss')}${ext}`
-        )
+        filename = `새 문서_${dayjs().format('YYYYMMDDHHmmss')}.${ext}`
+        tarDir = path.join(tarDir, filename)
     }
     fs.writeFileSync(tarDir, data)
+    return filename
 }
 const writeDir = (
     dir: string | null,
@@ -97,14 +94,17 @@ const writeDir = (
     if (_.isNil(dir)) {
         dir = '/'
     }
+
     let target = path.join(rootDir, dir)
-    if (_.isString(dirname)) {
-        target = path.join(rootDir, dir, dirname)
-    }
     if (!isSubdir(rootDir, target)) {
         throw { message: `${dirname} 디렉토리를 생성할 수 없습니다.` }
     }
+    if (!_.isString(dirname)) {
+        dirname = `새 폴더_${dayjs().format('YYYYMMDDHHmmss')}`
+        target = path.join(rootDir, dir, dirname)
+    }
     fs.ensureDir(target)
+    return dirname
 }
 const remove = async (
     dir: string | null,
@@ -123,6 +123,30 @@ const remove = async (
     }
     await fs.rm(target, { recursive: true, force: true })
 }
+const rename = (
+    target: string | null,
+    {
+        name,
+        rootDir,
+    }: {
+        name: string
+        rootDir: string
+    }
+): string => {
+    if (_.isNil(target)) {
+        target = '/'
+    }
+    target = path.join(rootDir, target)
+    if (!isSubdir(rootDir, target)) {
+        throw { message: '경로가 유효하지 않습니다' }
+    }
+    const { dir, ext } = path.parse(target)
+    const rename = `${name}${ext ? ext : ''}`
+    // 새로운 경로를 생성
+    const newTarget = path.join(dir, rename)
+    fs.renameSync(target, newTarget)
+    return rename
+}
 const isSubdir = async (parent: string, child: string) => {
     const rel = path.relative(
         await fs.promises.realpath(parent),
@@ -134,9 +158,10 @@ export default {
     isSubdir,
     getMdDir,
     ensureDir,
-    readDirs,
+    readDirsTree,
     readFile,
     writeDir,
     writeFile,
     remove,
+    rename,
 }

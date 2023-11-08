@@ -7,14 +7,14 @@
         transparent
     >
         <v-row
-            v-ripple
+            v-ripple="!isUpdatePath"
             no-gutters
             @mouseup.right="onRightClick"
             @dblclick="onDbClick"
             @click="show = !show"
         >
             <v-col>
-                <v-row no-gutters draggable>
+                <v-row no-gutters :draggable="!isUpdatePath">
                     <v-col v-if="depth > 0" class="text-right" :cols="depth">
                         <v-icon
                             v-if="isDir"
@@ -24,7 +24,7 @@
                             mdi-chevron-right
                         </v-icon>
                     </v-col>
-                    <v-col class="text-truncate">
+                    <v-col class="d-flex align-center text-truncate">
                         <v-icon
                             v-if="isDir"
                             class="mr-1"
@@ -41,7 +41,8 @@
                         >
                             mdi-file-document-outline
                         </v-icon>
-                        <b class="text-title">{{ printTitle }}</b>
+                        <md-update-path v-if="isUpdatePath" :path="path" />
+                        <b v-else class="text-title">{{ printTitle }}</b>
                     </v-col>
                 </v-row>
             </v-col>
@@ -62,8 +63,12 @@
 </template>
 <script>
 import _ from 'lodash'
+import MdUpdatePath from '@/components/markdown/MdUpdatePath.vue'
 export default {
     name: 'MdCategory',
+    components: {
+        MdUpdatePath,
+    },
     props: {
         title: {
             type: [String, null],
@@ -95,7 +100,18 @@ export default {
             show: true,
         }
     },
+    watch: {
+        items(newValue, oldValue) {
+            if (newValue.length !== oldValue.length) {
+                this.show = true
+            }
+        },
+    },
     computed: {
+        isUpdatePath() {
+            const targetPath = this.$app.getUpdatePath()
+            return targetPath && this.path == targetPath
+        },
         classListAppCategory() {
             let classList = []
             if (this.isFile) {

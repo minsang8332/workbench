@@ -31,6 +31,9 @@ export default {
                     }
                 }
             }
+            const compare = (a, b) =>
+                new Date(a.createdAt).getTime() -
+                new Date(b.createdAt).getTime()
             // 트리 만들기
             for (const key in map) {
                 const md = map[key]
@@ -41,8 +44,14 @@ export default {
                     categories.push(md)
                 }
             }
-            // 폴더순 정렬
-            categories = categories.sort((a, b) => b.isDir - a.isDir)
+            // 트리 정렬
+            for (const key in map) {
+                const md = map[key]
+                if (map[md.parent] && map[md.parent].items.length > 0) {
+                    map[md.parent].items = map[md.parent].items.sort(compare)
+                }
+            }
+            categories = categories.sort(compare)
         } catch (e) {
             console.error(e)
         }

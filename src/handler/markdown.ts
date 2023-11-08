@@ -7,7 +7,7 @@ fsTool.ensureDir(rootDir)
 ipcMain.handle('markdown:read-all', async () => {
     let dirs: Markdown[] = []
     try {
-        dirs = await fsTool.readDirs(rootDir)
+        dirs = await fsTool.readDirsTree(rootDir)
     } catch (e) {
         console.error(e)
     }
@@ -23,31 +23,41 @@ ipcMain.handle('markdown:read', async (event, { path = '/' } = {}) => {
     }
     return data
 })
-/**
- * @Handler 문서 저장
- * filename: 파일명, data: 내용 path: 상대경로, ext: 확장자명
- */
+/** @Handle 문서 생성 (data: 내용 path: 상대경로, ext: 확장자명) */
 ipcMain.handle(
     'markdown:write',
-    (event, { data = '', path = '/', ext = '.md' } = {}) => {
-        fsTool.writeFile(path, { data, ext, rootDir, overwrite: true })
-    }
-)
-ipcMain.handle(
-    'markdown:write-dir',
-    (event, { data = '', path = '/', dirname } = {}) => {
-        if (_.isNil(dirname)) {
-            dirname = `새폴더_${dayjs().format('YYYYMMDDHHmmss')}`
+    (event, { data = '', path = '/', ext = 'md' } = {}) => {
+        const writed = fsTool.writeFile(path, {
+            data,
+            ext,
+            rootDir,
+            overwrite: true,
+        })
+        return {
+            writed,
         }
-        fsTool.writeDir(path, { dirname, rootDir })
     }
 )
+// 문서 경로 추가
+ipcMain.handle('markdown:write-dir', (event, { path = '/', dirname } = {}) => {
+    const writed = fsTool.writeDir(path, { dirname, rootDir })
+    return {
+        writed,
+    }
+})
 // 문서 삭제
 ipcMain.handle('markdown:remove', async (event, { path = '/' } = {}) => {
     try {
         await fsTool.remove(path, { rootDir })
     } catch (e) {
         console.error(e)
+    }
+})
+// 문서명 변경
+ipcMain.handle('markdown:rename', (event, { path = '/', name } = {}) => {
+    const renamed = fsTool.rename(path, { name, rootDir })
+    return {
+        renamed,
     }
 })
 // 문서함 열기

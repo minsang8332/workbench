@@ -2,7 +2,7 @@
     <v-app-bar
         class="app-header native-drag bg-theme-linear"
         app
-        dense
+        :height="$app.scss('--app-header-height')"
         hide-overlay
         clipped-left
         elevate-on-scroll
@@ -19,8 +19,6 @@
                 >
                     <v-icon>fa-solid fa-bars</v-icon>
                 </v-btn>
-            </v-col>
-            <v-col align="right">
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
@@ -35,8 +33,10 @@
                             <v-icon>fa-solid fa-folder</v-icon>
                         </v-btn>
                     </template>
-                    <p class="white--text">저장공간</p>
+                    <p class="white--text">백업 폴더</p>
                 </v-tooltip>
+            </v-col>
+            <v-col align="right">
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
@@ -71,6 +71,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.app-header {
+.app-header::v-deep {
+    .v-toolbar__content {
+        padding: 0 4px;
+    }
 }
 </style>

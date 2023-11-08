@@ -13,7 +13,7 @@
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn
                         v-model="value"
-                        :color="$app.scss('--theme-color-2')"
+                        :color="$app.scss('--theme-color-1')"
                         dark
                         fab
                         v-bind="attrs"

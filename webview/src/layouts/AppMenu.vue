@@ -81,16 +81,32 @@ export default {
             selectedItem: null,
             items: [
                 {
+                    name: 'update-name',
+                    desc: '이름 바꾸기',
+                    shortcut: 'M',
+                    icon: 'mdi-pencil-box-outline',
+                    color: app.$app.scss('--dark-color'),
+                    callback() {
+                        const { path } = app
+                        app.$app.setUpdatePath(path)
+                        app.hide()
+                    },
+                },
+                {
                     name: 'add-folder',
                     desc: '새 폴더',
                     shortcut: 'N',
                     icon: 'fa-solid fa-folder',
                     color: app.$app.scss('--folder-color'),
                     callback() {
+                        const { path } = app
                         app.$store
-                            .dispatch('markdown/addMarkdownDir', {
-                                path: app.path,
-                            })
+                            .dispatch('markdown/saveMarkdownDir', { path })
+                            .then(({ writed }) =>
+                                app.$toast.success({
+                                    text: `${writed} 생성되었습니다.`,
+                                })
+                            )
                             .catch((e) => console.error(e))
                             .finally(app.hide)
                     },
@@ -102,10 +118,14 @@ export default {
                     icon: 'mdi-file-document-outline',
                     color: app.$app.scss('--dark-color'),
                     callback() {
+                        const { path } = app
                         app.$store
-                            .dispatch('markdown/saveMarkdown', {
-                                path: app.path,
-                            })
+                            .dispatch('markdown/saveMarkdown', { path })
+                            .then(({ writed }) =>
+                                app.$toast.success({
+                                    text: `${writed} 생성되었습니다.`,
+                                })
+                            )
                             .catch((e) => console.error(e))
                             .finally(app.hide)
                     },
@@ -118,10 +138,10 @@ export default {
                     icon: 'mdi-trash-can-outline',
                     color: app.$app.scss('--dark-color'),
                     callback() {
+                        const { path } = app
+
                         app.$store
-                            .dispatch('markdown/removeMarkdown', {
-                                path: app.path,
-                            })
+                            .dispatch('markdown/removeMarkdown', { path })
                             .then(
                                 app.$router
                                     .replace({ name: 'dashboard' })

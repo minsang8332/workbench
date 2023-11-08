@@ -22,6 +22,9 @@ contextBridge.exposeInMainWorld('$native', {
         remove(payload: object) {
             return ipcRenderer.invoke('markdown:remove', payload)
         },
+        rename(payload: object) {
+            return ipcRenderer.invoke('markdown:rename', payload)
+        },
         openDir() {
             ipcRenderer.send('markdown:open-dir')
         },

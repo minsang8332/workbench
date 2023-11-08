@@ -11,18 +11,31 @@ export default {
     // 문서 열기
     async loadMarkdown(context, { path } = {}) {
         const markdown = await window.$native.markdown.read({ path })
-        console.log(markdown)
         return markdown
     },
     // 문서 저장
     async saveMarkdown(context, { path, data } = {}) {
-        await window.$native.markdown.write({ path, data })
+        const { writed } = await window.$native.markdown.write({ path, data })
         context.dispatch('loadMarkdowns')
+        return {
+            writed,
+        }
     },
-    // 문서 폴더 추가
-    async addMarkdownDir(context, { path } = {}) {
-        await window.$native.markdown.writeDir({ path })
+    // 문서 이름 변경
+    async renameMarkdown(context, { path, name } = {}) {
+        const { renamed } = await window.$native.markdown.rename({ path, name })
         context.dispatch('loadMarkdowns')
+        return {
+            renamed,
+        }
+    },
+    // 문서 폴더 생성
+    async saveMarkdownDir(context, { path } = {}) {
+        const { writed } = await window.$native.markdown.writeDir({ path })
+        context.dispatch('loadMarkdowns')
+        return {
+            writed,
+        }
     },
     // 문서 폴더 열기
     openMarkdownDir() {

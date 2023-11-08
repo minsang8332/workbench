@@ -7,6 +7,8 @@ import AppModal from '@/layouts/AppModal'
 import store from './store'
 import router from './router'
 import appPlugin from '@/plugins/app'
+import toastPlugin from '@/plugins/toast'
+import 'toastify-js/src/toastify.css'
 import '@/assets/css/app.scss'
 Vue.config.productionTip = false
 const app = new Vue({
@@ -19,4 +21,5 @@ Vue.component('app-loading', AppLoading)
 Vue.component('app-layout', AppLayout)
 Vue.component('app-modal', AppModal)
 Vue.use(appPlugin)
+Vue.use(toastPlugin)
 app.$mount('#app')

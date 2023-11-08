@@ -1,7 +1,7 @@
 @import '@/assets/css/font';
 $themeColor1: #247ba0;
-$themeColor2: #70c1b3;
-$themeColor3: #b2dbbf;
+$themeColor2: #9ceaef;
+$themeColor3: #f7fff7;
 
 $dark: #313131;
 $folder: #ffe9a2;
@@ -12,6 +12,8 @@ $folder: #ffe9a2;
     --theme-color-3: #{$themeColor3};
     --dark-color: #{$dark};
     --folder-color: #{$folder};
+    --success-color: #06d6a0;
+    --app-header-height: 48px;
 }
 *::-webkit-scrollbar {
     display: none;
@@ -97,4 +99,18 @@ code {
         var(--theme-color-1) 0%,
         var(--theme-color-2) 100%
     );
+}
+.app-toast {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    i {
+        font-size: 24px;
+        margin-right: 8px;
+    }
+    p {
+        font-size: 16px;
+        font-family: 'Nanum Gothic Bold';
+        color: #fff;
+    }
 }
