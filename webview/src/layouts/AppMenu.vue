@@ -9,7 +9,7 @@
             :style="styleAppMenu"
             @focusout.self.prevent="onFocusout"
         >
-            <v-row class="bg-theme" no-gutters dense>
+            <v-row class="bg-theme-g1" no-gutters dense>
                 <v-col align="end">
                     <v-btn dark small text @click="onInput(false)">
                         <v-icon>mdi-close</v-icon>
@@ -81,18 +81,6 @@ export default {
             selectedItem: null,
             items: [
                 {
-                    name: 'update-name',
-                    desc: '이름 바꾸기',
-                    shortcut: 'M',
-                    icon: 'mdi-pencil-box-outline',
-                    color: app.$app.scss('--dark-color'),
-                    callback() {
-                        const { path } = app
-                        app.$app.setUpdatePath(path)
-                        app.hide()
-                    },
-                },
-                {
                     name: 'add-folder',
                     desc: '새 폴더',
                     shortcut: 'N',
@@ -152,6 +140,18 @@ export default {
                     },
                 },
                 {
+                    name: 'update-name',
+                    desc: '이름 바꾸기',
+                    shortcut: 'M',
+                    icon: 'mdi-pencil-box-outline',
+                    color: app.$app.scss('--dark-color'),
+                    callback() {
+                        const { path } = app
+                        app.$app.setUpdatePath(path)
+                        app.hide()
+                    },
+                },
+                {
                     name: 'add-folder',
                     desc: '새로고침',
                     shortcut: 'R',
@@ -186,7 +186,7 @@ export default {
                 if (item.name.includes('add') && this.isDir == false) {
                     return false
                 }
-                if (item.name == 'remove' && !this.path) {
+                if (['remove', 'rename'].includes(item.name) && !this.path) {
                     return false
                 }
                 return item

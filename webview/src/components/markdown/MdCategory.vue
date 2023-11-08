@@ -47,18 +47,16 @@
                 </v-row>
             </v-col>
         </v-row>
-        <transition name="slide">
-            <v-row v-if="items && items.length > 0 && show" no-gutters>
-                <v-col>
-                    <md-category
-                        v-for="(item, i) of items"
-                        v-bind="item"
-                        :depth="depth + 1"
-                        :key="`item-${i}`"
-                    />
-                </v-col>
-            </v-row>
-        </transition>
+        <v-row v-if="items && items.length > 0 && show" no-gutters>
+            <v-col>
+                <md-category
+                    v-for="(item, i) of items"
+                    v-bind="item"
+                    :depth="depth + 1"
+                    :key="`item-${i}`"
+                />
+            </v-col>
+        </v-row>
     </v-card>
 </template>
 <script>

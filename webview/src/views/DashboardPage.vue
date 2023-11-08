@@ -88,6 +88,11 @@ export default {
             markdowns: [],
         }
     },
+    watch: {
+        getRecentMarkdowns() {
+            this.onLoad()
+        },
+    },
     computed: {
         ...mapGetters('markdown', ['getRecentMarkdowns']),
     },
