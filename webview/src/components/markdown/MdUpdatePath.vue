@@ -50,17 +50,27 @@ export default {
         onInput(value) {
             this.input = value
         },
-        onUpdateName(event) {
+        async onUpdateName(event) {
             event.preventDefault()
             const { input: name, path } = this
             if (name) {
-                this.renameMarkdown({ path, name })
-                    .then(({ renamed }) =>
-                        this.$toast.success({
-                            text: `${renamed} 으로 변경되었습니다.`,
+                const { renamed } = await this.renameMarkdown({
+                    path,
+                    name,
+                }).catch((e) => e)
+                // 현재 작성중인 문서인 경우
+                if (this.$route.params.path == path) {
+                    this.$router
+                        .replace({
+                            name: 'markdown-editor',
+                            params: { path: renamed },
                         })
-                    )
-                    .catch((e) => e)
+                        .catch((e) => e)
+                }
+                const filename = _.last(renamed.split('/'))
+                this.$toast.success({
+                    text: `${filename} 으/로 변경되었습니다.`,
+                })
             }
             this.clear()
         },

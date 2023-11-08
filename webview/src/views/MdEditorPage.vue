@@ -1,10 +1,10 @@
 <template>
-    <v-container fluid class="markdown-page">
+    <v-container fluid class="md-editor-page pa-0">
         <v-card
-            class="card-markdown-page fill-height"
+            class="card-md fill-height"
             ref="card"
             flat
-            :color="$app.scss('--theme-color-2')"
+            tile
             outlined
             @mousemove="onMouseMove"
         >
@@ -13,12 +13,12 @@
                     <v-icon class="mr-1" :color="$app.scss('--dark-color')">
                         mdi-file-document-outline
                     </v-icon>
-                    <b>
-                        {{ path }}
+                    <b class="text-title">
+                        {{ printPath }}
                     </b>
                 </v-col>
             </v-row>
-            <v-divider />
+            <v-divider :color="$app.scss('--theme-color-2')" />
             <v-row
                 class="row-md-content pa-0"
                 no-gutters
@@ -26,41 +26,41 @@
                 @mouseup="onMouseUp"
             >
                 <v-col class="d-flex fill-height">
+                    <!-- s: 입력창 -->
                     <div class="md-left-panel">
                         <textarea
                             v-model="editor"
                             ref="editor"
-                            class="md-editor pa-2"
-                            :style="{ width: editorX + 'px' }"
+                            class="md-editor d2coding pa-2"
+                            :style="{ width: editorWidth + 'px' }"
                             @keydown.ctrl.83.prevent.stop="onSave"
                         />
                     </div>
+                    <!-- e: 입력창 -->
+                    <!-- s: 프리뷰 -->
                     <div class="md-right-panel">
                         <div class="md-resizer" @mousedown="onMouseDown">
                             <v-btn
                                 class="btn-md-resizer"
-                                :color="$app.scss('--theme-color-2')"
                                 text
                                 fab
-                                ><v-icon
-                                    >mdi-arrow-split-vertical</v-icon
-                                ></v-btn
+                                :color="$app.scss('--theme-color-2')"
+                                ><v-icon>fa-solid fa-compress</v-icon></v-btn
                             >
                         </div>
-                        <div
-                            v-html="preview"
-                            class="markdown-body md-preview px-4 py-2"
-                        />
+                        <md-preview :text="editor" />
                     </div>
+                    <!-- e: 프리뷰 -->
                 </v-col>
             </v-row>
+            <v-divider :color="$app.scss('--theme-color-2')" />
             <v-row class="row-md-footer text-truncate px-2" no-gutters>
                 <v-col class="align-self-center">
-                    <v-tooltip bottom>
+                    <v-tooltip top>
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn
+                                class="btn-md-save pulsing"
                                 dark
-                                text
                                 block
                                 v-bind="attrs"
                                 v-on="on"
@@ -69,7 +69,7 @@
                                 <v-icon>mdi-send</v-icon>
                             </v-btn>
                         </template>
-                        <p class="white--text">저장하기</p>
+                        <p class="white--text">파일을 저장해 주세요.</p>
                     </v-tooltip>
                 </v-col>
             </v-row>
@@ -79,21 +79,23 @@
 <script>
 import _ from 'lodash'
 import { mapActions } from 'vuex'
-import { marked } from 'marked'
-import 'github-markdown-css'
+import MdPreview from '@/components/markdown/MdPreview'
 export default {
-    name: 'MarkdownPage',
+    name: 'MdEditorPage',
     props: {
         path: {
             type: [String],
             default: '',
         },
     },
+    components: {
+        MdPreview,
+    },
     data() {
         return {
             resize: false,
             editor: '',
-            editorX: null,
+            editorWidth: null,
         }
     },
     watch: {
@@ -105,17 +107,23 @@ export default {
         },
     },
     computed: {
-        preview() {
-            return marked(this.editor)
+        printPath() {
+            let path = this.path
+            if (path) {
+                path = path.split('/')
+                path = _.last(path)
+            }
+            return path
         },
     },
     methods: {
         ...mapActions('markdown', ['loadMarkdown', 'saveMarkdown']),
         async onLoad() {
-            const path = this.path
+            const { path } = this
             try {
-                this.editor = ''
-                this.editor = await this.loadMarkdown({ path })
+                this.editor = _.toString(null)
+                const { data } = await this.loadMarkdown({ path })
+                this.editor = _.toString(data)
             } catch (e) {
                 console.error(e)
             }
@@ -125,13 +133,12 @@ export default {
                 if (this.resize == false) {
                     return
                 }
-                const card = this.$refs.card
-                const editor = this.$refs.editor
+                const { card, editor } = this.$refs
                 const domRect = editor.getBoundingClientRect()
-                const limit = card.$el.clientWidth - 100
-                // 이벤트가 없으면 최대폭으로 둔다
+                const maxWidth = card.$el.clientWidth - 100
+                // event 없이 접근시 넓이 고정
                 if (!event) {
-                    this.editorX = limit
+                    this.editorWidth = maxWidth
                     return
                 }
                 let x = event.x
@@ -139,11 +146,11 @@ export default {
                 if (this.$app.drawer) {
                     x = event.x - domRect.x
                 }
-                if (x > limit) {
-                    this.editorX = limit
+                if (x > maxWidth) {
+                    this.editorWidth = maxWidth
                     return
                 }
-                this.editorX = x
+                this.editorWidth = x
             })
         },
         onMouseUp() {
@@ -165,31 +172,40 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-$rowHeight: 48px;
-.markdown-page::v-deep {
+$rowHeader: 36px;
+$rowFooter: 48px;
+.md-editor-page::v-deep {
     height: calc(100vh - var(--app-header-height));
-    .row-md-header,
-    .row-md-footer {
-        height: $rowHeight;
+    .card-md {
+        border: 1px solid var(--theme-color-2);
+    }
+    .row-md-header {
+        height: $rowHeader;
         flex-shrink: 0;
+        .text-title {
+            font-size: 14px;
+        }
+    }
+    .row-md-footer {
+        height: $rowFooter;
+        flex-shrink: 0;
+        .btn-md-save {
+            background: var(--theme-color-g1);
+        }
     }
     .row-md-content {
-        height: calc(100% - $rowHeight * 2);
+        height: calc(100% - $rowHeader - $rowFooter);
         overflow-x: hidden;
-        .md-editor {
-            background: rgba(246, 246, 246, 0.8);
-            height: 100%;
-            min-width: 25vw;
-            font-family: 'Monaco', courier, monospace;
-            border: none;
-            resize: none;
-            outline: none;
-        }
-        .md-preview {
-            overflow-y: auto;
-        }
-        .markdown-body {
-            height: 100%;
+        .md-left-panel {
+            .md-editor {
+                background: rgba(246, 246, 246);
+                height: 100%;
+                font-family: 'Monaco', courier, monospace;
+                font-size: 14px;
+                border: none;
+                resize: none;
+                outline: none;
+            }
         }
         .md-right-panel {
             height: 100%;
@@ -201,12 +217,12 @@ $rowHeight: 48px;
                 left: 0;
                 height: 100%;
                 width: 4px;
-                border-left: 1px solid var(--theme-color-3);
+                border-left: 1.5px dotted var(--theme-color-2);
                 cursor: col-resize;
                 .btn-md-resizer {
                     position: absolute;
                     top: 50%;
-                    left: -29.5px;
+                    left: -29px;
                 }
             }
         }

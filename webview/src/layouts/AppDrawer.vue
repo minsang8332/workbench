@@ -7,7 +7,7 @@
         class="app-drawer"
         @input="onInput"
     >
-        <v-card class="card-app-drawer" tile flat outlined>
+        <v-card class="card-app-drawer" tile flat>
             <v-row class="row-category" no-gutters>
                 <v-col>
                     <v-tabs-items v-model="selectedTab">
@@ -18,7 +18,7 @@
                             <md-category
                                 title="전체"
                                 is-dir
-                                :items="getCategories"
+                                :items="getMarkdownTree"
                                 class="pa-2"
                             />
                         </v-tab-item>
@@ -74,17 +74,11 @@ export default {
                     label: '',
                     value: 'category',
                 },
-                /*
-                {
-                    label: '내 문서',
-                    value: 'file',
-                },
-                */
             ],
         }
     },
     computed: {
-        ...mapGetters('markdown', ['getCategories']),
+        ...mapGetters('markdown', ['getMarkdownTree']),
     },
     methods: {
         onInput(value) {
@@ -100,10 +94,6 @@ export default {
     .card-app-drawer {
         position: relative;
         height: 100%;
-        border-top: 1px solid var(--theme-color-1);
-        border-bottom: 1px solid var(--theme-color-1);
-        border-left: 4px solid var(--theme-color-1);
-        border-right: 4px solid var(--theme-color-1);
         .row-category {
             height: calc(100vh - 96px);
             overflow: scroll;
@@ -114,7 +104,7 @@ export default {
             width: 100%;
             .drawer-tabs {
                 .active {
-                    background-color: var(--theme-color-1);
+                    background: var(--theme-color-g1);
                     opacity: 0.9;
                     span {
                         color: #fff;
@@ -123,6 +113,9 @@ export default {
                 .text-tab {
                     font-family: 'NanumGothic';
                 }
+            }
+            .v-tabs-slider-wrapper {
+                display: none;
             }
         }
     }

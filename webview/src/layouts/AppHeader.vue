@@ -1,6 +1,6 @@
 <template>
     <v-app-bar
-        class="app-header native-drag bg-theme-linear"
+        class="app-header native-drag bg-theme-g1"
         app
         :height="$app.scss('--app-header-height')"
         hide-overlay
@@ -26,6 +26,7 @@
                             text
                             tile
                             dark
+                            :color="$app.scss('--folder-color')"
                             v-bind="attrs"
                             v-on="on"
                             @click="onOpenDir"
@@ -41,6 +42,7 @@
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
                             class="skip-native-drag"
+                            :color="$app.scss('--theme-color-1')"
                             text
                             tile
                             dark
@@ -51,7 +53,7 @@
                             <v-icon>fa-solid fa-power-off</v-icon>
                         </v-btn>
                     </template>
-                    <p class="white--text">종료하기</p>
+                    <p class="white--text">종료</p>
                 </v-tooltip>
             </v-col>
         </v-row>

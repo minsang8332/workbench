@@ -21,7 +21,7 @@ ipcMain.handle('markdown:read', async (event, { path = '/' } = {}) => {
     } catch (e) {
         console.error(e)
     }
-    return data
+    return { data }
 })
 /** @Handle 문서 생성 (data: 내용 path: 상대경로, ext: 확장자명) */
 ipcMain.handle(

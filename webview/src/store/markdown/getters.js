@@ -3,8 +3,8 @@ export default {
     getMarkdowns(state) {
         return state.markdowns
     },
-    // 배열 -> 계층트리
-    getCategories(state, { getMarkdowns }) {
+    // 문서 계층화
+    getMarkdownTree(state, { getMarkdowns }) {
         let categories = []
         try {
             let map = {}
@@ -56,5 +56,11 @@ export default {
             console.error(e)
         }
         return categories
+    },
+    // 최근 생성된 문서
+    getRecentMarkdowns(state, { getMarkdowns }) {
+        return getMarkdowns
+            .filter((md) => md.isDir == false)
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     },
 }

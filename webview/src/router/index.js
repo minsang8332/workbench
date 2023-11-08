@@ -12,9 +12,9 @@ const routes = [
                 component: () => import('@/views/DashboardPage.vue'),
             },
             {
-                name: 'markdown',
-                path: '/markdown/:path',
-                component: () => import('@/views/MarkdownPage.vue'),
+                name: 'markdown-editor',
+                path: '/markdown-editor/:path',
+                component: () => import('@/views/MdEditorPage.vue'),
                 props: true,
             },
         ],

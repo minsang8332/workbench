@@ -7,7 +7,7 @@ const getMdDir = () =>
     path.resolve(app.getPath('documents'), app.getName(), 'markdown')
 const ensureDir = (dir = '') => fs.ensureDirSync(dir, { mode: 0o2775 })
 const readDirsTree = async (
-    dir = '/',
+    rootDir: string,
     { onlyFile = false, onlyFolder = false } = {}
 ) => {
     const markdowns: Markdown[] = []
@@ -32,13 +32,13 @@ const readDirsTree = async (
             }
         }
         markdowns.push({
-            path: target.replace(dir, '').replace(/\\/g, '/'),
+            path: transPathToKey(target, rootDir),
             isDir,
             createdAt: stats.birthtime,
             updatedAt: stats.mtime,
         })
     }
-    await search(dir)
+    await search(rootDir)
     return markdowns
 }
 const readFile = async (
@@ -145,7 +145,10 @@ const rename = (
     // 새로운 경로를 생성
     const newTarget = path.join(dir, rename)
     fs.renameSync(target, newTarget)
-    return rename
+    return transPathToKey(newTarget, rootDir)
+}
+const transPathToKey = (target: string, rootDir: string) => {
+    return target.replace(rootDir, '').replace(/\\/g, '/')
 }
 const isSubdir = async (parent: string, child: string) => {
     const rel = path.relative(

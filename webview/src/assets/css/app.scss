@@ -1,15 +1,20 @@
 @import '@/assets/css/font';
+@import '@/assets/css/animation';
 $themeColor1: #247ba0;
 $themeColor2: #9ceaef;
-$themeColor3: #f7fff7;
-
+$themeColor3: #b0f2b4;
+$themeColorG1: linear-gradient(
+    90deg,
+    var(--theme-color-1) 0%,
+    var(--theme-color-2) 100%
+);
 $dark: #313131;
 $folder: #ffe9a2;
 :root {
-    --theme-color: #{$themeColor1};
     --theme-color-1: #{$themeColor1};
     --theme-color-2: #{$themeColor2};
     --theme-color-3: #{$themeColor3};
+    --theme-color-g1: #{$themeColorG1};
     --dark-color: #{$dark};
     --folder-color: #{$folder};
     --success-color: #06d6a0;
@@ -24,13 +29,16 @@ p {
 p,
 span,
 input {
-    font-family: 'Nanum Gothic';
+    font-family: 'Pretendard';
     color: $dark;
 }
 b,
 button {
-    font-family: 'Nanum Gothic Bold';
+    font-family: 'Pretendard';
     color: $dark;
+}
+h1 {
+    font-family: 'Pretendard';
 }
 ul {
     list-style: none;
@@ -39,51 +47,24 @@ ul {
 code {
     background-color: unset !important;
 }
-// slide 트랜지션
-.slide-enter-active {
-    -moz-transition-duration: 0.3s;
-    -webkit-transition-duration: 0.3s;
-    -o-transition-duration: 0.3s;
-    transition-duration: 0.3s;
-    -moz-transition-timing-function: ease-in;
-    -webkit-transition-timing-function: ease-in;
-    -o-transition-timing-function: ease-in;
-    transition-timing-function: ease-in;
+// 배경 색상
+.bg-theme-1 {
+    background: var(--theme-color-1);
 }
-.slide-leave-active {
-    -moz-transition-duration: 0.3s;
-    -webkit-transition-duration: 0.3s;
-    -o-transition-duration: 0.3s;
-    transition-duration: 0.3s;
-    -moz-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-    -webkit-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-    -o-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-    transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+.bg-theme-g1 {
+    background: var(--theme-color-g1);
 }
-.slide-enter-to,
-.slide-leave {
-    max-height: 100px;
-    overflow: hidden;
+.bg-theme-2 {
+    background: var(--theme-color-2);
 }
-.slide-enter,
-.slide-leave-to {
-    overflow: hidden;
-    max-height: 0;
+.bg-theme-3 {
+    background: var(--theme-color-3);
 }
-// fade 트랜지션
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.5s ease;
+// 테두리 테마
+.border-theme-g1 {
+    border: 1px solid var(--theme-color-g1);
 }
-
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-// 색상
-.bg-theme {
-    background: var(--theme-color);
-}
+.full-width,
 .fill-width {
     width: 100%;
 }
@@ -92,25 +73,4 @@ code {
 }
 .native-drag {
     -webkit-app-region: drag;
-}
-.bg-theme-linear {
-    background: linear-gradient(
-        90deg,
-        var(--theme-color-1) 0%,
-        var(--theme-color-2) 100%
-    );
-}
-.app-toast {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    i {
-        font-size: 24px;
-        margin-right: 8px;
-    }
-    p {
-        font-size: 16px;
-        font-family: 'Nanum Gothic Bold';
-        color: #fff;
-    }
 }

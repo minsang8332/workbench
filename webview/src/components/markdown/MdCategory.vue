@@ -156,7 +156,7 @@ export default {
                 return
             }
             this.$router
-                .replace({ name: 'markdown', params: { path } })
+                .replace({ name: 'markdown-editor', params: { path } })
                 .catch((e) => e)
         },
     },

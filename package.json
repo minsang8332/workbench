@@ -1,7 +1,7 @@
 {
     "name": "markdown-editor",
     "description": "마크다운 편집기",
-    "version": "0.9.0",
+    "version": "0.9.1",
     "main": "build/bundle.js",
     "build": {
         "productName": "마크다운 편집기",

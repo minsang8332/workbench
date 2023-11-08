@@ -10,8 +10,10 @@ export default {
     },
     // 문서 열기
     async loadMarkdown(context, { path } = {}) {
-        const markdown = await window.$native.markdown.read({ path })
-        return markdown
+        const { data } = await window.$native.markdown.read({ path })
+        return {
+            data,
+        }
     },
     // 문서 저장
     async saveMarkdown(context, { path, data } = {}) {

@@ -6,24 +6,21 @@
         :bottom="bottom"
         :right="right"
         :direction="direction"
-        transition="slide-y-reverse-transition"
+        transition="scale-transition"
     >
         <template v-slot:activator>
-            <v-tooltip left>
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                        v-model="value"
-                        :color="$app.scss('--theme-color-1')"
-                        dark
-                        fab
-                        v-bind="attrs"
-                        v-on="on"
-                    >
-                        <v-icon>fa-solid fa-gear</v-icon>
-                    </v-btn>
-                </template>
-                <p class="white--text">환경설정</p>
-            </v-tooltip>
+            <v-btn
+                v-model="value"
+                class="btn-app-floating"
+                :style="{
+                    backgroundImage: `url(${require('@/assets/img/favicon.png')})`,
+                    backgroundSize: 'contain',
+                }"
+                dark
+                fab
+            >
+                <v-icon>fa-solid fa-gear</v-icon>
+            </v-btn>
         </template>
         <v-tooltip
             v-for="(item, i) in items"
@@ -69,9 +66,9 @@ export default {
             value: false,
             items: [
                 {
-                    desc: '통계 및 추이',
-                    icon: 'mdi-chart-bar',
-                    color: 'green darken-1',
+                    desc: '대시보드',
+                    icon: 'mdi-monitor-dashboard',
+                    color: app.$app.scss('--theme-color-1'),
                     callback() {
                         app.$router
                             .replace({ name: 'dashboard' })
