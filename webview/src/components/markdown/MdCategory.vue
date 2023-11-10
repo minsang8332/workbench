@@ -14,7 +14,14 @@
             @click="show = !show"
         >
             <v-col>
-                <v-row no-gutters :draggable="!isUpdatePath">
+                <v-row
+                    :draggable="!isUpdatePath"
+                    @dragstart="onDragstart($event, path)"
+                    @drop="onDrop"
+                    @dragenter.prevent
+                    @dragover.prevent
+                    no-gutters
+                >
                     <v-col v-if="depth > 0" class="text-right" :cols="depth">
                         <v-icon
                             v-if="isDir"
@@ -61,6 +68,7 @@
 </template>
 <script>
 import _ from 'lodash'
+import { mapActions } from 'vuex'
 import MdUpdatePath from '@/components/markdown/MdUpdatePath.vue'
 export default {
     name: 'MdCategory',
@@ -134,6 +142,7 @@ export default {
         },
     },
     methods: {
+        ...mapActions('markdown', ['moveMarkdown']),
         // 우측 마우스 클릭시 메뉴 모달
         onRightClick(event) {
             const { path, isDir } = this
@@ -156,6 +165,36 @@ export default {
             this.$router
                 .replace({ name: 'markdown-editor', params: { path } })
                 .catch((e) => e)
+        },
+        onDragstart(event, path) {
+            if (!(event && event.dataTransfer && path)) {
+                return
+            }
+            event.dataTransfer.setData('path', path)
+        },
+        async onDrop(event) {
+            if (!(event && event.dataTransfer)) {
+                return
+            }
+            try {
+                const dest = this.path
+                const target = event.dataTransfer.getData('path')
+                if (!(target && target != dest)) {
+                    return
+                }
+                const { moved } = await this.moveMarkdown({ target, dest })
+                // 현재 작성중인 문서인 경우
+                if (this.$route.params.path == target) {
+                    this.$router
+                        .replace({
+                            name: 'markdown-editor',
+                            params: { path: moved },
+                        })
+                        .catch((e) => e)
+                }
+            } catch (e) {
+                this.$toast.error(e)
+            }
         },
     },
 }

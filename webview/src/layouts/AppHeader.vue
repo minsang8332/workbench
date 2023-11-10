@@ -67,7 +67,13 @@ export default {
             this.$store.dispatch('markdown/openMarkdownDir')
         },
         onPowerOff() {
-            this.$store.dispatch('app/powerOff')
+            const app = this
+            this.$app.showModal({
+                message: '어플리케이션을 종료 하시겠습니까 ?',
+                ok() {
+                    app.$store.dispatch('app/powerOff').catch((e) => e)
+                },
+            })
         },
     },
 }

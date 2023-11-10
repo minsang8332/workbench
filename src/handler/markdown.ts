@@ -1,64 +1,108 @@
 import _ from 'lodash'
 import { ipcMain, shell } from 'electron'
-import dayjs from 'dayjs'
 import fsTool from '@/tools/fs'
+import handlerTool from '@/tools/handler'
 const rootDir = fsTool.getMdDir()
 fsTool.ensureDir(rootDir)
+// 문서함 열기
+ipcMain.on('markdown:open-dir', () => shell.openPath(rootDir))
+// 모든 문서 목록
 ipcMain.handle('markdown:read-all', async () => {
-    let dirs: Markdown[] = []
+    let response: IHandlerResponse = handlerTool.createResponse()
     try {
-        dirs = await fsTool.readDirsTree(rootDir)
+        const markdowns: Markdown[] = await fsTool.readTreeDirs(rootDir)
+        response.data = {
+            markdowns,
+        }
     } catch (e) {
-        console.error(e)
+        response.error = handlerTool.createError(e)
     }
-    return dirs
+    return response
 })
-ipcMain.handle('markdown:read', async (event, { path = '/' } = {}) => {
-    let data = null
+ipcMain.handle('markdown:read', async (event, { target } = {}) => {
+    let response: IHandlerResponse = handlerTool.createResponse()
     try {
-        data = await fsTool.readFile(path, { rootDir })
-        data = _.toString(data)
+        const text = await fsTool.readFile(target, { rootDir })
+        response.data = {
+            text: _.toString(text),
+        }
     } catch (e) {
-        console.error(e)
+        response.error = handlerTool.createError(e)
     }
-    return { data }
+    return response
 })
 /** @Handle 문서 생성 (data: 내용 path: 상대경로, ext: 확장자명) */
 ipcMain.handle(
     'markdown:write',
-    (event, { data = '', path = '/', ext = 'md' } = {}) => {
-        const writed = fsTool.writeFile(path, {
-            data,
-            ext,
-            rootDir,
-            overwrite: true,
-        })
-        return {
-            writed,
+    async (event, { target, text = '', ext = 'md' } = {}) => {
+        let response: IHandlerResponse = handlerTool.createResponse()
+        try {
+            const writed = await fsTool.writeFile(target, {
+                text,
+                ext,
+                rootDir,
+            })
+            response.data = {
+                writed,
+            }
+        } catch (e) {
+            response.error = handlerTool.createError(e)
         }
+        return response
     }
 )
 // 문서 경로 추가
-ipcMain.handle('markdown:write-dir', (event, { path = '/', dirname } = {}) => {
-    const writed = fsTool.writeDir(path, { dirname, rootDir })
-    return {
-        writed,
+ipcMain.handle(
+    'markdown:write-dir',
+    async (event, { target, dirname } = {}) => {
+        let response: IHandlerResponse = handlerTool.createResponse()
+        try {
+            const writed = await fsTool.writeDir(target, { dirname, rootDir })
+            response.data = {
+                writed,
+            }
+        } catch (e) {
+            response.error = handlerTool.createError(e)
+        }
+        return response
     }
-})
+)
 // 문서 삭제
-ipcMain.handle('markdown:remove', async (event, { path = '/' } = {}) => {
+ipcMain.handle('markdown:remove', async (event, { target } = {}) => {
+    let response: IHandlerResponse = handlerTool.createResponse()
     try {
-        await fsTool.remove(path, { rootDir })
+        const removed = await fsTool.remove(target, { rootDir })
+        response.data = {
+            removed,
+        }
     } catch (e) {
-        console.error(e)
+        response.error = handlerTool.createError(e)
     }
+    return response
 })
 // 문서명 변경
-ipcMain.handle('markdown:rename', (event, { path = '/', name } = {}) => {
-    const renamed = fsTool.rename(path, { name, rootDir })
-    return {
-        renamed,
+ipcMain.handle('markdown:rename', async (event, { target, rename } = {}) => {
+    let response: IHandlerResponse = handlerTool.createResponse()
+    try {
+        const renamed = await fsTool.rename(target, rename, { rootDir })
+        response.data = {
+            renamed,
+        }
+    } catch (e) {
+        response.error = handlerTool.createError(e)
     }
+    return response
 })
-// 문서함 열기
-ipcMain.on('markdown:open-dir', () => shell.openPath(rootDir))
+// 문서 이동
+ipcMain.handle('markdown:move', async (event, { target, dest } = {}) => {
+    let response: IHandlerResponse = handlerTool.createResponse()
+    try {
+        const moved = await fsTool.move(target, dest, { rootDir })
+        response.data = {
+            moved,
+        }
+    } catch (e) {
+        response.error = handlerTool.createError(e)
+    }
+    return response
+})

@@ -5,9 +5,9 @@
             <router-view />
         </v-main>
         <app-floating-btn />
-        <app-modal v-model="$app.modal" />
         <app-drawer v-model="$app.drawer" />
-        <app-menu v-model="$app.menu" v-bind="$app.bindMenu" />
+        <app-menu v-model="$app.menu" v-bind="$app.menuProps" />
+        <app-modal v-model="$app.modal" v-bind="$app.modalProps" />
     </v-app>
 </template>
 <script>

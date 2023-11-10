@@ -16,7 +16,7 @@
                             :key="`drawer-tab-item-${i}`"
                         >
                             <md-category
-                                title="전체"
+                                :title="`전체 (${cntMarkdowns})`"
                                 is-dir
                                 :items="getMarkdownTree"
                                 class="pa-2"
@@ -78,7 +78,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('markdown', ['getMarkdownTree']),
+        ...mapGetters('markdown', ['getMarkdownTree', 'cntMarkdowns']),
     },
     methods: {
         onInput(value) {

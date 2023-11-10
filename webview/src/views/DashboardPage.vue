@@ -18,13 +18,12 @@
                         >
                             <v-card
                                 class="ma-4"
-                                tile
                                 height="40vh"
                                 width="20vw"
                                 @click="onClickRecentMarkdown(toggle)"
                             >
                                 <v-row
-                                    class="row-md-title bg-theme-1 px-1"
+                                    class="row-md-title bg-theme-1 px-2"
                                     no-gutters
                                 >
                                     <v-col
@@ -37,7 +36,7 @@
                                 </v-row>
                                 <v-row class="row-md-preview" no-gutters>
                                     <v-col>
-                                        <md-preview :text="md.data" />
+                                        <md-preview :text="md.text" />
                                         <v-scale-transition>
                                             <template v-if="active"></template>
                                         </v-scale-transition>
@@ -129,13 +128,17 @@ export default {
         async onLoad() {
             const markdowns = await Promise.all(
                 this.getRecentMarkdowns.map(async (md) => {
-                    const result = await this.loadMarkdown({
-                        path: md.path,
-                    }).catch((e) => e)
-                    if (!(result && result.data)) {
-                        return md
+                    try {
+                        const markdown = await this.loadMarkdown({
+                            target: md.path,
+                        })
+                        if (!(markdown && markdown.text)) {
+                            return md
+                        }
+                        md.text = markdown.text
+                    } catch (e) {
+                        console.error(e)
                     }
-                    md.data = result.data
                     return md
                 })
             )

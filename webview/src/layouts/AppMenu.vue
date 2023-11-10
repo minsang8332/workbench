@@ -82,6 +82,19 @@ export default {
             items: [
                 {
                     name: 'add-folder',
+                    desc: '새로고침',
+                    shortcut: 'R',
+                    icon: 'mdi-refresh',
+                    color: app.$app.scss('--dark-color'),
+                    callback() {
+                        app.$store
+                            .dispatch('markdown/loadMarkdowns')
+                            .catch((e) => console.error(e))
+                            .finally(app.hide)
+                    },
+                },
+                {
+                    name: 'add-folder',
                     desc: '새 폴더',
                     shortcut: 'N',
                     icon: 'fa-solid fa-folder',
@@ -89,13 +102,13 @@ export default {
                     callback() {
                         const { path } = app
                         app.$store
-                            .dispatch('markdown/saveMarkdownDir', { path })
+                            .dispatch('markdown/saveMarkdownDir', {
+                                target: path,
+                            })
                             .then(({ writed }) =>
-                                app.$toast.success({
-                                    text: `${writed} 생성되었습니다.`,
-                                })
+                                app.$toast.success(`${writed} 생성되었습니다.`)
                             )
-                            .catch((e) => console.error(e))
+                            .catch((e) => app.$toast.error(e))
                             .finally(app.hide)
                     },
                 },
@@ -108,35 +121,12 @@ export default {
                     callback() {
                         const { path } = app
                         app.$store
-                            .dispatch('markdown/saveMarkdown', { path })
+                            .dispatch('markdown/saveMarkdown', { target: path })
                             .then(({ writed }) =>
-                                app.$toast.success({
-                                    text: `${writed} 생성되었습니다.`,
-                                })
+                                app.$toast.success(`${writed} 생성되었습니다.`)
                             )
-                            .catch((e) => console.error(e))
+                            .catch((e) => app.$toast.error(e))
                             .finally(app.hide)
-                    },
-                },
-
-                {
-                    name: 'remove',
-                    desc: '삭제',
-                    shortcut: 'D',
-                    icon: 'mdi-trash-can-outline',
-                    color: app.$app.scss('--dark-color'),
-                    callback() {
-                        const { path } = app
-
-                        app.$store
-                            .dispatch('markdown/removeMarkdown', { path })
-                            .then(
-                                app.$router
-                                    .replace({ name: 'dashboard' })
-                                    .catch((e) => e)
-                                    .finally(app.hide)
-                            )
-                            .catch((e) => console.error(e))
                     },
                 },
                 {
@@ -152,16 +142,25 @@ export default {
                     },
                 },
                 {
-                    name: 'add-folder',
-                    desc: '새로고침',
-                    shortcut: 'R',
-                    icon: 'mdi-refresh',
+                    name: 'remove',
+                    desc: '삭제',
+                    shortcut: 'D',
+                    icon: 'mdi-trash-can-outline',
                     color: app.$app.scss('--dark-color'),
                     callback() {
+                        const { path } = app
                         app.$store
-                            .dispatch('markdown/loadMarkdowns')
-                            .catch((e) => console.error(e))
-                            .finally(app.hide)
+                            .dispatch('markdown/removeMarkdown', {
+                                target: path,
+                            })
+                            .then(({ removed }) => {
+                                app.$toast.success(`${removed} 삭제되었습니다.`)
+                                app.$router
+                                    .replace({ name: 'dashboard' })
+                                    .catch((e) => e)
+                                    .finally(app.hide)
+                            })
+                            .catch((e) => app.$toast.error(e))
                     },
                 },
             ],

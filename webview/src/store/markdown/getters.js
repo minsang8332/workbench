@@ -3,6 +3,9 @@ export default {
     getMarkdowns(state) {
         return state.markdowns
     },
+    cntMarkdowns(state, { getMarkdowns }) {
+        return getMarkdowns.filter((md) => md.isDir == false).length
+    },
     // 문서 계층화
     getMarkdownTree(state, { getMarkdowns }) {
         let categories = []

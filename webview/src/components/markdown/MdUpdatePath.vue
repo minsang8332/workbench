@@ -1,12 +1,8 @@
 <template>
-    <v-text-field
+    <input
         class="md-update-path"
         :value="printValue"
         :color="$app.scss('--theme-color-1')"
-        dense
-        filled
-        outlined
-        hide-details
         @input="onInput"
         @keydown.enter="onUpdateName"
         @focusout="clear"
@@ -47,17 +43,22 @@ export default {
     },
     methods: {
         ...mapActions('markdown', ['renameMarkdown']),
-        onInput(value) {
-            this.input = value
+        onInput(event) {
+            this.input = event.target.value
         },
         async onUpdateName(event) {
             event.preventDefault()
-            const { input: name, path } = this
-            if (name) {
+            try {
+                const { input, path } = this
+                if (!input) {
+                    return
+                }
                 const { renamed } = await this.renameMarkdown({
-                    path,
-                    name,
-                }).catch((e) => e)
+                    target: path,
+                    rename: input,
+                })
+                const filename = _.last(renamed.split('/'))
+                this.$toast.success(`${filename} 으/로 변경되었습니다.`)
                 // 현재 작성중인 문서인 경우
                 if (this.$route.params.path == path) {
                     this.$router
@@ -67,10 +68,8 @@ export default {
                         })
                         .catch((e) => e)
                 }
-                const filename = _.last(renamed.split('/'))
-                this.$toast.success({
-                    text: `${filename} 으/로 변경되었습니다.`,
-                })
+            } catch (e) {
+                this.$toast.error(e)
             }
             this.clear()
         },

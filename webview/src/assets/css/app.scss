@@ -11,6 +11,7 @@ $themeColorG1: linear-gradient(
 $dark: #313131;
 $folder: #ffe9a2;
 :root {
+    --app-header-height: 48px;
     --theme-color-1: #{$themeColor1};
     --theme-color-2: #{$themeColor2};
     --theme-color-3: #{$themeColor3};
@@ -18,7 +19,8 @@ $folder: #ffe9a2;
     --dark-color: #{$dark};
     --folder-color: #{$folder};
     --success-color: #06d6a0;
-    --app-header-height: 48px;
+    --failed-color: #ff0000;
+    --edited-color: #ff0000;
 }
 *::-webkit-scrollbar {
     display: none;

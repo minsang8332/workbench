@@ -10,13 +10,16 @@
         >
             <v-row class="row-md-header text-truncate px-2" no-gutters>
                 <v-col class="d-flex align-center">
-                    <v-icon class="mr-1" :color="$app.scss('--dark-color')">
-                        mdi-file-document-outline
-                    </v-icon>
-                    <b class="text-title">
-                        {{ printPath }}
-                    </b>
+                    <v-badge :color="isMutated ? 'red' : null" inline dot>
+                        <v-icon class="mr-1" :color="$app.scss('--dark-color')">
+                            mdi-file-document-outline
+                        </v-icon>
+                        <b class="text-title">
+                            {{ printPath }}
+                        </b>
+                    </v-badge>
                 </v-col>
+                <v-col> </v-col>
             </v-row>
             <v-divider :color="$app.scss('--theme-color-2')" />
             <v-row
@@ -29,7 +32,7 @@
                     <!-- s: 입력창 -->
                     <div class="md-left-panel">
                         <textarea
-                            v-model="editor"
+                            v-model="inputText"
                             ref="editor"
                             class="md-editor d2coding pa-2"
                             :style="{ width: editorWidth + 'px' }"
@@ -48,7 +51,7 @@
                                 ><v-icon>fa-solid fa-compress</v-icon></v-btn
                             >
                         </div>
-                        <md-preview :text="editor" />
+                        <md-preview :text="inputText" />
                     </div>
                     <!-- e: 프리뷰 -->
                 </v-col>
@@ -94,7 +97,8 @@ export default {
     data() {
         return {
             resize: false,
-            editor: '',
+            text: '',
+            inputText: '',
             editorWidth: null,
         }
     },
@@ -103,6 +107,11 @@ export default {
             if (newValue) {
                 // this.onSave()
                 this.onLoad()
+            }
+        },
+        text(newValue) {
+            if (newValue) {
+                this.inputText = newValue
             }
         },
     },
@@ -115,17 +124,32 @@ export default {
             }
             return path
         },
+        isMutated() {
+            return this.text !== this.inputText
+        },
     },
     methods: {
         ...mapActions('markdown', ['loadMarkdown', 'saveMarkdown']),
         async onLoad() {
             const { path } = this
             try {
-                this.editor = _.toString(null)
-                const { data } = await this.loadMarkdown({ path })
-                this.editor = _.toString(data)
+                this.clear()
+                const { text } = await this.loadMarkdown({ target: path })
+                this.text = text
             } catch (e) {
-                console.error(e)
+                this.$toast.error(e)
+                this.clear()
+            }
+        },
+        async onSave() {
+            const { path, editor } = this
+            try {
+                await this.saveMarkdown({ target: path, text: editor })
+                const title = _.last(path.split('/'))
+                this.$toast.success(title + ' 파일이 저장되었습니다.')
+                this.onLoad()
+            } catch (e) {
+                this.$toast.error(e)
             }
         },
         onMouseMove(event) {
@@ -159,15 +183,33 @@ export default {
         onMouseDown() {
             this.resize = true
         },
-        onSave() {
-            const { path, editor: data } = this
-            this.saveMarkdown({ path, data })
-            const title = _.last(path.split('/'))
-            this.$toast.success({ text: title + ' 파일이 저장되었습니다.' })
+        clear() {
+            this.text = ''
+            this.inputText = ''
         },
     },
     mounted() {
         this.onLoad()
+    },
+    beforeRouteUpdate(to, from, next) {
+        if (this.isMutated) {
+            this.$toast.error({
+                message:
+                    '문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.',
+            })
+            return next(false)
+        }
+        next()
+    },
+    beforeRouteLeave(to, from, next) {
+        if (this.isMutated) {
+            this.$toast.error({
+                message:
+                    '문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.',
+            })
+            return next(false)
+        }
+        next()
     },
 }
 </script>
