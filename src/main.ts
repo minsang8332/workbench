@@ -51,7 +51,7 @@ app.on('ready', () => {
         : 'http://localhost:8080'
     mainWindow.setMenu(null)
     mainWindow.loadURL(loadURL)
-    mainWindow.webContents.once('did-finish-load', () => {
+    mainWindow.webContents.once('did-navigate', () => {
         mainWindow.show()
         if (app.isPackaged == false) {
             mainWindow.webContents.openDevTools()

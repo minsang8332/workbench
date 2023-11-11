@@ -1,11 +1,12 @@
 <template>
     <input
-        class="md-update-path"
+        class="md-update-path pa-0 ma-0"
+        ref="input"
         :value="printValue"
         :color="$app.scss('--theme-color-1')"
         @input="onInput"
         @keydown.enter="onUpdateName"
-        @focusout="clear"
+        @focusout="onFocusout"
     />
 </template>
 <script>
@@ -73,15 +74,40 @@ export default {
             }
             this.clear()
         },
+        onFocusout(event) {
+            if (this.input) {
+                this.onUpdateName(event)
+                return
+            }
+            this.clear()
+        },
+        focus() {
+            this.$nextTick(() => {
+                const refInput = this.$refs.input
+                if (refInput) {
+                    refInput.focus()
+                }
+            })
+        },
         clear() {
-            this.name = null
+            this.input = null
             this.$app.setUpdatePath(null)
         },
+    },
+    mounted() {
+        this.focus()
     },
 }
 </script>
 <style scoped lang="scss">
 .md-update-path::v-deep {
+    width: 100%;
+    height: 100%;
     font-size: 14px;
+    font-weight: 700;
+    color: var(--update-color);
+    border: 2px dotted var(--update-color);
+    border-radius: 4px;
+    outline: none;
 }
 </style>

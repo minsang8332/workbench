@@ -6,6 +6,7 @@
         :bottom="bottom"
         :right="right"
         :direction="direction"
+        :style="styleAppFloatingBtn"
         transition="scale-transition"
     >
         <template v-slot:activator>
@@ -78,6 +79,18 @@ export default {
             ],
         }
     },
+    computed: {
+        styleAppFloatingBtn() {
+            let style = {}
+            if (this.bottom) {
+                // 에디터의 경우 하단 버튼이 있어 간격을 더 준다.
+                if (['markdown-editor'].includes(this.$route.name)) {
+                    style.bottom = '64px'
+                }
+            }
+            return style
+        },
+    },
     methods: {
         onClickBtn({ callback = Function } = {}) {
             if (callback) {
@@ -90,8 +103,12 @@ export default {
     },
 }
 </script>
-<style lang="scss" scoped>
-.app-floating-btn {
-    text-align: right;
+<style scoped lang="scss">
+.v-speed-dial {
+    position: absolute;
+    transition: 0.5s;
+}
+.v-btn--floating {
+    position: relative;
 }
 </style>

@@ -5,10 +5,11 @@ const routes = [
     {
         path: '/',
         component: () => import('@/layouts/AppLayout.vue'),
+        redirect: 'dashboard',
         children: [
             {
                 name: 'dashboard',
-                path: '/',
+                path: '/dashboard',
                 component: () => import('@/views/DashboardPage.vue'),
             },
             {
@@ -18,6 +19,11 @@ const routes = [
                 props: true,
             },
         ],
+    },
+    // notfound-404 핸들링
+    {
+        path: '*',
+        redirect: 'dashboard',
     },
 ]
 const router = new VueRouter({

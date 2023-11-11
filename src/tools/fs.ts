@@ -163,6 +163,9 @@ const rename = async (
     rename = `${rename}${ext ? ext : ''}`
     // 새로운 경로를 생성
     const renameDir = path.join(dir, rename)
+    if (fs.existsSync(renameDir)) {
+        throw new Error('이미 존재하는 파일명 입니다.')
+    }
     fs.renameSync(tarDir, renameDir)
     return sliceRootDir(rootDir, renameDir)
 }

@@ -142,9 +142,9 @@ export default {
             }
         },
         async onSave() {
-            const { path, editor } = this
+            const { path, inputText } = this
             try {
-                await this.saveMarkdown({ target: path, text: editor })
+                await this.saveMarkdown({ target: path, text: inputText })
                 const title = _.last(path.split('/'))
                 this.$toast.success(title + ' 파일이 저장되었습니다.')
                 this.onLoad()

@@ -9,7 +9,7 @@ export default {
         ...mapActions('markdown', ['loadMarkdowns']),
     },
     mounted() {
-        this.loadMarkdowns()
+        this.loadMarkdowns().catch((e) => e)
     },
 }
 </script>

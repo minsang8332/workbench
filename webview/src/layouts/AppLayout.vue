@@ -2,7 +2,9 @@
     <v-app>
         <app-header />
         <v-main>
-            <router-view />
+            <v-slide-x-transition mode="out-in">
+                <router-view />
+            </v-slide-x-transition>
         </v-main>
         <app-floating-btn />
         <app-drawer v-model="$app.drawer" />
@@ -25,11 +27,3 @@ export default {
     },
 }
 </script>
-<style scoped lang="scss">
-.v-speed-dial {
-    position: absolute;
-}
-.v-btn--floating {
-    position: relative;
-}
-</style>

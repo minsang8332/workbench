@@ -1,7 +1,7 @@
 <template>
     <v-container class="dashboard-page fill-height" fluid>
         <v-card class="full-width fill-height" flat>
-            <v-row class="row-recent-files" no-gutters>
+            <v-row class="row-recent-md" no-gutters>
                 <v-col>
                     <h1 class="text-title pa-2">최근 작성한 문서</h1>
                     <v-divider />
@@ -14,57 +14,11 @@
                         <v-slide-item
                             v-for="(md, i) in markdowns"
                             :key="`recent-md-${i}`"
-                            v-slot="{ active, toggle }"
+                            v-slot="{ toggle }"
                         >
-                            <v-card
-                                class="ma-4"
-                                height="40vh"
-                                width="20vw"
-                                @click="onClickRecentMarkdown(toggle)"
-                            >
-                                <v-row
-                                    class="row-md-title bg-theme-1 px-2"
-                                    no-gutters
-                                >
-                                    <v-col
-                                        class="d-flex align-center fill-height white--text text-truncate"
-                                    >
-                                        <span class="white--text">{{
-                                            md.title
-                                        }}</span>
-                                    </v-col>
-                                </v-row>
-                                <v-row class="row-md-preview" no-gutters>
-                                    <v-col>
-                                        <md-preview :text="md.text" />
-                                        <v-scale-transition>
-                                            <template v-if="active"></template>
-                                        </v-scale-transition>
-                                    </v-col>
-                                </v-row>
-                                <v-divider />
-                                <v-row
-                                    class="row-md-created-at pa-2"
-                                    no-gutters
-                                >
-                                    <v-col
-                                        class="d-flex flex-column text-truncate"
-                                    >
-                                        <p
-                                            class="text-created-at text-truncate"
-                                        >
-                                            작성일
-                                            {{ printDate(md.createdAt) }}
-                                        </p>
-                                        <p
-                                            class="text-created-at text-truncate"
-                                        >
-                                            수정일
-                                            {{ printDate(md.updatedAt) }}
-                                        </p>
-                                    </v-col>
-                                </v-row>
-                            </v-card>
+                            <div @click="onClickRecentMarkdown(toggle)">
+                                <md-preview-card v-bind="md" />
+                            </div>
                         </v-slide-item>
                     </v-slide-group>
                 </v-col>
@@ -73,13 +27,12 @@
     </v-container>
 </template>
 <script>
-import dayjs from 'dayjs'
 import { mapGetters, mapActions } from 'vuex'
-import MdPreview from '@/components/markdown/MdPreview'
+import MdPreviewCard from '@/components/markdown/MdPreviewCard'
 export default {
     name: 'DashboardPage',
     components: {
-        MdPreview,
+        MdPreviewCard,
     },
     data() {
         return {
@@ -97,14 +50,6 @@ export default {
     },
     methods: {
         ...mapActions('markdown', ['loadMarkdown']),
-        printDate(date) {
-            date = dayjs(new Date(date))
-            if (date.isValid()) {
-                date = date.format('YYYY년 MM월 DD일 HH:mm:ss')
-                return date
-            }
-            return null
-        },
         onClickRecentMarkdown(toggle = Function) {
             toggle()
             this.$nextTick(() => {
@@ -152,21 +97,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 .dashboard-page::v-deep {
-    .row-recent-files {
+    .row-recent-md {
         height: 50%;
-        .row-md-preview {
-            height: 70%;
-            overflow-y: hidden;
-        }
-        .row-md-title {
-            height: 10%;
-        }
-        .row-md-created-at {
-            height: 20%;
-            .text-created-at {
-                font-size: 13px;
-            }
-        }
     }
 }
 </style>
