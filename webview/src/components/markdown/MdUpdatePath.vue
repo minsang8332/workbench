@@ -107,7 +107,6 @@ export default {
     font-weight: 700;
     color: var(--update-color);
     border: 2px dotted var(--update-color);
-    border-radius: 4px;
     outline: none;
 }
 </style>

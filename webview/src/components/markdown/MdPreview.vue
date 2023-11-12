@@ -23,6 +23,6 @@ export default {
 <style scoped lang="scss">
 .md-preview {
     height: 100%;
-    overflow: hidden;
+    overflow-y: scroll;
 }
 </style>
