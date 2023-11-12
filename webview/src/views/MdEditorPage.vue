@@ -8,8 +8,24 @@
             outlined
             @mousemove="onMouseMove"
         >
-            <v-row class="row-md-header text-truncate px-2" no-gutters>
+            <v-row class="row-md-header text-truncate" no-gutters>
                 <v-col class="d-flex align-center">
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                                :color="$app.scss('--dark-color')"
+                                class="pa-0"
+                                depressed
+                                icon
+                                v-bind="attrs"
+                                v-on="on"
+                                @click="onClickBack"
+                            >
+                                <v-icon>mdi-chevron-left</v-icon>
+                            </v-btn>
+                        </template>
+                        <p class="white--text">뒤로가기</p>
+                    </v-tooltip>
                     <v-badge :color="isMutated ? 'red' : null" inline dot>
                         <v-icon class="mr-1" :color="$app.scss('--dark-color')">
                             mdi-file-document-outline
@@ -19,7 +35,6 @@
                         </b>
                     </v-badge>
                 </v-col>
-                <v-col> </v-col>
             </v-row>
             <v-divider :color="$app.scss('--theme-color-2')" />
             <v-row
@@ -183,6 +198,13 @@ export default {
         onMouseDown() {
             this.resize = true
         },
+        onClickBack() {
+            if (window.history && window.history.length > 2) {
+                this.$router.back()
+                return
+            }
+            this.$router.replace({ name: 'dashboard' }).catch((e) => e)
+        },
         clear() {
             this.text = ''
             this.inputText = ''
@@ -214,9 +236,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-$rowHeader: 36px;
-$rowFooter: 48px;
 .md-editor-page::v-deep {
+    $rowHeader: 36px;
+    $rowFooter: 48px;
     height: calc(100vh - var(--app-header-height));
     .card-md {
         border: 1px solid var(--theme-color-2);
