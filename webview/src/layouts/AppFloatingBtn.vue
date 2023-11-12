@@ -105,7 +105,7 @@ export default {
 </script>
 <style scoped lang="scss">
 .v-speed-dial {
-    position: absolute;
+    position: fixed;
     transition: 0.5s;
 }
 .v-btn--floating {

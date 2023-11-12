@@ -13,6 +13,22 @@ contextBridge.exposeInMainWorld('$native', {
     getVersion() {
         return 1
     },
+    updater: {
+        // 업데이트 가능여부가 확인뙬 때 까지 기다림
+        wait() {
+            return new Promise((resolve) => {
+                ipcRenderer.on('updater:available', (event, payload) =>
+                    resolve(payload)
+                )
+            })
+        },
+        available(payload = {}) {
+            return invoke('updater:available', payload)
+        },
+        install() {
+            ipcRenderer.send('updater:install')
+        },
+    },
     markdown: {
         readAll(payload: object) {
             return invoke('markdown:read-all', payload)

@@ -25,6 +25,12 @@ $folder: #ffe9a2;
 *::-webkit-scrollbar {
     display: none;
 }
+html {
+    scroll-behavior: smooth;
+}
+body {
+    background: transparent;
+}
 p {
     margin: 0 !important;
 }

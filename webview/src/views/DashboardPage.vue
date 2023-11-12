@@ -1,26 +1,26 @@
 <template>
-    <v-container class="dashboard-page fill-height" fluid>
-        <v-card class="full-width fill-height" flat>
-            <v-row class="row-recent-md" no-gutters>
+    <v-container class="dashboard-page" fluid>
+        <v-card flat>
+            <v-row class="row-recent-md-title pa-2">
                 <v-col>
-                    <h1 class="text-title pa-2">최근 작성한 문서</h1>
-                    <v-divider />
-                    <v-slide-group
-                        v-model="selected"
-                        class="pa-4"
-                        show-arrows
-                        center-active
+                    <h1 class="text-title">최근 작성한 문서</h1>
+                </v-col>
+            </v-row>
+            <v-divider class="pa-1" />
+            <v-row no-gutters>
+                <v-col
+                    v-for="(md, i) in markdowns"
+                    :key="`recent-md-${i}`"
+                    cols="12"
+                    md="4"
+                    class="pa-4"
+                >
+                    <div
+                        class="div-preview-card"
+                        @click="onClickRecentMarkdown(md)"
                     >
-                        <v-slide-item
-                            v-for="(md, i) in markdowns"
-                            :key="`recent-md-${i}`"
-                            v-slot="{ toggle }"
-                        >
-                            <div @click="onClickRecentMarkdown(toggle)">
-                                <md-preview-card v-bind="md" />
-                            </div>
-                        </v-slide-item>
-                    </v-slide-group>
+                        <md-preview-card v-bind="md" />
+                    </div>
                 </v-col>
             </v-row>
         </v-card>
@@ -36,7 +36,6 @@ export default {
     },
     data() {
         return {
-            selected: null,
             markdowns: [],
         }
     },
@@ -50,25 +49,16 @@ export default {
     },
     methods: {
         ...mapActions('markdown', ['loadMarkdown']),
-        onClickRecentMarkdown(toggle = Function) {
-            toggle()
-            this.$nextTick(() => {
-                const idx = this.selected
-                const files = this.getRecentMarkdowns
-                if (!(files && files[idx])) {
-                    return
-                }
-                const md = files[idx]
-                const { path } = md
-                this.$router
-                    .replace({
-                        name: 'markdown-editor',
-                        params: {
-                            path,
-                        },
-                    })
-                    .catch((e) => e)
-            })
+        onClickRecentMarkdown(md) {
+            const { path } = md
+            this.$router
+                .replace({
+                    name: 'markdown-editor',
+                    params: {
+                        path,
+                    },
+                })
+                .catch((e) => e)
         },
         async onLoad() {
             const markdowns = await Promise.all(
@@ -90,15 +80,18 @@ export default {
             this.markdowns = markdowns
         },
     },
-    mounted() {
+    async mounted() {
         this.onLoad()
     },
 }
 </script>
 <style lang="scss" scoped>
 .dashboard-page::v-deep {
-    .row-recent-md {
-        height: 50%;
+    .div-preview-card {
+        height: 100%;
+        min-height: 320px;
+        max-height: 320px;
+        width: 100%;
     }
 }
 </style>

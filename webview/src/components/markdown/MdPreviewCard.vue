@@ -1,29 +1,24 @@
 <template>
-    <v-card
-        class="md-preview-card test ma-4"
-        height="40vh"
-        width="20vw"
-        v-ripple
-    >
-        <v-row class="row-md-title px-2" no-gutters>
+    <v-card class="md-preview-card" :width="width" outlined shaped v-ripple>
+        <v-row class="row-md-title bg-theme-1 px-2" no-gutters>
             <v-col class="d-flex align-center fill-height text-truncate">
-                <b class="text-mpc-title">{{ title }}</b>
+                <p class="text-mpc-title d2coding white--text">{{ title }}</p>
             </v-col>
         </v-row>
-        <v-divider />
+        <v-divider class="mpc-divider" />
         <v-row class="row-md-preview" no-gutters>
-            <v-col>
-                <md-preview :text="text" />
+            <v-col class="fill-height">
+                <md-preview ref="preview" :text="text" />
             </v-col>
         </v-row>
-        <v-divider />
-        <v-row class="row-md-created-at px-2" no-gutters>
+        <v-divider class="mpc-divider" />
+        <v-row class="row-md-created-at bg-theme-1 px-2" no-gutters>
             <v-col class="d-flex flex-column justify-center text-truncate">
-                <p class="text-mpc-date d2coding text-truncate">
+                <p class="text-mpc-date d2coding text-truncate white--text">
                     작성일
                     {{ printDate(createdAt) }}
                 </p>
-                <p class="text-mpc-date d2coding text-truncate">
+                <p class="text-mpc-date d2coding text-truncate white--text">
                     수정일
                     {{ printDate(updatedAt) }}
                 </p>
@@ -56,12 +51,16 @@ export default {
             type: [Date, null],
             default: null,
         },
+        width: {
+            type: [String, null],
+            default: '100%',
+        },
     },
     methods: {
         printDate(date) {
             date = dayjs(new Date(date))
             if (date.isValid()) {
-                date = date.format('YYYY년 MM월 DD일 HH:mm:ss')
+                date = date.format('YYYY.MM.DD HH:mm:ss')
                 return date
             }
             return null
@@ -71,14 +70,8 @@ export default {
 </script>
 <style scoped lang="scss">
 .md-preview-card {
-    .test {
-        background: rgba(255, 255, 255, 0.25);
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        backdrop-filter: blur(2px);
-        -webkit-backdrop-filter: blur(2px);
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-    }
+    height: 100%;
+    border: 1px solid var(--theme-color-1);
     .row-md-title {
         height: 15%;
         .text-mpc-title {
@@ -94,6 +87,9 @@ export default {
         .text-mpc-date {
             font-size: 13px;
         }
+    }
+    .mpc-divider {
+        background: var(--theme-color-1);
     }
 }
 </style>

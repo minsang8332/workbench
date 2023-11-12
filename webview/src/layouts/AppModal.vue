@@ -104,7 +104,7 @@ export default {
             height: 25%;
             max-height: 25%;
             b {
-                font-size: 20px;
+                font-size: 24px;
             }
         }
         .row-am-message {
@@ -114,6 +114,7 @@ export default {
             height: 55%;
             overflow-y: auto;
             p {
+                font-size: 20px;
                 text-align: center;
             }
         }
@@ -121,6 +122,7 @@ export default {
             height: 20%;
             .v-btn {
                 height: 100% !important;
+                font-size: 20px;
             }
             .btn-am-no {
                 color: var(--failed-color);

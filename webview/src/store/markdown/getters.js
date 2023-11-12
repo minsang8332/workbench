@@ -64,6 +64,10 @@ export default {
     getRecentMarkdowns(state, { getMarkdowns }) {
         return getMarkdowns
             .filter((md) => md.isDir == false)
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .sort(
+                (a, b) =>
+                    new Date(b.updatedAt) - new Date(a.updatedAt) ||
+                    new Date(b.createdAt) - new Date(a.createdAt)
+            )
     },
 }

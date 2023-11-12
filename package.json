@@ -1,13 +1,26 @@
 {
     "name": "markdown-editor",
     "description": "마크다운 편집기",
-    "version": "0.9.1",
+    "version": "0.9.4",
     "main": "build/bundle.js",
+    "scripts": {
+        "setup": "npm install && cd webview && npm install",
+        "serve": "concurrently \"npm run webview\" \"npm run webpack:watch\"",
+        "build": "npm run webview:build && npm run webpack:build && electron-builder",
+        "deploy": "npm run webview:build && npm run webpack:build && electron-builder -p always",
+        "webpack:watch": "webpack --watch",
+        "webpack:build": "webpack --env production",
+        "webview": "cd webview && npm run serve",
+        "webview:build": "cd webview && npm run build",
+        "icon": "electron-icon-builder --input=./src/assets/favicon.png --output=./src/assets -f"
+    },
     "build": {
+        "appId": "com.yuu2dev.mdeditor",
         "productName": "마크다운 편집기",
+        "artifactName": "markdown-editor-setup-${version}.${ext}",
         "asar": true,
         "win": {
-            "target": "msi"
+            "target": "nsis"
         },
         "nsis": {
             "shortcutName": "마크다운 편집기"
@@ -20,19 +33,12 @@
             "buildResources": "build/assets"
         }
     },
-    "scripts": {
-        "setup": "npm install && cd webview && npm install",
-        "serve": "concurrently \"npm run webview\" \"npm run webpack:watch\"",
-        "build": "npm run webview:build && npm run webpack:build && electron-builder",
-        "webpack:watch": "webpack --watch",
-        "webpack:build": "webpack --env production",
-        "webview": "cd webview && npm run serve",
-        "webview:build": "cd webview && npm run build",
-        "icon": "electron-icon-builder --input=./src/assets/favicon.png --output=./src/assets -f"
-    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/yuu2dev/markdown-editor.git"
+    },
+    "publish": {
+        "provider": "github"
     },
     "keywords": [],
     "author": "yuu2dev@gmail.com",
@@ -57,7 +63,9 @@
         "crypto": "^1.0.1",
         "dayjs": "^1.11.9",
         "dotenv": "^16.3.1",
+        "electron-log": "^5.0.0",
         "electron-store": "^8.1.0",
+        "electron-updater": "^6.1.4",
         "fs-extra": "^11.1.1",
         "lodash": "^4.17.21",
         "webpack-electron-reload": "^1.0.1"

@@ -22,6 +22,10 @@ export default {
             app.modal = true
             app.modalProps = props
         }
+        app.hideModal = () => {
+            app.modal = false
+            app.modalProps = null
+        }
         app.showMenu = (props) => {
             app.menu = true
             app.menuProps = props

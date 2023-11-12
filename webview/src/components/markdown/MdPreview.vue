@@ -21,8 +21,8 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-.markdown-body {
-    overflow-y: scroll;
+.md-preview {
     height: 100%;
+    overflow: hidden;
 }
 </style>

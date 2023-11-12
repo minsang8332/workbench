@@ -3,8 +3,9 @@ import fs from 'fs-extra'
 import path from 'path'
 import dayjs from 'dayjs'
 import { app } from 'electron'
-const getMdDir = () =>
-    path.resolve(app.getPath('documents'), app.getName(), 'markdown')
+export const getDocsDir = () =>
+    path.resolve(app.getPath('documents'), app.getName())
+const getMdDir = () => path.resolve(getDocsDir(), 'markdown')
 const ensureDir = (dir = '') => fs.ensureDirSync(dir, { mode: 0o2775 })
 const sliceRootDir = (rootDir: string, tarDir: string) => {
     return tarDir.replace(rootDir, '').replace(/\\/g, '/')
@@ -211,8 +212,9 @@ const move = async (
     return sliceRootDir(rootDir, destDir)
 }
 export default {
-    isSubdir,
+    getDocsDir,
     getMdDir,
+    isSubdir,
     ensureDir,
     readTreeDirs,
     readFile,
