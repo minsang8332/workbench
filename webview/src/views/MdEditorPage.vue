@@ -1,13 +1,12 @@
 <template>
-    <v-container fluid class="md-editor-page pa-0">
-        <v-card
-            class="card-md fill-height"
-            ref="card"
-            flat
-            tile
-            outlined
-            @mousemove="onMouseMove"
-        >
+    <v-container
+        ref="md-editor-page"
+        fluid
+        class="md-editor-page pa-0"
+        @mousemove="onResize"
+        @mouseup="onMouseUp"
+    >
+        <v-card class="card-md fill-height" ref="card" flat tile outlined>
             <v-row class="row-md-header text-truncate" no-gutters>
                 <v-col class="d-flex align-center">
                     <v-tooltip bottom>
@@ -37,38 +36,31 @@
                 </v-col>
             </v-row>
             <v-divider :color="$app.scss('--theme-color-2')" />
-            <v-row
-                class="row-md-content pa-0"
-                no-gutters
-                @mousemove="onMouseMove"
-                @mouseup="onMouseUp"
-            >
+            <v-row class="row-md-content pa-0" no-gutters>
                 <v-col class="d-flex fill-height">
-                    <!-- s: 입력창 -->
-                    <div class="md-left-panel">
-                        <textarea
-                            v-model="inputText"
-                            ref="editor"
-                            class="md-editor d2coding pa-2"
-                            :style="{ width: editorWidth + 'px' }"
-                            @keydown.ctrl.83.prevent.stop="onSave"
-                        />
+                    <textarea
+                        v-model="inputText"
+                        class="md-editor d2coding pa-2"
+                        :style="{
+                            width: widthEditor + 'px',
+                        }"
+                        @keydown.ctrl.83.prevent.stop="onSave"
+                    />
+                    <div class="md-resizer" @mousedown="onMouseDown">
+                        <v-btn
+                            class="btn-md-resizer"
+                            text
+                            fab
+                            :color="$app.scss('--theme-color-2')"
+                            ><v-icon>fa-solid fa-compress</v-icon></v-btn
+                        >
                     </div>
-                    <!-- e: 입력창 -->
-                    <!-- s: 프리뷰 -->
-                    <div class="md-right-panel">
-                        <div class="md-resizer" @mousedown="onMouseDown">
-                            <v-btn
-                                class="btn-md-resizer"
-                                text
-                                fab
-                                :color="$app.scss('--theme-color-2')"
-                                ><v-icon>fa-solid fa-compress</v-icon></v-btn
-                            >
-                        </div>
-                        <md-preview :text="inputText" />
-                    </div>
-                    <!-- e: 프리뷰 -->
+                    <md-preview
+                        :text="inputText"
+                        :style="{
+                            width: widthPreview + 'px',
+                        }"
+                    />
                 </v-col>
             </v-row>
             <v-divider :color="$app.scss('--theme-color-2')" />
@@ -114,7 +106,8 @@ export default {
             resize: false,
             text: '',
             inputText: '',
-            editorWidth: null,
+            widthEditor: null,
+            widthPreview: null,
         }
     },
     watch: {
@@ -138,6 +131,12 @@ export default {
                 path = _.last(path)
             }
             return path
+        },
+        previewWidth() {
+            if (this.editorWidth == null) {
+                return
+            }
+            return window.innerWidth - this.editorWidth - 4
         },
         isMutated() {
             return this.text !== this.inputText
@@ -167,29 +166,19 @@ export default {
                 this.$toast.error(e)
             }
         },
-        onMouseMove(event) {
+        onResize(event, reset = false) {
             this.$nextTick(() => {
-                if (this.resize == false) {
+                const page = this.$refs['md-editor-page']
+                const domRect = page.getBoundingClientRect()
+                if (reset) {
+                    this.widthEditor = domRect.width / 2
+                    this.widthPreview = domRect.width / 2
                     return
+                } else if (this.resize) {
+                    const width = event.x - domRect.left
+                    this.widthEditor = event.x - domRect.left
+                    this.widthPreview = domRect.width - width - 4
                 }
-                const { card, editor } = this.$refs
-                const domRect = editor.getBoundingClientRect()
-                const maxWidth = card.$el.clientWidth - 100
-                // event 없이 접근시 넓이 고정
-                if (!event) {
-                    this.editorWidth = maxWidth
-                    return
-                }
-                let x = event.x
-                // 좌측 사이드바가 열려있는 경우 그 폭만큼 빼준다.
-                if (this.$app.drawer) {
-                    x = event.x - domRect.x
-                }
-                if (x > maxWidth) {
-                    this.editorWidth = maxWidth
-                    return
-                }
-                this.editorWidth = x
             })
         },
         onMouseUp() {
@@ -209,29 +198,26 @@ export default {
             this.text = ''
             this.inputText = ''
         },
+        preventRoute(next = Function) {
+            if (this.isMutated) {
+                this.$toast.error({
+                    message:
+                        '문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.',
+                })
+                return next(false)
+            }
+            next()
+        },
     },
     mounted() {
         this.onLoad()
+        this.onResize(null, true)
     },
     beforeRouteUpdate(to, from, next) {
-        if (this.isMutated) {
-            this.$toast.error({
-                message:
-                    '문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.',
-            })
-            return next(false)
-        }
-        next()
+        this.preventRoute(next)
     },
     beforeRouteLeave(to, from, next) {
-        if (this.isMutated) {
-            this.$toast.error({
-                message:
-                    '문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.',
-            })
-            return next(false)
-        }
-        next()
+        this.preventRoute(next)
     },
 }
 </script>
@@ -260,34 +246,27 @@ export default {
     .row-md-content {
         height: calc(100% - $rowHeader - $rowFooter);
         overflow-x: hidden;
-        .md-left-panel {
-            .md-editor {
-                background: rgba(246, 246, 246);
-                height: 100%;
-                font-family: 'Monaco', courier, monospace;
-                font-size: 14px;
-                border: none;
-                resize: none;
-                outline: none;
-            }
-        }
-        .md-right-panel {
+        .md-editor {
+            background: rgba(246, 246, 246);
             height: 100%;
+            font-family: 'Monaco', courier, monospace;
+            font-size: 14px;
+            border: none;
+            resize: none;
+            outline: none;
+        }
+        .md-resizer {
+            flex-shrink: 1;
             position: relative;
-            width: inherit;
-            .md-resizer {
+            height: 100%;
+            width: 4px;
+            border-left: 1.5px dotted var(--theme-color-2);
+            cursor: col-resize;
+            .btn-md-resizer {
                 position: absolute;
-                top: 0;
-                left: 0;
-                height: 100%;
-                width: 4px;
-                border-left: 1.5px dotted var(--theme-color-2);
-                cursor: col-resize;
-                .btn-md-resizer {
-                    position: absolute;
-                    top: 50%;
-                    left: -29px;
-                }
+                z-index: 1;
+                top: 50%;
+                left: -28px;
             }
         }
     }

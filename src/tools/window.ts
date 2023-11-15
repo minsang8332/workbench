@@ -46,6 +46,7 @@ const creaateWindow = ({
     window.on('page-title-updated', (e) => {
         e.preventDefault()
     })
+    window.webContents.on('will-navigate', (e) => e.preventDefault())
     return window
 }
 const setMainWindow = (window: BrowserWindow) => {

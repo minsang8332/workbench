@@ -1,8 +1,8 @@
 <template>
     <v-card class="md-preview-card" :width="width" outlined shaped v-ripple>
-        <v-row class="row-md-title bg-theme-1 px-2" no-gutters>
+        <v-row class="row-md-title px-2" no-gutters>
             <v-col class="d-flex align-center fill-height text-truncate">
-                <p class="text-mpc-title d2coding white--text">{{ title }}</p>
+                <p class="text-mpc-title d2coding">{{ title }}</p>
             </v-col>
         </v-row>
         <v-divider class="mpc-divider" />
@@ -12,13 +12,13 @@
             </v-col>
         </v-row>
         <v-divider class="mpc-divider" />
-        <v-row class="row-md-created-at bg-theme-1 px-2" no-gutters>
+        <v-row class="row-md-created-at px-2" no-gutters>
             <v-col class="d-flex flex-column justify-center text-truncate">
-                <p class="text-mpc-date d2coding text-truncate white--text">
+                <p class="text-mpc-date d2coding text-truncate">
                     작성일
                     {{ printDate(createdAt) }}
                 </p>
-                <p class="text-mpc-date d2coding text-truncate white--text">
+                <p class="text-mpc-date d2coding text-truncate">
                     수정일
                     {{ printDate(updatedAt) }}
                 </p>
@@ -71,7 +71,7 @@ export default {
 <style scoped lang="scss">
 .md-preview-card {
     height: 100%;
-    border: 1px solid var(--theme-color-1);
+    // border: 1px solid var(--theme-color-1);
     .row-md-title {
         height: 15%;
         .text-mpc-title {
@@ -89,7 +89,7 @@ export default {
         }
     }
     .mpc-divider {
-        background: var(--theme-color-1);
+        // background: var(--theme-color-1);
     }
 }
 </style>

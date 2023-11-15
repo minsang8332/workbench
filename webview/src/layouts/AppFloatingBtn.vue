@@ -69,7 +69,7 @@ export default {
                 {
                     desc: '대시보드',
                     icon: 'mdi-monitor-dashboard',
-                    color: app.$app.scss('--theme-color-g1'),
+                    color: app.$app.scss('--theme-color-1'),
                     callback() {
                         app.$router
                             .replace({ name: 'dashboard' })
