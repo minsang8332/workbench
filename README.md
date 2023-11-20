@@ -6,8 +6,9 @@
 
 ## 업데이트
 
-2023/11/08 문서 관리 기능 완성. 버그 수정 및 UX 개선중 ([0.9.0-alpha](https://github.com/yuu2dev/markdown-editor/releases))  
-2023/11/09 파일 및 폴더명 바꾸기, 최근작성목록 추가 ([0.9.1-alpha](https://github.com/yuu2dev/markdown-editor/releases))
+2023/11/08 문서 관리 기능 완성. 버그 수정 및 UX 개선중 ([v0.9.0-alpha](https://github.com/yuu2dev/markdown-editor/releases))  
+2023/11/09 파일 및 폴더명 바꾸기, 최근작성목록 추가 ([v0.9.1-alpha](https://github.com/yuu2dev/markdown-editor/releases))  
+2023/11/20 파일이동, 자동업데이트, 기능점검 ([v1.0](https://github.com/yuu2dev/markdown-editor/releases))
 
 ## 설치 및 실행
 

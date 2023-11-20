@@ -1,7 +1,7 @@
 {
     "name": "markdown-editor",
     "description": "마크다운 편집기",
-    "version": "0.9.5",
+    "version": "1.0.0",
     "main": "build/bundle.js",
     "scripts": {
         "setup": "npm install && cd webview && npm install",
