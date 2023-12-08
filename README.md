@@ -1,16 +1,17 @@
-# Markdown Editor
+# 편리한 업무 작업대 (Workbench)
 
-> 마크다운 문서 관리를 위한 Mac 및 Windows용 데스크톱 앱
+> 편리한 업무 작업대 (Mac 및 Windows용 데스크톱 앱)
 
 ![](./screenshot.png)
 
-## 업데이트
+## 업데이트 및 공지사항
 
-2023/11/08 문서 관리 기능 완성. 버그 수정 및 UX 개선중 ([v0.9.0-alpha](https://github.com/yuu2dev/markdown-editor/releases))  
-2023/11/09 파일 및 폴더명 바꾸기, 최근작성목록 추가 ([v0.9.1-alpha](https://github.com/yuu2dev/markdown-editor/releases))  
-2023/11/20 파일이동, 자동업데이트, 기능점검 ([v1.0](https://github.com/yuu2dev/markdown-editor/releases))
+-   2023/12/05 마크다운 편집기 ([v1.0](https://github.com/yuu2dev/workbench/releases))
+-   ✨ "출입장부" 기능 추가 예정 (v1.1)
 
 ## 설치 및 실행
+
+> node 16.20.1^ 기준
 
 ```
 // 패키지 설치하기
@@ -31,20 +32,4 @@ npm run icon
 
 // 출시하는 단말기 환경변수 GH_TOKEN 이 선언되어 있어야함
 npm run deploy
-```
-
-## 프로그램 기획 및 설계
-
-```
-📌 화면구성
-- [✓] : 앱 레이아웃
-- [✓] : 마크다운 파일 시스템 UI
-- [✓] : 마크다운 문서 작성 및 편집 그리고 프리뷰
-- [✓] : 마크다운 최근 작성 목록
-
-📌 기능구성
-- [✓] : 마크다운 CRUD 핸들러
-- [✓] : documents 백업 폴더
-- [✓] : 디버그 및 에러 로그
-- [✓] : 자동업데이트
 ```

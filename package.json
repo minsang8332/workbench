@@ -1,6 +1,6 @@
 {
-    "name": "markdown-editor",
-    "description": "마크다운 편집기",
+    "name": "workbench",
+    "description": "편리한 업무 작업대 (Mac 및 Windows용 데스크톱 앱)",
     "version": "1.0.0",
     "main": "build/bundle.js",
     "scripts": {
@@ -15,15 +15,15 @@
         "icon": "electron-icon-builder --input=./src/assets/favicon.png --output=./src/assets -f"
     },
     "build": {
-        "appId": "com.yuu2dev.mdeditor",
-        "productName": "마크다운 편집기",
-        "artifactName": "markdown-editor-setup-${version}.${ext}",
+        "appId": "com.yuu2dev.workbench",
+        "productName": "업무 작업대",
+        "artifactName": "workbench-setup-${version}.${ext}",
         "asar": true,
         "win": {
             "target": "nsis"
         },
         "nsis": {
-            "shortcutName": "마크다운 편집기"
+            "shortcutName": "업무 작업대"
         },
         "files": [
             "build/**",
@@ -35,7 +35,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/yuu2dev/markdown-editor.git"
+        "url": "git+https://github.com/yuu2dev/workbench.git"
     },
     "publish": {
         "provider": "github"
@@ -44,9 +44,9 @@
     "author": "yuu2dev@gmail.com",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/yuu2dev/markdown-editor/issues"
+        "url": "https://github.com/yuu2dev/workbench/issues"
     },
-    "homepage": "https://github.com/yuu2dev/markdown-editor#readme",
+    "homepage": "https://github.com/yuu2dev/workbench#readme",
     "devDependencies": {
         "@types/lodash": "^4.14.200",
         "concurrently": "^8.2.0",
