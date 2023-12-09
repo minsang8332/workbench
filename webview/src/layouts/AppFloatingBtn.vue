@@ -69,10 +69,20 @@ export default {
                 {
                     desc: '대시보드',
                     icon: 'mdi-monitor-dashboard',
-                    color: app.$app.scss('--theme-color-1'),
+                    color: '#3A86FF',
                     callback() {
                         app.$router
                             .replace({ name: 'dashboard' })
+                            .catch((e) => e)
+                    },
+                },
+                {
+                    desc: '매출 장부',
+                    icon: 'mdi-point-of-sale',
+                    color: '#FF006E',
+                    callback() {
+                        app.$router
+                            .replace({ name: 'account-book' })
                             .catch((e) => e)
                     },
                 },

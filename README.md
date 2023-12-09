@@ -1,13 +1,12 @@
-# 편리한 업무 작업대 (Workbench)
+# 업무작업대 (Workbench)
 
-> 편리한 업무 작업대 (Mac 및 Windows용 데스크톱 앱)
+_문서 편집 외 여러 업무 지원을 위한 Mac 및 Windows용 데스크톱 앱_
 
 ![](./screenshot.png)
 
 ## 업데이트 및 공지사항
 
--   2023/12/05 마크다운 편집기 ([v1.0](https://github.com/yuu2dev/workbench/releases))
--   ✨ "출입장부" 기능 추가 예정 (v1.1)
+-   2023/11/20 마크다운 문서 편집 기능 ([v1.0](https://github.com/yuu2dev/workbench/releases))
 
 ## 설치 및 실행
 

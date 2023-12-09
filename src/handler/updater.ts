@@ -1,6 +1,6 @@
 import { app, ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
-import log from '@/tools/log'
+import log from '@/logger'
 import windowTool from '@/tools/window'
 // 앱 종료시 자동 업데이트
 autoUpdater.autoInstallOnAppQuit = false

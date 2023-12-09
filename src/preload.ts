@@ -55,4 +55,18 @@ contextBridge.exposeInMainWorld('$native', {
             return invoke('markdown:move', payload)
         },
     },
+    accountBook: {
+        readAll(payload = {}) {
+            return invoke('accountBook:readAll', payload)
+        },
+        readOne(payload = {}) {
+            return invoke('accountBook:readOne', payload)
+        },
+        save(payload = {}) {
+            return invoke('accountBook:save', payload)
+        },
+        remove(payload = {}) {
+            return invoke('accountBook:remove', payload)
+        },
+    },
 })

@@ -1,7 +1,7 @@
 <template>
     <v-container class="dashboard-page" fluid>
         <v-card flat>
-            <v-row class="row-recent-md-title pa-2">
+            <v-row class="pa-2" no-gutters>
                 <v-col>
                     <h1 class="text-title">최근 작성한 문서</h1>
                 </v-col>
