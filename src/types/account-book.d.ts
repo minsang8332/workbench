@@ -6,13 +6,23 @@ interface IAccountBook extends StoreField {
     quantity: number
     isStock: boolean
 }
-interface IAccountBookForm extends IAccountBook {
-    id?: string
-    title: string
-    desc?: string
-    price?: number
-    quantity?: number
-    tax?: number
-    isStock?: boolean
+namespace IpcPayload {
+    namespace AccountBook {
+        interface IRead {
+            id: string
+        }
+        interface ISave extends IAccountBook {
+            id?: string
+            title: string
+            desc?: string
+            price?: number
+            quantity?: number
+            tax?: number
+            isStock?: boolean
+        }
+        interface IRemove {
+            id: string
+        }
+    }
 }
 type AccountBookType = 'account-book'

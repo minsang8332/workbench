@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { app, contextBridge, ipcRenderer } from 'electron'
 const invoke = async (channel: string, payload: object) => {
     const response = await ipcRenderer.invoke(channel, payload).catch((e) => e)
     if (response && response.error) {
@@ -11,7 +11,7 @@ contextBridge.exposeInMainWorld('$native', {
         ipcRenderer.send('exit')
     },
     getVersion() {
-        return 1
+        return app.getVersion()
     },
     updater: {
         // 업데이트 가능여부가 확인뙬 때 까지 기다림
@@ -56,17 +56,14 @@ contextBridge.exposeInMainWorld('$native', {
         },
     },
     accountBook: {
-        readAll(payload = {}) {
-            return invoke('accountBook:readAll', payload)
+        read(payload: IpcPayload.AccountBook.IRead) {
+            return invoke('account-book:read', payload)
         },
-        readOne(payload = {}) {
-            return invoke('accountBook:readOne', payload)
+        save(payload: IpcPayload.AccountBook.ISave) {
+            return invoke('account-book:save', payload)
         },
-        save(payload = {}) {
-            return invoke('accountBook:save', payload)
-        },
-        remove(payload = {}) {
-            return invoke('accountBook:remove', payload)
+        remove(payload: IpcPayload.AccountBook.IRemove) {
+            return invoke('account-book:remove', payload)
         },
     },
 })
