@@ -2,7 +2,7 @@ import { useAppStore } from '@/stores/app'
 const appStore = useAppStore()
 const onOpenDir = () => {}
 const onPowerOff = () => {}
-import styles from '@/layouts/AppHeader.module.scss'
+import styles from '@/layouts/AppHeader/AppHeader.module.scss'
 export default () => (
     <v-app-bar flat class={styles.appHeader} height={appStore.scss('--app-header-height')}>
         <v-row no-gutters>
