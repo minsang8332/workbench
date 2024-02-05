@@ -1,18 +1,20 @@
-.appDrawer {
+.app-drawer {
     $rowFooter: 48px;
     height: 100%;
     .card-app-drawer {
         position: relative;
         height: 100%;
         .row-category {
-            height: calc(100vh - 96px);
+            height: calc(100vh - var(--app-header-height));
             overflow: scroll;
         }
+        /*
         .row-footer {
             position: absolute;
             height: $rowFooter;
             bottom: 0;
             width: 100%;
         }
+        */
     }
 }
