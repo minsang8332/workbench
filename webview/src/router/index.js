@@ -18,11 +18,6 @@ const routes = [
                 component: () => import('@/views/MdEditorPage.vue'),
                 props: true,
             },
-            {
-                name: 'account-book',
-                path: '/account-book',
-                component: () => import('@/views/AccountBookPage.vue'),
-            },
         ],
     },
     // notfound-404 핸들링

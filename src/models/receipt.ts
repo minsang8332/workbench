@@ -1,5 +1,5 @@
 import _ from 'lodash'
-export default class AccountBook implements IAccountBook {
+export default class Receipt implements IReceipt {
     id: string = ''
     title: string = ''
     desc: string | null = null
@@ -9,7 +9,7 @@ export default class AccountBook implements IAccountBook {
     isStock: boolean = false
     createdAt: Date | null = null
     updatedAt: Date | null = null
-    constructor(payload?: IAccountBook) {
+    constructor(payload?: IReceipt) {
         if (payload) {
             if (_.isNil(payload.createdAt)) {
                 this.createdAt = new Date()

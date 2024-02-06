@@ -5,7 +5,6 @@ import dayjs from 'dayjs'
 import { app } from 'electron'
 export const getDocsDir = () =>
     path.resolve(app.getPath('documents'), app.getName())
-const getMdDir = () => path.resolve(getDocsDir(), 'markdown')
 const ensureDir = (dir = '') => fs.ensureDirSync(dir, { mode: 0o2775 })
 const sliceRootDir = (rootDir: string, tarDir: string) => {
     return tarDir.replace(rootDir, '').replace(/\\/g, '/')
@@ -27,7 +26,7 @@ const readTreeDirs = async (
     rootDir: string,
     { onlyFile = false, onlyFolder = false } = {}
 ) => {
-    const markdowns: Markdown[] = []
+    const docs: IDocument[] = []
     const search = async (target = '/') => {
         const stats = fs.lstatSync(target)
         let isDir = false
@@ -48,7 +47,7 @@ const readTreeDirs = async (
                 return
             }
         }
-        markdowns.push({
+        docs.push({
             path: sliceRootDir(rootDir, target),
             isDir,
             createdAt: stats.birthtime,
@@ -56,7 +55,7 @@ const readTreeDirs = async (
         })
     }
     await search(rootDir)
-    return markdowns
+    return docs
 }
 const readFile = async (
     dir = '',
@@ -213,7 +212,6 @@ const move = async (
 }
 export default {
     getDocsDir,
-    getMdDir,
     isSubdir,
     ensureDir,
     readTreeDirs,

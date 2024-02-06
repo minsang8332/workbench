@@ -76,16 +76,6 @@ export default {
                             .catch((e) => e)
                     },
                 },
-                {
-                    desc: '매출 장부',
-                    icon: 'mdi-point-of-sale',
-                    color: '#FF006E',
-                    callback() {
-                        app.$router
-                            .replace({ name: 'account-book' })
-                            .catch((e) => e)
-                    },
-                },
             ],
         }
     },

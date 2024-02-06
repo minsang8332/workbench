@@ -1,16 +1,18 @@
-export const createResponse = (props = {}): IHandlerResponse => {
+export const createResponse = (props = {}): IpcHandle.IResponse => {
     return {
         ...props,
         data: {},
     }
 }
-export const createError = (error?: Error | unknown): IHandlerError | null => {
+export const createError = (
+    error?: Error | unknown
+): IpcHandle.IError | undefined => {
     return error instanceof Error
         ? {
               name: error.name,
               message: error.message,
           }
-        : null
+        : undefined
 }
 export default {
     createResponse,
