@@ -1,14 +1,14 @@
 import { useAppStore } from '@/stores/app'
-const appStore = useAppStore()
-const onOpenDir = () => {}
-const onPowerOff = () => {}
 import '@/layouts/AppHeader.scoped.scss'
 import { defineComponent } from 'vue'
 export default defineComponent({
     name: 'AppHeader',
     setup() {
+        const appStore = useAppStore()
+        const onOpenDir = () => {}
+        const onPowerOff = () => {}
         return () => (
-            <v-app-bar class="app-header" flat height={appStore.scss('--app-header-height')}>
+            <v-app-bar class="app-header" density="compact" flat>
                 <v-row no-gutters>
                     <v-col>
                         <v-btn

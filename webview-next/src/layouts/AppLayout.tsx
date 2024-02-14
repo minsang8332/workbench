@@ -11,8 +11,8 @@ export default defineComponent({
     setup() {
         return () => (
             <v-app>
+                <app-header />
                 <v-main>
-                    <app-header />
                     <app-drawer />
                     <RouterView />
                 </v-main>

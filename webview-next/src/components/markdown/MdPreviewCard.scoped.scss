@@ -1,0 +1,19 @@
+.md-preview-card {
+    height: 100%;
+    .mpc-row-title {
+        height: 15%;
+        .mpc-text-title {
+            font-size: 15px;
+        }
+    }
+    .mpc-row-preview {
+        height: 65%;
+        overflow-y: hidden;
+    }
+    .mpc-row-created-at {
+        height: 20%;
+        .mpc-text-date {
+            font-size: 13px;
+        }
+    }
+}
