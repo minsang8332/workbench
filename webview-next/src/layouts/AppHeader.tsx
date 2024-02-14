@@ -8,7 +8,7 @@ export default defineComponent({
         const onOpenDir = () => {}
         const onPowerOff = () => {}
         return () => (
-            <v-app-bar class="app-header" density="compact" flat>
+            <v-app-bar class="app-header native-drag" density="compact" flat>
                 <v-row no-gutters>
                     <v-col>
                         <v-btn
