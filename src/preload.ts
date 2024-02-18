@@ -6,30 +6,30 @@ const invoke = async (channel: string, payload?: any) => {
     }
     return response
 }
-const document = {
+const diary = {
     readAll() {
-        return invoke('document:read-all')
+        return invoke('diary:read-all')
     },
-    read(payload: IpcPayload.Document.IRead) {
-        return invoke('document:read', payload)
+    read(payload: IpcPayload.Diary.IRead) {
+        return invoke('diary:read', payload)
     },
-    write(payload: IpcPayload.Document.IWrite) {
-        return invoke('document:write', payload)
+    write(payload: IpcPayload.Diary.IWrite) {
+        return invoke('diary:write', payload)
     },
     openDir() {
-        ipcRenderer.send('document:open-dir')
+        ipcRenderer.send('diary:open-dir')
     },
-    writeDir(payload: IpcPayload.Document.IWriteDir) {
-        return invoke('document:write-dir', payload)
+    writeDir(payload: IpcPayload.Diary.IWriteDir) {
+        return invoke('diary:write-dir', payload)
     },
-    remove(payload: IpcPayload.Document.IRemove) {
-        return invoke('document:remove', payload)
+    remove(payload: IpcPayload.Diary.IRemove) {
+        return invoke('diary:remove', payload)
     },
-    rename(payload: IpcPayload.Document.IRename) {
-        return invoke('document:rename', payload)
+    rename(payload: IpcPayload.Diary.IRename) {
+        return invoke('diary:rename', payload)
     },
-    move(payload: IpcPayload.Document.IMove) {
-        return invoke('document:move', payload)
+    move(payload: IpcPayload.Diary.IMove) {
+        return invoke('diary:move', payload)
     },
 }
 contextBridge.exposeInMainWorld('$native', {
@@ -55,9 +55,9 @@ contextBridge.exposeInMainWorld('$native', {
             ipcRenderer.send('updater:install')
         },
     },
-    document,
+    diary,
     /** @memo v1.0.0 에서는 [ markdown ] 으로 사용중. */
-    markdown: document,
+    markdown: diary,
     receipt: {
         read(payload: IpcPayload.Receipt.IRead) {
             return invoke('receipt:read', payload)

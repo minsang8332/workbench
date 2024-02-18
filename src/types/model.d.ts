@@ -1,11 +1,12 @@
-type DocumentType = 'markdown'
+type DiaryType = 'diary'
 type ReceiptType = 'receipt'
-interface IDocument {
+interface IFile {
     path: string
     isDir: boolean
     createdAt?: Date
     updatedAt?: Date
 }
+interface IDiary extends IFile {}
 interface IReceipt extends StoreField {
     title: string
     desc: string | null

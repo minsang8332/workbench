@@ -26,7 +26,7 @@ const readTreeDirs = async (
     rootDir: string,
     { onlyFile = false, onlyFolder = false } = {}
 ) => {
-    const docs: IDocument[] = []
+    const docs: IFile[] = []
     const search = async (target = '/') => {
         const stats = fs.lstatSync(target)
         let isDir = false

@@ -1,14 +1,18 @@
 import { defineComponent, type PropType } from 'vue'
 import dayjs from 'dayjs'
-import '@/components/markdown/MdPreviewCard.scoped.scss'
+import DiaryPreview from '@/components/diary/DiaryPreview.vue'
+import '@/components/diary/DiaryCard.scoped.scss'
 export default defineComponent({
-    name: 'MdPreviewCard',
+    name: 'DiaryCard',
+    components: {
+        DiaryPreview
+    },
     props: {
         title: {
             type: [String, null] as PropType<string | null>,
             default: null
         },
-        text: {
+        preview: {
             type: [String, null] as PropType<string | null>,
             default: null
         },
@@ -37,28 +41,26 @@ export default defineComponent({
             return print
         }
         return () => (
-            <v-card class="md-preview-card" width={props.width} outlined shaped v-ripple>
-                <v-row class="mpc-row-title px-2" no-gutters>
+            <v-card class="diary-card" width={props.width} hover v-ripple>
+                <v-row class="dc-row-title px-2" no-gutters>
                     <v-col class="d-flex align-center fill-height text-truncate">
-                        <p class="mpc-text-title d2coding">{props.title}</p>
+                        <p class="dc-text-title d2coding">{props.title}</p>
                     </v-col>
                 </v-row>
                 <v-divider />
-                <v-row class="mpc-row-preview" no-gutters>
+                <v-row class="dc-row-preview" no-gutters>
                     <v-col class="fill-height">
-                        <md-preview ref="preview" text={props.text} />
+                        <diary-preview preview={props.preview} />
                     </v-col>
                 </v-row>
                 <v-divider />
-                <v-row class="mpc-row-created-at px-2" no-gutters>
+                <v-row class="dc-row-created-at px-2" no-gutters>
                     <v-col class="d-flex flex-column justify-center text-truncate">
-                        <p class="mpc-text-date d2coding text-truncate">
-                            작성일
-                            {printDate(props.createdAt)}
+                        <p class="dc-text-date d2coding text-truncate">
+                            작성일 {printDate(props.createdAt)}
                         </p>
-                        <p class="mpc-text-date d2coding text-truncate">
-                            수정일
-                            {printDate(props.updatedAt)}
+                        <p class="dc-text-date d2coding text-truncate">
+                            수정일 {printDate(props.updatedAt)}
                         </p>
                     </v-col>
                 </v-row>

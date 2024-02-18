@@ -1,13 +1,18 @@
-import MdPreviewCard from '@/components/markdown/MdPreviewCard'
+import { defineComponent, onMounted, ref } from 'vue'
+import DiaryCard from '@/components/diary/DiaryCard'
+import { useDiaryStore } from '@/stores/diary'
 import '@/views/DashboardPage.scoped.scss'
-import { defineComponent, ref } from 'vue'
 export default defineComponent({
     name: 'DashboardPage',
     components: {
-        MdPreviewCard
+        DiaryCard
     },
     setup() {
-        const documents = ref([])
+        const recentDiaries = ref<IDiaryWithPreview[]>([])
+        const diaryStore = useDiaryStore()
+        onMounted(async () => {
+            recentDiaries.value = await diaryStore.loadDiariesWithPreview()
+        })
         return () => (
             <v-container class="dashboard-page pa-0" fluid>
                 <v-card flat>
@@ -18,10 +23,10 @@ export default defineComponent({
                     </v-row>
                     <v-divider class="pa-1" />
                     <v-row no-gutters>
-                        {documents.value.map((doc) => (
+                        {recentDiaries.value.map((diary) => (
                             <v-col cols="12" md="4" class="pa-4">
-                                <div class="dp-card-recently-doc">
-                                    <md-preview-card v-bind={doc} />
+                                <div class="dp-card-recently-diary">
+                                    <diary-card {...diary} />
                                 </div>
                             </v-col>
                         ))}

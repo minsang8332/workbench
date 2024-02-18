@@ -1,18 +1,18 @@
-.md-preview-card {
+.diary-card {
     height: 100%;
-    .mpc-row-title {
+    .dc-row-title {
         height: 15%;
-        .mpc-text-title {
+        .dc-text-title {
             font-size: 15px;
         }
     }
-    .mpc-row-preview {
+    .dc-row-preview {
         height: 65%;
         overflow-y: hidden;
     }
-    .mpc-row-created-at {
+    .dc-row-created-at {
         height: 20%;
-        .mpc-text-date {
+        .dc-text-date {
             font-size: 13px;
         }
     }

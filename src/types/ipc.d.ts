@@ -26,7 +26,7 @@ namespace IpcPayload {
             id: string
         }
     }
-    namespace Document {
+    namespace Diary {
         interface IRead {
             target: string
         }
