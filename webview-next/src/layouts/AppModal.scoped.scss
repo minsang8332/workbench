@@ -1,0 +1,40 @@
+.app-modal {
+    width: calc(100vw / 2);
+    .am-card {
+        width: 100%;
+        .am-row-title {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 25%;
+            max-height: 25%;
+            b {
+                font-size: 24px;
+            }
+        }
+        .am-row-message {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 55%;
+            overflow-y: auto;
+            p {
+                font-size: 20px;
+                text-align: center;
+            }
+        }
+        .am-row-actions {
+            height: 20%;
+            .v-btn {
+                font-size: 20px;
+                height: 100%;
+            }
+            .am-btn-no span {
+                color: #c3c3c3;
+            }
+            .am-btn-ok span {
+                color: var(--theme-color-1);
+            }
+        }
+    }
+}

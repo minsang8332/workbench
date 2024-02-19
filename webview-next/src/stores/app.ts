@@ -2,15 +2,19 @@ import { reactive } from 'vue'
 import { defineStore } from 'pinia'
 // 어플리케이션 전반적인 동작 관련 전역 스토어
 export const useAppStore = defineStore('app', () => {
-    const state = reactive({
+    const state = reactive<IAppState>({
         // 좌측 사이드바
         drawer: false,
         // 모달 관련
         modal: false,
+        modalProps: {
+            message: null,
+            ok: null
+        },
         // 우측 마우스 클릭시 보이는 메뉴
         menu: false,
         // 파일명 변경 시 담을 변수
-        updatePath: null
+        inputPath: null
     })
     const scss = (property: string): string | null => {
         const style = getComputedStyle(document.body)
@@ -18,6 +22,24 @@ export const useAppStore = defineStore('app', () => {
             return null
         }
         return style.getPropertyValue(property)
+    }
+    const showModal = (message: string, { ok }: { ok: () => any }) => {
+        state.modalProps.message = message
+        if (ok) {
+            state.modalProps.ok = ok
+        }
+        toggleModal(true)
+    }
+    const toggleModal = (modal?: boolean) => {
+        if (typeof modal == 'boolean') {
+            state.modal = modal
+            if (state.modal == false) {
+                state.modalProps.message = null
+                state.modalProps.ok = null
+            }
+        } else {
+            state.modal = !state.modal
+        }
     }
     const toggleDrawer = () => {
         state.drawer = !state.drawer
@@ -38,5 +60,15 @@ export const useAppStore = defineStore('app', () => {
     const installUpdate = () => {
         window.$native.updater.install()
     }
-    return { state, scss, toggleDrawer, powerOff, waitUpdate, availableUpdate, installUpdate }
+    return {
+        state,
+        scss,
+        showModal,
+        toggleModal,
+        toggleDrawer,
+        powerOff,
+        waitUpdate,
+        availableUpdate,
+        installUpdate
+    }
 })

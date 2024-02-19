@@ -1,12 +1,19 @@
 import { useAppStore } from '@/stores/app'
+import { useDiaryStore } from '@/stores/diary'
 import '@/layouts/AppHeader.scoped.scss'
 import { defineComponent } from 'vue'
 export default defineComponent({
     name: 'AppHeader',
     setup() {
         const appStore = useAppStore()
-        const onOpenDir = () => {}
-        const onPowerOff = () => {}
+        const diaryStore = useDiaryStore()
+        const onPowerOff = () => {
+            appStore.showModal('어플리케이션을 종료 하시겠습니까 ?', {
+                ok() {
+                    appStore.powerOff()
+                }
+            })
+        }
         return () => (
             <v-app-bar class="app-header native-drag" density="compact" flat>
                 <v-row no-gutters>
@@ -18,7 +25,7 @@ export default defineComponent({
                         >
                             <v-icon class="ico-menu">fa-solid fa-bars</v-icon>
                         </v-btn>
-                        <v-btn class="skip-native-drag" size="large" onClick={onOpenDir}>
+                        <v-btn class="skip-native-drag" size="large" onClick={diaryStore.dirDiary}>
                             <v-icon class="ico-folder">fa-solid fa-folder</v-icon>
                         </v-btn>
                     </v-col>
