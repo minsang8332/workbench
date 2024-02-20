@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 import { defineStore } from 'pinia'
 // 어플리케이션 전반적인 동작 관련 전역 스토어
 export const useAppStore = defineStore('app', () => {
@@ -15,6 +15,9 @@ export const useAppStore = defineStore('app', () => {
         menu: false,
         // 파일명 변경 시 담을 변수
         inputPath: null
+    })
+    const getDrawer = computed(() => {
+        return state.drawer
     })
     const scss = (property: string): string | null => {
         const style = getComputedStyle(document.body)
@@ -41,8 +44,12 @@ export const useAppStore = defineStore('app', () => {
             state.modal = !state.modal
         }
     }
-    const toggleDrawer = () => {
-        state.drawer = !state.drawer
+    const toggleDrawer = (drawer?: boolean) => {
+        if (typeof drawer == 'boolean') {
+            state.drawer = drawer
+        } else {
+            state.drawer = !state.drawer
+        }
     }
     // 앱 종료
     const powerOff = () => {
@@ -63,6 +70,7 @@ export const useAppStore = defineStore('app', () => {
     return {
         state,
         scss,
+        getDrawer,
         showModal,
         toggleModal,
         toggleDrawer,

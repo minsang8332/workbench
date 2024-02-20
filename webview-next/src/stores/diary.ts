@@ -17,9 +17,8 @@ export const useDiaryStore = defineStore('diary', () => {
     const treeDiaries = computed(() => {
         let tree = []
         try {
-            const diaries = state.diaries
             const diaryTable: any = {}
-            // 관계 데이터 생성
+            const diaries = [...getDiaries.value]
             for (const diary of diaries) {
                 const paths = diary.path.split('/')
                 for (let depth = 0; depth < paths.length; depth++) {
@@ -28,13 +27,14 @@ export const useDiaryStore = defineStore('diary', () => {
                     }
                     const path = diary.path
                     if (diaryTable[path] == undefined) {
-                        diaryTable[path] = _.merge(diary, {
+                        diaryTable[path] = _.merge({}, diary, {
                             title: paths[paths.length - 1],
                             path,
                             parent: null,
                             items: []
                         })
                     }
+                    // 관계 데이터 생성
                     if (depth > 0) {
                         diaryTable[path].parent = paths.slice(0, paths.length - 1).join('/')
                     }

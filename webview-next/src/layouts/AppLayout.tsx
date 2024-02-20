@@ -16,8 +16,8 @@ export default defineComponent({
         return () => (
             <v-app>
                 <app-header />
+                <app-drawer />
                 <v-main>
-                    <app-drawer />
                     <RouterView />
                 </v-main>
                 <app-modal
