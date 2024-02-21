@@ -1,8 +1,10 @@
 import _ from 'lodash'
-import { computed, defineComponent, ref, watch } from 'vue'
+import { computed, defineComponent, ref, watch, inject } from 'vue'
 import type { PropType } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import '@/components/diary/DiaryCategory.scoped.scss'
 import { useAppStore } from '@/stores/app'
+import { useDiaryStore } from '@/stores/diary'
 export default defineComponent({
     name: 'DiaryCategory',
     props: {
@@ -34,34 +36,31 @@ export default defineComponent({
         }
     },
     setup(props) {
+        const $toast = inject('toast') as IToastPlugin
+        const router = useRouter()
+        const route = useRoute()
         const appStore = useAppStore()
-        const visible = ref<boolean>(false)
+        const diaryStore = useDiaryStore()
+        const visible = ref<boolean>(true)
         const toggleVisible = () => {
             visible.value = !visible.value
         }
-        const isInputPath = computed(() => {
-            // const targetPath = this.$app.getUpdatePath()
-            // return targetPath && this.path == targetPath
-            return false
+        const isUpdate = computed(() => {
+            return appStore.getIsInputPath && props.path == appStore.getIsInputPath
         })
         const onDbClick = () => {
-            /*
-            const { path, isDir } = this
-            if (!path) {
+            if (!props.path) {
                 return
             }
-            if (isDir) {
+            if (props.isDir) {
                 return
             }
-            this.$router
-                .replace({ name: 'markdown-editor', params: { path } })
-                .catch((e) => e)
-            */
+            router.replace({ name: 'diary', params: { path: props.path } }).catch((e) => e)
         }
+        // 메뉴창 열기
         const onMouseUp = (event: MouseEvent) => {
             console.log('on-mouse-up', event.button)
         }
-        /*
         watch(
             () => props.items,
             (oldValue, newValue) => {
@@ -73,21 +72,63 @@ export default defineComponent({
                 }
             }
         )
-        */
+        const onPrevent = (event: DragEvent) => {
+            event.preventDefault()
+        }
+        const onDragStart = (event: DragEvent, target: string = props.path) => {
+            if (!(event && event.dataTransfer)) {
+                return
+            }
+            if (!target) {
+                return
+            }
+            event.dataTransfer.setData('target', target)
+        }
+        const onDrop = async (event: DragEvent) => {
+            if (!(event && event.dataTransfer)) {
+                return
+            }
+            try {
+                const target = event.dataTransfer.getData('target')
+                const dest = props.path
+                if (!(target && target != dest)) {
+                    return
+                }
+                const { moved } = await diaryStore.mvDiary({ target, dest })
+                // 현재 작성중인 문서인 경우
+                if (route.params.path == target) {
+                    router
+                        .replace({
+                            name: 'diary',
+                            params: { path: moved }
+                        })
+                        .catch((e) => e)
+                }
+            } catch (e) {
+                $toast.error(e as Error)
+            }
+        }
         return () =>
             props.depth >= 0 &&
             props.depth <= props.maxDepth && (
                 <v-card class="diary-category" flat transparent>
                     {
                         <v-row
-                            v-ripple={!isInputPath.value}
+                            v-ripple={!isUpdate.value}
                             ondbclick={onDbClick}
                             onclick={toggleVisible}
                             mouseup={onMouseUp}
                             no-gutters
                         >
                             <v-col>
-                                <v-row draggable={!isInputPath.value} no-gutters>
+                                <v-row
+                                    draggable={!isUpdate.value}
+                                    ondragenter={onPrevent}
+                                    ondragover={onPrevent}
+                                    ondragstart={onDragStart}
+                                    ondrop={onDrop}
+                                    no-gutters
+                                >
                                     {props.depth > 0 && (
                                         <v-col class="text-right" cols={props.depth}>
                                             {props.isDir && (
@@ -135,7 +176,6 @@ export default defineComponent({
     }
 })
 /*
-    methods: {,
         // 우측 마우스 클릭시 메뉴 모달
         onRightClick(event) {
             const { path, isDir } = this
@@ -146,36 +186,5 @@ export default defineComponent({
                 isDir,
             })
         },
-        onDragstart(event, path) {
-            if (!(event && event.dataTransfer && path)) {
-                return
-            }
-            event.dataTransfer.setData('path', path)
-        },
-        async onDrop(event) {
-            if (!(event && event.dataTransfer)) {
-                return
-            }
-            try {
-                const dest = this.path
-                const target = event.dataTransfer.getData('path')
-                if (!(target && target != dest)) {
-                    return
-                }
-                const { moved } = await this.moveMarkdown({ target, dest })
-                // 현재 작성중인 문서인 경우
-                if (this.$route.params.path == target) {
-                    this.$router
-                        .replace({
-                            name: 'markdown-editor',
-                            params: { path: moved },
-                        })
-                        .catch((e) => e)
-                }
-            } catch (e) {
-                this.$toast.error(e)
-            }
-        },
-    },
-}
+
 */

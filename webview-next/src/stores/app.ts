@@ -19,6 +19,9 @@ export const useAppStore = defineStore('app', () => {
     const getDrawer = computed(() => {
         return state.drawer
     })
+    const getIsInputPath = computed(() => {
+        return state.inputPath
+    })
     const scss = (property: string): string | null => {
         const style = getComputedStyle(document.body)
         if (!style) {
@@ -71,6 +74,7 @@ export const useAppStore = defineStore('app', () => {
         state,
         scss,
         getDrawer,
+        getIsInputPath,
         showModal,
         toggleModal,
         toggleDrawer,

@@ -18,7 +18,7 @@ export const useDiaryStore = defineStore('diary', () => {
         let tree = []
         try {
             const diaryTable: any = {}
-            const diaries = [...getDiaries.value]
+            const diaries = getDiaries.value
             for (const diary of diaries) {
                 const paths = diary.path.split('/')
                 for (let depth = 0; depth < paths.length; depth++) {

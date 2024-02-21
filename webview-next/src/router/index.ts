@@ -14,23 +14,16 @@ const router = createRouter({
                     name: 'dashboard',
                     path: '/dashboard',
                     component: () => import('@/views/DashboardPage')
-                }
-                /*
-                {
-                    name: 'markdown-editor',
-                    path: '/markdown-editor/:path',
-                    component: () => import('@/views/MdEditorPage.vue'),
-                    props: true
                 },
                 {
-                    name: 'account-book',
-                    path: '/account-book',
-                    component: () => import('@/views/AccountBookPage.vue')
+                    name: 'diary',
+                    path: '/diary/:path',
+                    component: () => import('@/views/DiaryPage'),
+                    props: true
                 }
-                */
             ]
         },
-        // notfound-404 핸들링
+        // not-found 핸들링
         {
             path: '/:pathMatch(.*)*',
             redirect: 'dashboard'
