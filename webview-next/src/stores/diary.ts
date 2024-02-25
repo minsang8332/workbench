@@ -73,7 +73,7 @@ export const useDiaryStore = defineStore('diary', () => {
         return { diaries }
     }
     // 문서 열기
-    const loadDiary = async ({ target }: { target: string }) => {
+    const readDiary = async ({ target }: { target: string }) => {
         const response = await window.$native.diary.read({ target })
         const { text } = response.data
         return { text }
@@ -118,13 +118,32 @@ export const useDiaryStore = defineStore('diary', () => {
         const { moved } = response.data
         return { moved }
     }
+    const readDiaryWithPreview = async ({
+        target
+    }: {
+        target: string
+    }): Promise<{ text: string; preview: string } | null> => {
+        let text = ''
+        let preview = ''
+        try {
+            const diary = await readDiary({ target })
+            text = diary.text
+            preview = await marked(_.toString(text))
+        } catch (e) {
+            console.error(e)
+        }
+        return {
+            text,
+            preview
+        }
+    }
     const loadDiariesWithPreview = async () => {
         let diariesWithPreview: IDiaryWithPreview[] = []
         try {
             await loadDiaries()
             diariesWithPreview = await Promise.all(
                 recentDiaries.value.map(async (d) => {
-                    const diary = await loadDiary({
+                    const diary = await readDiary({
                         target: d.path
                     })
                     const preview = await marked(_.toString(diary.text))
@@ -146,13 +165,14 @@ export const useDiaryStore = defineStore('diary', () => {
         recentDiaries,
         treeDiaries,
         loadDiaries,
-        loadDiary,
+        readDiary,
         saveDiary,
         renameDiary,
         mkdirDiary,
         dirDiary,
         rmDiary,
         mvDiary,
+        readDiaryWithPreview,
         loadDiariesWithPreview
     }
 })

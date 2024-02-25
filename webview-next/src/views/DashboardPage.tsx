@@ -1,4 +1,5 @@
 import { defineComponent, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import DiaryCard from '@/components/diary/DiaryCard'
 import { useDiaryStore } from '@/stores/diary'
 import '@/views/DashboardPage.scoped.scss'
@@ -8,8 +9,19 @@ export default defineComponent({
         DiaryCard
     },
     setup() {
-        const recentDiaries = ref<IDiaryWithPreview[]>([])
+        const router = useRouter()
         const diaryStore = useDiaryStore()
+        const recentDiaries = ref<IDiaryWithPreview[]>([])
+        const onMoveDiary = (diary: IDiary) => {
+            router
+                .replace({
+                    name: 'diary',
+                    params: {
+                        path: diary.path
+                    }
+                })
+                .catch((e) => e)
+        }
         onMounted(async () => {
             recentDiaries.value = await diaryStore.loadDiariesWithPreview()
         })
@@ -26,7 +38,7 @@ export default defineComponent({
                         {recentDiaries.value.map((diary) => (
                             <v-col cols="12" md="4" class="pa-4">
                                 <div class="dp-card-recently-diary">
-                                    <diary-card {...diary} />
+                                    <diary-card {...diary} onclick={() => onMoveDiary(diary)} />
                                 </div>
                             </v-col>
                         ))}

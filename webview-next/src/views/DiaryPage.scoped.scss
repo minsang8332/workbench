@@ -1,0 +1,52 @@
+.diary-page {
+    $rowHeader: 36px;
+    $rowFooter: 48px;
+    height: calc(100vh - var(--app-header-height));
+    .dp-card {
+        border: 1px solid var(--theme-color-2);
+        .dp-row-header {
+            height: $rowHeader;
+            flex-shrink: 0;
+            .dp-text-title {
+                font-size: 14px;
+            }
+        }
+        .dp-row-main {
+            height: calc(100% - $rowHeader - $rowFooter);
+            overflow-x: hidden;
+            .dp-editor {
+                background: rgba(246, 246, 246);
+                height: 100%;
+                font-family: 'd2coding', courier, monospace;
+                font-size: 14px;
+                border: none;
+                resize: none;
+                outline: none;
+            }
+            .dp-resizer {
+                flex-shrink: 1;
+                position: relative;
+                height: 100%;
+                width: 4px;
+                border-left: 1.5px dotted var(--theme-color-2);
+                cursor: col-resize;
+                .dp-btn-resizer {
+                    position: absolute;
+                    z-index: 1;
+                    top: 50%;
+                    left: -40px;
+                    .v-icon {
+                        color: var(--theme-color-2);
+                    }
+                }
+            }
+        }
+        .dp-row-footer {
+            height: $rowFooter;
+            flex-shrink: 0;
+            .dp-btn-save {
+                background: var(--theme-color-g1);
+            }
+        }
+    }
+}

@@ -53,7 +53,7 @@ export default defineComponent({
         const isRenaming = computed(() => {
             return unref(editable)
         })
-        const onDbClick = () => {
+        const onDblClick = () => {
             if (!props.path) {
                 return
             }
@@ -209,7 +209,7 @@ export default defineComponent({
                     {
                         <v-row
                             v-ripple={!unref(isRenaming)}
-                            ondbclick={onDbClick}
+                            ondblclick={onDblClick}
                             onclick={toggleVisible}
                             onmouseup={onMouseUpRight}
                             no-gutters
