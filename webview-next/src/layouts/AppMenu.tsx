@@ -114,38 +114,3 @@ export default defineComponent({
         )
     }
 })
-/*
-<script>
-export default {
-    data() {
-        const app = this
-        return {
-            selectedItem: null,
-        }
-    },
-
-    computed: {
-        getItems() {
-            return this.items.filter((item) => {
-                if (item.name.includes('add') && this.isDir == false) {
-                    return false
-                }
-                if (['remove', 'rename'].includes(item.name) && !this.path) {
-                    return false
-                }
-                return item
-            })
-        },
-    },
-    methods: {
-        clear() {
-            this.selectedItem = null
-        },
-        onClickMenuItem({ callback = Function } = {}) {
-            if (callback) {
-                callback()
-            }
-        },
-    },
-}
-*/

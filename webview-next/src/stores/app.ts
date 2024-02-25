@@ -30,15 +30,10 @@ export const useAppStore = defineStore('app', () => {
         modalProps: resetModalProps(),
         // 우측 마우스 클릭시 보이는 메뉴
         menu: false,
-        menuProps: resetMenuProps(),
-        // 파일명 변경 시 담을 변수
-        inputPath: null
+        menuProps: resetMenuProps()
     })
     const getDrawer = computed(() => {
         return state.drawer
-    })
-    const getIsInputPath = computed(() => {
-        return state.inputPath
     })
     const showModal = (message: string, { ok }: { ok: () => any }) => {
         state.modalProps.message = message
@@ -102,7 +97,6 @@ export const useAppStore = defineStore('app', () => {
         state,
         scss,
         getDrawer,
-        getIsInputPath,
         showModal,
         toggleModal,
         toggleDrawer,

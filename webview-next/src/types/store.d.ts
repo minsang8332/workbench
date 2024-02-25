@@ -4,7 +4,6 @@ interface IAppState {
     modalProps: IAppModalProps
     menu: boolean
     menuProps: IAppMenuProps
-    inputPath: string | null
 }
 interface IDiaryState {
     diaries: IDiary[]

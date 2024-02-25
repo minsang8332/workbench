@@ -1,12 +1,16 @@
-import _ from 'lodash'
-import { computed, defineComponent, ref, watch, inject } from 'vue'
+import _, { countBy } from 'lodash'
+import { computed, defineComponent, ref, watch, inject, unref } from 'vue'
 import type { PropType } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import '@/components/diary/DiaryCategory.scoped.scss'
 import { useAppStore } from '@/stores/app'
 import { useDiaryStore } from '@/stores/diary'
+import DiaryInputPath from '@/components/diary//DiaryInputPath'
+import '@/components/diary/DiaryCategory.scoped.scss'
 export default defineComponent({
     name: 'DiaryCategory',
+    components: {
+        DiaryInputPath
+    },
     props: {
         title: {
             type: String as PropType<string>,
@@ -42,11 +46,12 @@ export default defineComponent({
         const appStore = useAppStore()
         const diaryStore = useDiaryStore()
         const visible = ref<boolean>(true)
+        const editable = ref<boolean>(false)
         const toggleVisible = () => {
             visible.value = !visible.value
         }
-        const isUpdate = computed(() => {
-            return appStore.getIsInputPath && props.path == appStore.getIsInputPath
+        const isRenaming = computed(() => {
+            return unref(editable)
         })
         const onDbClick = () => {
             if (!props.path) {
@@ -113,7 +118,11 @@ export default defineComponent({
                     desc: '이름 바꾸기',
                     shortcut: 'M',
                     icon: 'mdi:mdi-pencil-box-outline',
-                    color: appStore.scss('--dark-color')
+                    color: appStore.scss('--dark-color'),
+                    cb() {
+                        editable.value = true
+                        appStore.toggleMenu(false)
+                    }
                 },
                 {
                     name: 'remove',
@@ -179,6 +188,9 @@ export default defineComponent({
                 $toast.error(e as Error)
             }
         }
+        const toggleEditable = (toggle = false) => {
+            editable.value = toggle
+        }
         watch(
             () => props.items,
             (oldValue, newValue) => {
@@ -196,7 +208,7 @@ export default defineComponent({
                 <v-card class="diary-category" flat transparent>
                     {
                         <v-row
-                            v-ripple={!isUpdate.value}
+                            v-ripple={!unref(isRenaming)}
                             ondbclick={onDbClick}
                             onclick={toggleVisible}
                             onmouseup={onMouseUpRight}
@@ -204,7 +216,7 @@ export default defineComponent({
                         >
                             <v-col>
                                 <v-row
-                                    draggable={!isUpdate.value}
+                                    draggable={!unref(isRenaming)}
                                     ondragenter={onPrevent}
                                     ondragover={onPrevent}
                                     ondragstart={onDragStart}
@@ -238,7 +250,14 @@ export default defineComponent({
                                                 icon="mdi:mdi-file-document-outline"
                                             />
                                         )}
-                                        <b class="dc-text-title">{props.title}</b>
+                                        {unref(isRenaming) ? (
+                                            <diary-input-path
+                                                path={props.path}
+                                                onToggle={toggleEditable}
+                                            />
+                                        ) : (
+                                            <b class="dc-text-title">{props.title}</b>
+                                        )}
                                     </v-col>
                                 </v-row>
                             </v-col>

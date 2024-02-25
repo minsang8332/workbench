@@ -1,6 +1,6 @@
 import { defineComponent, type PropType } from 'vue'
 import dayjs from 'dayjs'
-import DiaryPreview from '@/components/diary/DiaryPreview.vue'
+import DiaryPreview from '@/components/diary/DiaryPreview'
 import '@/components/diary/DiaryCard.scoped.scss'
 export default defineComponent({
     name: 'DiaryCard',
