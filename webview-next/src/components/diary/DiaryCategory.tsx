@@ -92,7 +92,7 @@ export default defineComponent({
                             .mkdirDiary({
                                 target: props.path
                             })
-                            .then(({ writed }) => $toast.success(`${writed} 생성되었습니다.`))
+                            .then(({ writed }) => $toast.success(`${writed} 생성 되었습니다.`))
                             .catch((e) => $toast.error(e))
                             .finally(() => appStore.toggleMenu(false))
                     }
@@ -108,7 +108,7 @@ export default defineComponent({
                             .saveDiary({
                                 target: props.path
                             })
-                            .then(({ writed }) => $toast.success(`${writed} 생성되었습니다.`))
+                            .then(({ writed }) => $toast.success(`${writed} 생성 되었습니다.`))
                             .catch((e) => $toast.error(e))
                             .finally(() => appStore.toggleMenu(false))
                     }

@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import { app } from 'electron'
 export const getDocsDir = () =>
     path.resolve(app.getPath('documents'), app.getName())
+export const diaryexts = ['.md', '.txt']
 const ensureDir = (dir = '') => fs.ensureDirSync(dir, { mode: 0o2775 })
 const sliceRootDir = (rootDir: string, tarDir: string) => {
     return tarDir.replace(rootDir, '').replace(/\\/g, '/')
@@ -43,7 +44,7 @@ const readTreeDirs = async (
             if (onlyFolder) {
                 return
             }
-            if (path.extname(target) != '.md') {
+            if (!diaryexts.includes(path.extname(target))) {
                 return
             }
         }
@@ -69,7 +70,7 @@ const readFile = async (
     return fs.readFileSync(target, 'utf8')
 }
 const writeFile = async (
-    target: string,
+    target: string = '/',
     {
         filename,
         text,
@@ -82,24 +83,42 @@ const writeFile = async (
         rootDir: string
     }
 ) => {
-    if (!_.isString(target)) {
-        target = '/'
-    }
-    if (!_.isString(filename)) {
-        filename = `새 문서_${dayjs().format('YYYYMMDDHHmmss')}.${ext}`
-    }
     let tarDir = path.join(rootDir, target)
     if (!(await isSubdir(rootDir, tarDir))) {
         throw new Error('유효하지 않은 경로 입니다.')
     }
-    if (fs.lstatSync(tarDir).isDirectory()) {
-        tarDir = path.join(tarDir, filename)
+    // 파일로 들어온 경우 부모 경로로 자동설정
+    if (!(await fs.lstat(tarDir)).isDirectory()) {
+        tarDir = path.dirname(tarDir)
     }
-    fs.writeFileSync(tarDir, text)
+    ext = /^\.(\w)+/.test(ext) ? ext : `.${ext}`
+    if (!_.includes(diaryexts, ext)) {
+        throw new Error(
+            `작성 가능한 확장자는 다음과 같습니다. (${diaryexts.join('|')})`
+        )
+    }
+    // 파일명이 없으면 신규 파일로 간주
+    if (_.isNil(filename)) {
+        let counts = 0
+        let newers = '새 문서'
+        for (const file of fs.readdirSync(tarDir)) {
+            // 폴더는 무시
+            if (fs.lstatSync(path.join(tarDir, file)).isDirectory()) {
+                continue
+            }
+            const { name } = path.parse(file)
+            if (name !== `${newers} (${counts})`) {
+                continue
+            }
+            counts++
+        }
+        filename = `${newers} (${counts})`
+    }
+    fs.writeFileSync(path.format({ dir: tarDir, name: filename, ext }), text)
     return filename
 }
 const writeDir = async (
-    target: string,
+    target: string = '/',
     {
         dirname,
         rootDir,
@@ -108,19 +127,32 @@ const writeDir = async (
         rootDir: string
     }
 ) => {
-    if (!_.isString(target)) {
-        target = '/'
-    }
     let tarDir = path.join(rootDir, target)
-    // 루트 경로가 아니면서 하위 경로가 아니라면
     if (!(await isSubdir(rootDir, tarDir))) {
         throw new Error('유효하지 않은 경로 입니다.')
     }
-    // 폴더명이 지정되지 않았다면
-    if (!_.isString(dirname)) {
-        dirname = `새 폴더_${dayjs().format('YYYYMMDDHHmmss')}`
-        tarDir = path.join(tarDir, dirname)
+    // 파일로 들어온 경우 부모 경로로 자동설정
+    if (!(await fs.lstat(tarDir)).isDirectory()) {
+        tarDir = path.dirname(tarDir)
     }
+    // 폴더명이 지정되지 않았다면
+    if (_.isNil(dirname)) {
+        let counts = 0
+        let newers = '새 폴더'
+        for (const file of fs.readdirSync(tarDir)) {
+            // 파일은 무시
+            if (!fs.lstatSync(path.join(tarDir, file)).isDirectory()) {
+                continue
+            }
+            const { name } = path.parse(file)
+            if (name !== `${newers} (${counts})`) {
+                continue
+            }
+            counts++
+        }
+        dirname = `${newers} (${counts})`
+    }
+    tarDir = path.join(tarDir, dirname)
     fs.ensureDir(tarDir)
     return dirname
 }
@@ -159,10 +191,19 @@ const rename = async (
     if (!(await isSubdir(rootDir, tarDir))) {
         throw new Error('유효하지 않은 경로 입니다.')
     }
-    const { dir, ext } = path.parse(tarDir)
-    rename = `${rename}${ext ? ext : ''}`
+    const src = path.parse(tarDir)
+    const dest = path.parse(rename)
+    if (!_.includes(diaryexts, dest.ext)) {
+        throw new Error(
+            `작성 가능한 확장자는 다음과 같습니다. (${diaryexts.join('|')})`
+        )
+    }
     // 새로운 경로를 생성
-    const renameDir = path.join(dir, rename)
+    const renameDir = path.format({
+        dir: src.dir,
+        name: dest.name,
+        ext: dest.ext,
+    })
     if (fs.existsSync(renameDir)) {
         throw new Error('이미 존재하는 파일명 입니다.')
     }
@@ -184,7 +225,7 @@ const move = async (
     if (!_.isString(dest)) {
         dest = '/'
     }
-    const tarDir = path.join(rootDir, target)
+    let tarDir = path.join(rootDir, target)
     let destDir = path.join(rootDir, dest)
     // 목적지가 대상의 하위 상위 경로인 경우
     if (await isSubdir(tarDir, destDir)) {

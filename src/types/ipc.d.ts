@@ -32,8 +32,9 @@ namespace IpcPayload {
         }
         interface IWrite {
             target: string
-            text: string
-            ext: string
+            filename?: string
+            text?: string
+            ext?: string
         }
         interface IWriteDir {
             target: string

@@ -79,8 +79,18 @@ export const useDiaryStore = defineStore('diary', () => {
         return { text }
     }
     // 문서 저장
-    const saveDiary = async ({ target, text }: { target: string; text?: string }) => {
-        const response = await window.$native.diary.write({ target, text })
+    const saveDiary = async ({
+        target,
+        filename,
+        ext,
+        text
+    }: {
+        target: string
+        filename?: string
+        ext?: string
+        text?: string
+    }) => {
+        const response = await window.$native.diary.write({ target, filename, ext, text })
         loadDiaries().catch((e) => e)
         const { writed } = response.data
         return { writed }
@@ -140,7 +150,6 @@ export const useDiaryStore = defineStore('diary', () => {
     const loadDiariesWithPreview = async () => {
         let diariesWithPreview: IDiaryWithPreview[] = []
         try {
-            await loadDiaries()
             diariesWithPreview = await Promise.all(
                 recentDiaries.value.map(async (d) => {
                     const diary = await readDiary({

@@ -39,11 +39,12 @@ ipcMain.handle(
     'diary:write',
     async (
         event,
-        { target, text = '', ext = 'md' }: IpcPayload.Diary.IWrite
+        { target, filename, text = '', ext = 'md' }: IpcPayload.Diary.IWrite
     ) => {
         let response: IpcHandle.IResponse = handlerTool.createResponse()
         try {
             const writed = await fsTool.writeFile(target, {
+                filename,
                 text,
                 ext,
                 rootDir,

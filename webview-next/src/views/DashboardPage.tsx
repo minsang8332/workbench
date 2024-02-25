@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DiaryCard from '@/components/diary/DiaryCard'
 import { useDiaryStore } from '@/stores/diary'
@@ -22,8 +22,29 @@ export default defineComponent({
                 })
                 .catch((e) => e)
         }
-        onMounted(async () => {
-            recentDiaries.value = await diaryStore.loadDiariesWithPreview()
+
+        watch(
+            () => diaryStore.getDiaries,
+            () =>
+                diaryStore
+                    .loadDiariesWithPreview()
+                    .then((value: any) => {
+                        recentDiaries.value = value
+                    })
+                    .catch((e) => console.error(e))
+        )
+        onMounted(() => {
+            diaryStore
+                .loadDiaries()
+                .then(() => {
+                    diaryStore
+                        .loadDiariesWithPreview()
+                        .then((value: any) => {
+                            recentDiaries.value = value
+                        })
+                        .catch((e) => console.error(e))
+                })
+                .catch((e) => console.error(e))
         })
         return () => (
             <v-container class="dashboard-page pa-0" fluid>

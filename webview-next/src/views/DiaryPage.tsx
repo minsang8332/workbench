@@ -121,10 +121,13 @@ export default defineComponent({
                 })
         }
         const onSave = () => {
+            const base = _.last(props.path.split('/'))
+            const filename = _.first(base?.split('.'))
+            const ext = _.last(base?.split('.'))
             diaryStore
-                .saveDiary({ target: props.path, text: state.updatedText })
-                .then(({ writed }) => {
-                    $toast.success(writed + ' 파일이 저장되었습니다.')
+                .saveDiary({ target: props.path, filename, ext, text: state.updatedText })
+                .then(() => {
+                    $toast.success(`${base} 파일에 작성되었습니다.`)
                     onLoad()
                 })
                 .catch((e) => $toast.error(e))

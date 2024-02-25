@@ -1,6 +1,5 @@
 import {
     defineComponent,
-    withModifiers,
     computed,
     ref,
     unref,
@@ -33,12 +32,8 @@ export default defineComponent({
         const printFileName = computed(() => {
             let filename
             try {
-                let tmp = props.path.split('/')
+                const tmp = props.path.split('/')
                 filename = _.last(tmp)
-                if (filename) {
-                    tmp = filename.split('.')
-                    filename = _.first(tmp)
-                }
             } catch (e) {
                 console.error(e)
             }
@@ -63,7 +58,6 @@ export default defineComponent({
         const onFocusout = (event: Event) => {
             if (inputRef.value && unref(inputRef.value).value) {
                 onUpdate(event)
-                return
             }
             onReset()
         }
@@ -77,12 +71,16 @@ export default defineComponent({
                 if (_.isEmpty(rename)) {
                     return
                 }
+                const tmp = props.path.split('/')
+                const filename = _.last(tmp)
+                if (filename == rename) {
+                    return
+                }
                 const { renamed } = await diaryStore.renameDiary({
                     target: props.path,
                     rename
                 })
-                const filename = _.last(renamed.split('/'))
-                $toast.success(`${filename} 으/로 이름 변경되었습니다.`)
+                $toast.success(`${rename} (으/로) 변경되었습니다.`)
                 // 현재 작성중인 문서인 경우
                 if (route.params.path == props.path) {
                     router
