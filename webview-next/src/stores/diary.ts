@@ -79,7 +79,7 @@ export const useDiaryStore = defineStore('diary', () => {
         return { text }
     }
     // 문서 저장
-    const saveDiary = async ({ target, text }: { target: string; text: string }) => {
+    const saveDiary = async ({ target, text }: { target: string; text?: string }) => {
         const response = await window.$native.diary.write({ target, text })
         loadDiaries().catch((e) => e)
         const { writed } = response.data

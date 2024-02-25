@@ -5,7 +5,7 @@ import '@/layouts/AppModal.scoped.scss'
 export default defineComponent({
     name: 'AppModal',
     props: {
-        value: {
+        modelValue: {
             type: Boolean as PropType<boolean>,
             default: false
         },
@@ -40,7 +40,7 @@ export default defineComponent({
         const onUpdateModelValue = (event: Event) => {
             emit('update:modelValue', event)
         }
-        const hide = () => {
+        const onClose = () => {
             emit('update:modelValue', false)
         }
         return () => (
@@ -48,7 +48,7 @@ export default defineComponent({
                 class="app-modal"
                 scrollable
                 height="calc(100vh/3)"
-                modelValue={props.value}
+                modelValue={props.modelValue}
                 onUpdate:modelValue={onUpdateModelValue}
             >
                 <v-card class="am-card fill-height" flat>
@@ -68,7 +68,7 @@ export default defineComponent({
                     </v-row>
                     <v-row class="am-row-actions" no-gutters>
                         <v-col>
-                            <v-btn variant="text" block class="am-btn-no" onClick={hide}>
+                            <v-btn variant="text" block class="am-btn-no" onClick={onClose}>
                                 <span>취소</span>
                             </v-btn>
                         </v-col>

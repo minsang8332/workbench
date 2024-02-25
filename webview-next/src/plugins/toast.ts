@@ -15,7 +15,7 @@ export default {
                 background: String(appStore.scss('--theme-color-g1'))
             },
             offset = {
-                y: '12vh',
+                y: '10vh',
                 x: ''
             },
             close = false

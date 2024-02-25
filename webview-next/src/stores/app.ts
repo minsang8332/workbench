@@ -1,5 +1,25 @@
 import { reactive, computed } from 'vue'
 import { defineStore } from 'pinia'
+import _ from 'lodash'
+const scss = (property: string): string => {
+    const style = getComputedStyle(document.body)
+    return style.getPropertyValue(property)
+}
+const resetModalProps = () => {
+    return {
+        message: null,
+        ok: null
+    }
+}
+const resetMenuProps = () => {
+    return {
+        path: null,
+        isDir: false,
+        pageX: 0,
+        pageY: 0,
+        items: []
+    }
+}
 // 어플리케이션 전반적인 동작 관련 전역 스토어
 export const useAppStore = defineStore('app', () => {
     const state = reactive<IAppState>({
@@ -7,12 +27,10 @@ export const useAppStore = defineStore('app', () => {
         drawer: false,
         // 모달 관련
         modal: false,
-        modalProps: {
-            message: null,
-            ok: null
-        },
+        modalProps: resetModalProps(),
         // 우측 마우스 클릭시 보이는 메뉴
         menu: false,
+        menuProps: resetMenuProps(),
         // 파일명 변경 시 담을 변수
         inputPath: null
     })
@@ -22,13 +40,6 @@ export const useAppStore = defineStore('app', () => {
     const getIsInputPath = computed(() => {
         return state.inputPath
     })
-    const scss = (property: string): string | null => {
-        const style = getComputedStyle(document.body)
-        if (!style) {
-            return null
-        }
-        return style.getPropertyValue(property)
-    }
     const showModal = (message: string, { ok }: { ok: () => any }) => {
         state.modalProps.message = message
         if (ok) {
@@ -36,22 +47,39 @@ export const useAppStore = defineStore('app', () => {
         }
         toggleModal(true)
     }
-    const toggleModal = (modal?: boolean) => {
-        if (typeof modal == 'boolean') {
-            state.modal = modal
-            if (state.modal == false) {
-                state.modalProps.message = null
-                state.modalProps.ok = null
-            }
-        } else {
-            state.modal = !state.modal
-        }
-    }
     const toggleDrawer = (drawer?: boolean) => {
         if (typeof drawer == 'boolean') {
             state.drawer = drawer
         } else {
             state.drawer = !state.drawer
+        }
+    }
+    const toggleModal = (modal: boolean, modalProps?: IAppModalProps) => {
+        if (typeof modal == 'boolean') {
+            state.modal = modal
+            if (modal && modalProps) {
+                state.modalProps = _.mergeWith(state.modalProps, modalProps, (a, b) =>
+                    b == undefined ? a : b
+                )
+            } else {
+                state.modalProps = resetModalProps()
+            }
+        } else {
+            state.modal = !state.modal
+        }
+    }
+    const toggleMenu = (menu: boolean, menuProps?: IAppMenuProps) => {
+        if (typeof menu == 'boolean') {
+            state.menu = menu
+            if (menu && menuProps) {
+                state.menuProps = _.mergeWith(state.menuProps, menuProps, (a, b) =>
+                    b == undefined ? a : b
+                )
+            } else {
+                state.menuProps = resetMenuProps()
+            }
+        } else {
+            state.menu = !state.menu
         }
     }
     // 앱 종료
@@ -78,6 +106,7 @@ export const useAppStore = defineStore('app', () => {
         showModal,
         toggleModal,
         toggleDrawer,
+        toggleMenu,
         powerOff,
         waitUpdate,
         availableUpdate,

@@ -58,20 +58,91 @@ export default defineComponent({
             router.replace({ name: 'diary', params: { path: props.path } }).catch((e) => e)
         }
         // 메뉴창 열기
-        const onMouseUp = (event: MouseEvent) => {
-            console.log('on-mouse-up', event.button)
-        }
-        watch(
-            () => props.items,
-            (oldValue, newValue) => {
-                if (!(_.isArray(oldValue) && _.isArray(newValue))) {
-                    return
-                }
-                if (newValue.length !== oldValue.length) {
-                    visible.value = true
-                }
+        const onMouseUpRight = (event: MouseEvent) => {
+            if (event.button != 2) {
+                return
             }
-        )
+            const items = [
+                {
+                    name: 'add-folder',
+                    desc: '새로고침',
+                    shortcut: 'R',
+                    icon: 'mdi:mdi-refresh',
+                    color: appStore.scss('--dark-color'),
+                    cb() {
+                        diaryStore
+                            .loadDiaries()
+                            .catch((e) => console.error(e))
+                            .finally(() => appStore.toggleMenu(false))
+                    }
+                },
+                {
+                    name: 'add-folder',
+                    desc: '새 폴더',
+                    shortcut: 'N',
+                    icon: 'fa-solid fa-folder',
+                    color: appStore.scss('--folder-color'),
+                    cb() {
+                        diaryStore
+                            .mkdirDiary({
+                                target: props.path
+                            })
+                            .then(({ writed }) => $toast.success(`${writed} 생성되었습니다.`))
+                            .catch((e) => $toast.error(e))
+                            .finally(() => appStore.toggleMenu(false))
+                    }
+                },
+                {
+                    name: 'add',
+                    desc: '새 문서',
+                    shortcut: 'N',
+                    icon: 'mdi:mdi-file-document-outline',
+                    color: appStore.scss('--dark-color'),
+                    cb() {
+                        diaryStore
+                            .saveDiary({
+                                target: props.path
+                            })
+                            .then(({ writed }) => $toast.success(`${writed} 생성되었습니다.`))
+                            .catch((e) => $toast.error(e))
+                            .finally(() => appStore.toggleMenu(false))
+                    }
+                },
+                {
+                    name: 'update-name',
+                    desc: '이름 바꾸기',
+                    shortcut: 'M',
+                    icon: 'mdi:mdi-pencil-box-outline',
+                    color: appStore.scss('--dark-color')
+                },
+                {
+                    name: 'remove',
+                    desc: '삭제',
+                    shortcut: 'D',
+                    icon: 'mdi:mdi-trash-can-outline',
+                    color: appStore.scss('--dark-color'),
+                    cb() {
+                        diaryStore
+                            .rmDiary({ target: props.path })
+                            .then(({ removed }) => {
+                                $toast.success(`${removed} 삭제되었습니다.`)
+                                router
+                                    .replace({ name: 'dashboard' })
+                                    .catch((e) => e)
+                                    .finally(() => appStore.toggleMenu(false))
+                            })
+                            .catch((e) => $toast.error(e))
+                    }
+                }
+            ]
+            appStore.toggleMenu(true, {
+                path: props.path,
+                isDir: props.isDir,
+                pageX: event.pageX,
+                pageY: event.pageY,
+                items
+            })
+        }
         const onPrevent = (event: DragEvent) => {
             event.preventDefault()
         }
@@ -108,6 +179,17 @@ export default defineComponent({
                 $toast.error(e as Error)
             }
         }
+        watch(
+            () => props.items,
+            (oldValue, newValue) => {
+                if (!(_.isArray(oldValue) && _.isArray(newValue))) {
+                    return
+                }
+                if (newValue.length !== oldValue.length) {
+                    visible.value = true
+                }
+            }
+        )
         return () =>
             props.depth >= 0 &&
             props.depth <= props.maxDepth && (
@@ -117,7 +199,7 @@ export default defineComponent({
                             v-ripple={!isUpdate.value}
                             ondbclick={onDbClick}
                             onclick={toggleVisible}
-                            mouseup={onMouseUp}
+                            onmouseup={onMouseUpRight}
                             no-gutters
                         >
                             <v-col>
@@ -175,16 +257,3 @@ export default defineComponent({
             )
     }
 })
-/*
-        // 우측 마우스 클릭시 메뉴 모달
-        onRightClick(event) {
-            const { path, isDir } = this
-            this.$app.showMenu({
-                pageX: event.pageX,
-                pageY: event.pageY,
-                path,
-                isDir,
-            })
-        },
-
-*/

@@ -1,0 +1,16 @@
+.app-menu {
+    position: absolute;
+    z-index: 9999;
+    width: calc(12px * 18);
+    top: 0;
+    left: 0;
+    background: #fff;
+    border: 1px solid var(--dark-color);
+    border-radius: 4px;
+    .am-ico-menu {
+        font-size: 16px;
+    }
+    .am-text-menu {
+        font-size: 14px;
+    }
+}
