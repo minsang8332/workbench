@@ -204,7 +204,8 @@ export default defineComponent({
                                     class="dp-btn-resizer"
                                     variant="text"
                                     size="large"
-                                    color={appStore.scss('--theme-color-2')}
+                                    rounded
+                                    color={appStore.scss('--theme-color-1')}
                                 >
                                     <v-icon>fa-solid fa-compress</v-icon>
                                 </v-btn>

@@ -13,14 +13,14 @@ namespace IpcPayload {
         interface IRead {
             id: string
         }
-        interface ISave extends IAccountBook {
+        interface ISave {
             id?: string
             title: string
             desc?: string
             price?: number
             quantity?: number
             tax?: number
-            isStock?: boolean
+            status?: ReceiptStatusType
         }
         interface IRemove {
             id: string

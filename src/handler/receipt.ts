@@ -45,7 +45,7 @@ ipcMain.handle('receipt:save', (event, payload: IpcPayload.Receipt.ISave) => {
         receipt.setPrice(payload.price)
         receipt.setQuantity(payload.quantity)
         receipt.setTax(payload.tax)
-        receipt.setIsStock(payload.isStock)
+        receipt.setStatus(payload.status)
         payload.id ? store.update(receipt) : store.insert(receipt)
     } catch (e) {
         logger.error(e)

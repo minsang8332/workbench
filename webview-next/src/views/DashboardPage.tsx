@@ -28,7 +28,7 @@ export default defineComponent({
             () =>
                 diaryStore
                     .loadDiariesWithPreview()
-                    .then((value: any) => {
+                    .then((value: IDiaryWithPreview[]) => {
                         recentDiaries.value = value
                     })
                     .catch((e) => console.error(e))
@@ -39,7 +39,7 @@ export default defineComponent({
                 .then(() => {
                     diaryStore
                         .loadDiariesWithPreview()
-                        .then((value: any) => {
+                        .then((value: IDiaryWithPreview[]) => {
                             recentDiaries.value = value
                         })
                         .catch((e) => console.error(e))

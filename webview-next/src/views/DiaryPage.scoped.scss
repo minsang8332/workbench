@@ -3,7 +3,6 @@
     $rowFooter: 48px;
     height: calc(100vh - var(--app-header-height));
     .dp-card {
-        border: 1px solid var(--theme-color-2);
         .dp-row-header {
             height: $rowHeader;
             flex-shrink: 0;
@@ -28,7 +27,7 @@
                 position: relative;
                 height: 100%;
                 width: 4px;
-                border-left: 1.5px dotted var(--theme-color-2);
+                border-left: 1.5px dotted var(--theme-color-1);
                 cursor: col-resize;
                 .dp-btn-resizer {
                     position: absolute;
@@ -36,7 +35,7 @@
                     top: 50%;
                     left: -40px;
                     .v-icon {
-                        color: var(--theme-color-2);
+                        color: var(--theme-color-1);
                     }
                 }
             }
@@ -45,7 +44,7 @@
             height: $rowFooter;
             flex-shrink: 0;
             .dp-btn-save {
-                background: var(--theme-color-g1);
+                background: var(--theme-color-1);
             }
         }
     }

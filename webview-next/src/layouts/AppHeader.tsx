@@ -8,14 +8,15 @@ export default defineComponent({
         const appStore = useAppStore()
         const diaryStore = useDiaryStore()
         const onPowerOff = () => {
-            appStore.showModal('어플리케이션을 종료 하시겠습니까 ?', {
+            appStore.toggleModal(true, {
+                message: '어플리케이션을 종료 하시겠습니까 ?',
                 ok() {
                     appStore.powerOff()
                 }
             })
         }
         return () => (
-            <v-app-bar class="app-header native-drag" density="compact" flat>
+            <v-app-bar class="app-header native-drag" height="40" flat>
                 <v-row no-gutters>
                     <v-col>
                         <v-btn

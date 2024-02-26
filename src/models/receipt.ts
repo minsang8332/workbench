@@ -6,27 +6,10 @@ export default class Receipt implements IReceipt {
     price: number = 0
     tax: number = 0
     quantity: number = 0
-    isStock: boolean = false
+    status: ReceiptStatusType | null = null
     createdAt: Date | null = null
     updatedAt: Date | null = null
-    constructor(payload?: IReceipt) {
-        if (payload) {
-            if (_.isNil(payload.createdAt)) {
-                this.createdAt = new Date()
-            }
-            if (payload.updatedAt) {
-                this.updatedAt = new Date()
-            }
-            this.setTitle(payload.title)
-                .setDesc(payload.desc)
-                .setPrice(payload.price)
-                .setTax(payload.tax)
-                .setQuantity(payload.quantity)
-                .setIsStock(payload.isStock)
-                .setCreatedAt(payload.createdAt)
-                .setUpdatedAt(payload.createdAt)
-        }
-    }
+
     setTitle(title: string) {
         this.title = title
         return this
@@ -47,8 +30,8 @@ export default class Receipt implements IReceipt {
         this.tax = tax
         return this
     }
-    setIsStock(isStock: boolean = false) {
-        this.isStock = isStock
+    setStatus(status: ReceiptStatusType | null = null) {
+        this.status = status
         return this
     }
     setCreatedAt(createdAt: Date | null = null) {

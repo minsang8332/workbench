@@ -35,13 +35,7 @@ export const useAppStore = defineStore('app', () => {
     const getDrawer = computed(() => {
         return state.drawer
     })
-    const showModal = (message: string, { ok }: { ok: () => any }) => {
-        state.modalProps.message = message
-        if (ok) {
-            state.modalProps.ok = ok
-        }
-        toggleModal(true)
-    }
+
     const toggleDrawer = (drawer?: boolean) => {
         if (typeof drawer == 'boolean') {
             state.drawer = drawer
@@ -97,7 +91,6 @@ export const useAppStore = defineStore('app', () => {
         state,
         scss,
         getDrawer,
-        showModal,
         toggleModal,
         toggleDrawer,
         toggleMenu,

@@ -1,6 +1,6 @@
 // pulse 애니메이션
 .pulsing {
-    box-shadow: 0 0 0 0 var(--theme-color-2);
+    box-shadow: 0 0 0 0 var(--theme-color-1);
     -webkit-animation: pulsing 2s infinite cubic-bezier(0.66, 0, 0, 1);
     -moz-animation: pulsing 2s infinite cubic-bezier(0.66, 0, 0, 1);
     -ms-animation: pulsing 2s infinite cubic-bezier(0.66, 0, 0, 1);

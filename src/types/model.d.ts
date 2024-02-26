@@ -1,17 +1,17 @@
 type DiaryType = 'diary'
 type ReceiptType = 'receipt'
+type ReceiptStatusType = 'purchase' | 'sales' | 'stock'
 interface IFile {
     path: string
     isDir: boolean
-    createdAt?: Date
-    updatedAt?: Date
+    createdAt: Date | null
+    updatedAt: Date | null
 }
 interface IDiary extends IFile {}
 interface IReceipt extends StoreField {
     title: string
-    desc: string | null
     price: number
-    tax: number
     quantity: number
-    isStock: boolean
+    status: ReceiptStatusType | null
+    desc: string | null
 }
