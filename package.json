@@ -1,12 +1,13 @@
 {
     "name": "workbench",
-    "description": "편리한 업무 작업대 (Mac 및 Windows용 데스크톱 앱)",
+    "description": "업무작업대 (Mac 및 Windows용 데스크톱 앱)",
     "version": "1.0.0",
     "main": "build/bundle.js",
     "scripts": {
         "setup": "npm install && cd webview && npm install",
+        "setup:next": "npm install && cd webview-next && npm install",
         "serve": "concurrently \"npm run webview\" \"npm run webpack:watch\"",
-        "serve-next": "concurrently \"npm run webview-next\" \"npm run webpack-next:watch\"",
+        "serve:next": "concurrently \"npm run webview-next\" \"npm run webpack-next:watch\"",
         "build": "npm run webview:build && npm run webpack:build && electron-builder",
         "deploy": "npm run webview:build && npm run webpack:build && electron-builder -p always",
         "webpack:watch": "webpack --env html=webview --watch",
@@ -18,7 +19,7 @@
         "icon": "electron-icon-builder --input=./src/assets/favicon.png --output=./src/assets -f"
     },
     "build": {
-        "appId": "com.yuu2dev.workbench",
+        "appId": "com.minsang8332.workbench",
         "productName": "업무 작업대",
         "artifactName": "workbench-setup-${version}.${ext}",
         "asar": true,
@@ -26,7 +27,7 @@
             "target": "nsis"
         },
         "nsis": {
-            "shortcutName": "업무 작업대"
+            "shortcutName": "업무작업대"
         },
         "files": [
             "build/**",
@@ -38,18 +39,18 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/yuu2dev/workbench.git"
+        "url": "git+https://github.com/minsang8332/workbench.git"
     },
     "publish": {
         "provider": "github"
     },
     "keywords": [],
-    "author": "yuu2dev@gmail.com",
+    "author": "minsang8332@gmail.com",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/yuu2dev/workbench/issues"
+        "url": "https://github.com/minsang8332/workbench/issues"
     },
-    "homepage": "https://github.com/yuu2dev/workbench#readme",
+    "homepage": "https://github.com/minsang8332/workbench#readme",
     "devDependencies": {
         "@types/lodash": "^4.14.200",
         "concurrently": "^8.2.0",
