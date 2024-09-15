@@ -8,7 +8,7 @@ export default defineComponent({
         DiaryPreview
     },
     props: {
-        title: {
+        filename: {
             type: [String, null] as PropType<string | null>,
             default: null
         },
@@ -42,24 +42,24 @@ export default defineComponent({
         }
         return () => (
             <v-card class="diary-card" width={props.width} hover v-ripple>
-                <v-row class="dc-row-title px-2" no-gutters>
+                <v-row class="diary-card__filename bg-theme-1 px-2" no-gutters>
                     <v-col class="d-flex align-center fill-height text-truncate">
-                        <p class="dc-text-title d2coding">{props.title}</p>
+                        <p class="d2coding">{props.filename}</p>
                     </v-col>
                 </v-row>
                 <v-divider />
-                <v-row class="dc-row-preview" no-gutters>
+                <v-row class="diary-card__preview" no-gutters>
                     <v-col class="fill-height">
                         <diary-preview preview={props.preview} />
                     </v-col>
                 </v-row>
                 <v-divider />
-                <v-row class="dc-row-created-at px-2" no-gutters>
+                <v-row class="diary-card__created-at bg-theme-1 px-2" no-gutters>
                     <v-col class="d-flex flex-column justify-center text-truncate">
-                        <p class="dc-text-date d2coding text-truncate">
+                        <p class="d2coding text-truncate">
                             작성일 {printDate(props.createdAt)}
                         </p>
-                        <p class="dc-text-date d2coding text-truncate">
+                        <p class="d2coding text-truncate">
                             수정일 {printDate(props.updatedAt)}
                         </p>
                     </v-col>

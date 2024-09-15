@@ -30,6 +30,7 @@ interface IDiaryMenuItem {
 }
 interface IDiary {
     path: string
+    filename?: string
     isDir: boolean
     createdAt: number
     updatedAt: number

@@ -53,12 +53,21 @@ code {
 // 배경 색상
 .bg-theme-1 {
     background: var(--theme-color-1);
+    * {
+        color: #fff;
+    }
 }
 .bg-theme-2 {
     background: var(--theme-color-2);
+    * {
+        color: #fff;
+    }
 }
 .bg-theme-3 {
     background: var(--theme-color-3);
+    * {
+        color: #fff;
+    }
 }
 .bg-transparent {
     background: transparent;

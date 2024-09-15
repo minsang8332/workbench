@@ -25,11 +25,21 @@ export const useDiaryStore = defineStore('diary', () => {
     })
     const getDiaries = computed(() => state.diaries)
     const cntDiaries = computed(() => state.diaries.filter((diary) => diary.isDir == false).length)
-    const recentDiaries = computed(() =>
-        state.diaries
+    const recentDiaries = computed(() => {
+        
+        return state.diaries
+            .map((diary: IDiary) => {
+                let filename
+                if (diary.path) {
+                    const path = diary.path.split('/')
+                    filename = _.last(path)
+                }
+                diary.filename = filename
+                return diary
+            })
             .filter((diary: IDiary) => diary.isDir == false)
             .sort((a: IDiary, b: IDiary) => b.updatedAt - a.updatedAt || b.createdAt - a.createdAt)
-    )
+    })
     // 문서 계층화
     const treeDiaries = computed(() => {
         let tree = []

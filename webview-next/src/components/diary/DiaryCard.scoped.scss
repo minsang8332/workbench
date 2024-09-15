@@ -1,19 +1,21 @@
 .diary-card {
+    border: 1px solid var(--theme-color-1);
     height: 100%;
-    .dc-row-title {
-        height: 15%;
-        .dc-text-title {
-            font-size: 15px;
+    &__filename {
+        height: 10%;
+        p {
+            font-size: 14px;
         }
+
     }
-    .dc-row-preview {
-        height: 65%;
+    &__preview {
+        height: 70%;
         overflow-y: hidden;
     }
-    .dc-row-created-at {
+    &__created-at {
         height: 20%;
-        .dc-text-date {
-            font-size: 13px;
+        p {
+            font-size: 14px;
         }
     }
 }

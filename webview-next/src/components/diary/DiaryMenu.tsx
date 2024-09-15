@@ -8,7 +8,7 @@ export default defineComponent({
             default: false
         },
         items: {
-            type: Array as PropType<IAppMenuItem[]>,
+            type: Array as PropType<IDiaryMenuItem[]>,
             default: () => []
         },
         path: {
@@ -30,7 +30,7 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const menuRef = ref<HTMLDivElement | null>(null)
-        const styleAppMenu = computed(() => {
+        const styleMenu = computed(() => {
             return {
                 top: props.pageY + 10 + 'px',
                 left: props.pageX + 'px'
@@ -51,7 +51,7 @@ export default defineComponent({
             }
             onClose()
         }
-        const onClickItem = (item: IAppMenuItem) => {
+        const onClickItem = (item: IDiaryMenuItem) => {
             if (item.cb) {
                 item.cb()
             }
@@ -71,7 +71,7 @@ export default defineComponent({
             <div
                 ref={menuRef}
                 class="diary-menu"
-                style={unref(styleAppMenu)}
+                style={unref(styleMenu)}
                 v-show={props.modelValue}
                 onFocusout={onFocusout}
                 tabindex="0"
