@@ -25,14 +25,23 @@ export default defineComponent({
                             onClick={appStore.toggleDrawer}
                         >
                             <v-icon class="ico-menu">fa-solid fa-bars</v-icon>
+                            <v-tooltip activator="parent" location="top">
+                                <p class="text-white">문서 탐색</p>
+                            </v-tooltip>
                         </v-btn>
                         <v-btn class="skip-native-drag" size="large" onClick={diaryStore.dirDiary}>
                             <v-icon class="ico-folder">fa-solid fa-folder</v-icon>
+                            <v-tooltip activator="parent" location="top">
+                                <p class="text-white">문서 열기</p>
+                            </v-tooltip>
                         </v-btn>
                     </v-col>
                     <v-col align="right">
                         <v-btn class=" skip-native-drag" size="large" onClick={onPowerOff}>
                             <v-icon class="ico-power-off">fa-solid fa-power-off</v-icon>
+                            <v-tooltip activator="parent" location="top">
+                                <p class="text-white">종료하기</p>
+                            </v-tooltip>
                         </v-btn>
                     </v-col>
                 </v-row>

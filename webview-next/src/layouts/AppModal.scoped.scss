@@ -3,20 +3,20 @@
     .am-card {
         width: 100%;
         .am-row-title {
+            height: 20%;
+            max-height: 20%;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 25%;
-            max-height: 25%;
             b {
-                font-size: 24px;
+                font-size: 20px;
             }
         }
         .am-row-message {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 55%;
+            height: 60%;
             overflow-y: auto;
             p {
                 font-size: 20px;

@@ -76,9 +76,9 @@ export default defineComponent({
                 onFocusout={onFocusout}
                 tabindex="0"
             >
-                <v-row class="bg-theme-g1" no-gutters dense>
+                <v-row class="bg-theme-1" no-gutters dense>
                     <v-col align="end">
-                        <v-btn size="small" variant="text" onClick={onClose}>
+                        <v-btn size="small" dense variant="text" onClick={onClose}>
                             <v-icon class="text-white">mdi:mdi-close</v-icon>
                         </v-btn>
                     </v-col>

@@ -36,7 +36,8 @@ export default defineComponent({
             widths: {
                 editor: 0,
                 preview: 0
-            }
+            },
+            tabSize: 4
         })
         const $toast = inject('toast') as IToastPlugin
         const router = useRouter()
@@ -55,10 +56,33 @@ export default defineComponent({
             return state.text !== state.updatedText
         })
         const onKeyDown = (event: KeyboardEvent) => {
-            if (!(event.key === 's' && event.ctrlKey)) {
-                return
+            // ctrl + s 는 저장
+            if (event.key === 's' && event.ctrlKey
+            ||  event.key === 's' && event.metaKey
+            ) {
+                return onSave()
             }
-            onSave()
+            // ctrl + a 는 전체 포커스
+            if (event.key === 'a' && event.ctrlKey
+            ||  event.key === 'a' && event.metaKey
+            ) {
+                event.preventDefault()
+                const el = event.target as HTMLTextAreaElement
+                el.select()
+                el.focus()
+            }
+            //
+            // 탭 누르면 띄워쓰기
+            if (event.key == 'Tab') {
+                event.preventDefault()
+                let indent = ''
+                for (let i=0; i<state.tabSize; i++) {
+                    indent += ' '
+                }
+                nextTick(() => {
+                    state.updatedText += indent
+                })
+            }
         }
         const onMoveBack = () => {
             if (window.history && window.history.length > 2) {

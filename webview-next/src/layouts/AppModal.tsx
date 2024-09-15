@@ -11,7 +11,7 @@ export default defineComponent({
         },
         title: {
             type: String as PropType<string>,
-            default: '안내'
+            default: ''
         },
         message: {
             type: [String, Array, null] as PropType<string | string[] | null>,
@@ -52,7 +52,7 @@ export default defineComponent({
                 onUpdate:modelValue={onUpdateModelValue}
             >
                 <v-card class="am-card fill-height" flat>
-                    <v-row class="am-row-title bg-theme-g1" no-gutters>
+                    <v-row class="am-row-title bg-theme-1" no-gutters>
                         <v-col align="center">
                             <b class="am-text-title text-white">{props.title}</b>
                         </v-col>

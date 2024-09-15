@@ -24,6 +24,7 @@ interface IAppMenuItem {
     cb?: () => void
 }
 interface IAppModalProps {
+    title?: string
     message: string | string[] | null
     ok: (() => void) | null
 }
