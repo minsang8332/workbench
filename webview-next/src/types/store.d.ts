@@ -1,32 +1,32 @@
 interface IAppState {
-    drawer: boolean
     modal: boolean
     modalProps: IAppModalProps
-    menu: boolean
-    menuProps: IAppMenuProps
+}
+interface IAppModalProps {
+    title?: string
+    message: string | string[] | null
+    ok: (() => void) | null
 }
 interface IDiaryState {
-    diaries: IDiary[]
+    drawer: boolean,
+    menu: boolean
+    menuProps: IDiaryMenuProps,
+    diaries: IDiary[],
 }
-interface IAppMenuProps {
+interface IDiaryMenuProps {
     path: string | null
     isDir: boolean
     pageX: number
     pageY: number
-    items?: IAppMenuItem[]
+    items?: IDiaryMenuItem[]
 }
-interface IAppMenuItem {
+interface IDiaryMenuItem {
     name: string
     icon: string
     color: string
     desc: string
     shortcut: string
     cb?: () => void
-}
-interface IAppModalProps {
-    title?: string
-    message: string | string[] | null
-    ok: (() => void) | null
 }
 interface IDiary {
     path: string

@@ -1,29 +1,22 @@
 import { defineComponent } from 'vue'
 import { RouterView } from 'vue-router'
 import AppHeader from '@/layouts/AppHeader'
-import AppDrawer from '@/layouts/AppDrawer'
 import AppModal from '@/layouts/AppModal'
-import AppMenu from '@/layouts/AppMenu'
+import DiaryDrawer from '@/components/diary/DiaryDrawer'
 import { useAppStore } from '@/stores/app'
 export default defineComponent({
     name: 'AppLayout',
     components: {
         AppHeader,
-        AppDrawer,
         AppModal,
-        AppMenu
+        DiaryDrawer,
     },
     setup() {
         const appStore = useAppStore()
         return () => (
             <v-app>
                 <app-header />
-                <app-drawer />
-                <app-menu
-                    {...appStore.state.menuProps}
-                    model-value={appStore.state.menu}
-                    onUpdate:modelValue={appStore.toggleMenu}
-                />
+                <diary-drawer />
                 <v-main>
                     <RouterView />
                 </v-main>

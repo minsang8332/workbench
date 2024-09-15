@@ -1,4 +1,4 @@
-.app-menu {
+.diary-menu {
     position: absolute;
     z-index: 9999;
     width: calc(12px * 18);
@@ -8,10 +8,10 @@
     border: 1px solid var(--dark-color);
     border-radius: 4px;
     outline: none;
-    .am-ico-menu {
-        font-size: 16px;
+    &__desc  {
+        font-size: 14px;
     }
-    .am-text-menu {
+    &__shortcut  {
         font-size: 14px;
     }
 }

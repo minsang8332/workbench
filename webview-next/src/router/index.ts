@@ -11,14 +11,14 @@ const router = createRouter({
             redirect: 'dashboard',
             children: [
                 {
-                    name: 'dashboard',
-                    path: '/dashboard',
-                    component: () => import('@/views/DashboardPage')
+                    name: 'diary',
+                    path: '/diary',
+                    component: () => import('@/views/DiaryPage')
                 },
                 {
-                    name: 'diary',
+                    name: 'diary-editor',
                     path: '/diary/:path',
-                    component: () => import('@/views/DiaryPage'),
+                    component: () => import('@/views/DiaryEditorPage'),
                     props: true
                 }
             ]
@@ -26,7 +26,7 @@ const router = createRouter({
         // not-found 핸들링
         {
             path: '/:pathMatch(.*)*',
-            redirect: 'dashboard'
+            redirect: 'diary'
         }
     ]
 })

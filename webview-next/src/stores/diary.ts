@@ -2,9 +2,26 @@ import { computed, reactive } from 'vue'
 import { defineStore } from 'pinia'
 import { marked } from 'marked'
 import _ from 'lodash'
+const initMenuProps = () => {
+    return {
+        path: null,
+        isDir: false,
+        pageX: 0,
+        pageY: 0,
+        items: []
+    }
+}
 export const useDiaryStore = defineStore('diary', () => {
     const state = reactive<IDiaryState>({
+        // 좌측 사이드바
+        drawer: false,
+        // 우측 마우스 클릭시 보이는 메뉴
+        menu: false,
+        menuProps: initMenuProps(),
         diaries: []
+    })
+    const getDrawer = computed(() => {
+        return state.drawer
     })
     const getDiaries = computed(() => state.diaries)
     const cntDiaries = computed(() => state.diaries.filter((diary) => diary.isDir == false).length)
@@ -65,6 +82,27 @@ export const useDiaryStore = defineStore('diary', () => {
         }
         return tree
     })
+    const toggleDrawer = (drawer?: boolean) => {
+        if (typeof drawer == 'boolean') {
+            state.drawer = drawer
+        } else {
+            state.drawer = !state.drawer
+        }
+    }
+    const toggleMenu = (menu: boolean, menuProps?: IDiaryMenuProps) => {
+        if (typeof menu == 'boolean') {
+            state.menu = menu
+            if (menu && menuProps) {
+                state.menuProps = _.mergeWith(state.menuProps, menuProps, (a, b) =>
+                    b == undefined ? a : b
+                )
+            } else {
+                state.menuProps = initMenuProps()
+            }
+        } else {
+            state.menu = !state.menu
+        }
+    }
     // 문서 목록 가져오기
     const loadDiaries = async () => {
         const response = await window.$native.diary.readAll()
@@ -169,10 +207,13 @@ export const useDiaryStore = defineStore('diary', () => {
     }
     return {
         state,
+        getDrawer,
         getDiaries,
         cntDiaries,
         recentDiaries,
         treeDiaries,
+        toggleDrawer,
+        toggleMenu,
         loadDiaries,
         readDiary,
         saveDiary,

@@ -1,0 +1,51 @@
+.diary-editor-page {
+    $rowHeader: 48px;
+    $rowFooter: 48px;
+    height: calc(100vh - var(--app-header-height));
+    .dep-card {
+        .dep-row-header {
+            height: $rowHeader;
+            flex-shrink: 0;
+            .dep-text-title {
+                font-size: 14px;
+            }
+        }
+        .dep-row-main {
+            height: calc(100% - $rowHeader - $rowFooter);
+            overflow-x: hidden;
+            .dep-editor {
+                background: rgba(246, 246, 246);
+                height: 100%;
+                font-family: 'd2coding', courier, monospace;
+                font-size: 14px;
+                border: none;
+                resize: none;
+                outline: none;
+            }
+            .dep-resizer {
+                flex-shrink: 1;
+                position: relative;
+                height: 100%;
+                width: 4px;
+                border-left: 1.5px dotted var(--theme-color-1);
+                cursor: col-resize;
+                .dep-btn-resizer {
+                    position: absolute;
+                    z-index: 1;
+                    top: 50%;
+                    left: -40px;
+                    .v-icon {
+                        color: var(--theme-color-1);
+                    }
+                }
+            }
+        }
+        .dep-row-footer {
+            height: $rowFooter;
+            flex-shrink: 0;
+            .dep-btn-save {
+                background: var(--theme-color-1);
+            }
+        }
+    }
+}

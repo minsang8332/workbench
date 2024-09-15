@@ -5,9 +5,9 @@ import { useRouter, useRoute } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useDiaryStore } from '@/stores/diary'
 import DiaryInputPath from '@/components/diary//DiaryInputPath'
-import '@/components/diary/DiaryCategory.scoped.scss'
+import '@/components/diary/DiaryTree.scoped.scss'
 export default defineComponent({
-    name: 'DiaryCategory',
+    name: 'DiaryTree',
     components: {
         DiaryInputPath
     },
@@ -60,7 +60,7 @@ export default defineComponent({
             if (props.isDir) {
                 return
             }
-            router.replace({ name: 'diary', params: { path: props.path } }).catch((e) => e)
+            router.replace({ name: 'diary-editor', params: { path: props.path } }).catch((e) => e)
         }
         // 메뉴창 열기
         const onMouseUpRight = (event: MouseEvent) => {
@@ -78,7 +78,7 @@ export default defineComponent({
                         diaryStore
                             .loadDiaries()
                             .catch((e) => console.error(e))
-                            .finally(() => appStore.toggleMenu(false))
+                            .finally(() => diaryStore.toggleMenu(false))
                     }
                 },
                 {
@@ -94,7 +94,7 @@ export default defineComponent({
                             })
                             .then(({ writed }) => $toast.success(`${writed} 생성 되었습니다.`))
                             .catch((e) => $toast.error(e))
-                            .finally(() => appStore.toggleMenu(false))
+                            .finally(() => diaryStore.toggleMenu(false))
                     }
                 },
                 {
@@ -110,7 +110,7 @@ export default defineComponent({
                             })
                             .then(({ writed }) => $toast.success(`${writed} 생성 되었습니다.`))
                             .catch((e) => $toast.error(e))
-                            .finally(() => appStore.toggleMenu(false))
+                            .finally(() => diaryStore.toggleMenu(false))
                     }
                 },
                 {
@@ -121,7 +121,7 @@ export default defineComponent({
                     color: appStore.scss('--dark-color'),
                     cb() {
                         editable.value = true
-                        appStore.toggleMenu(false)
+                        diaryStore.toggleMenu(false)
                     }
                 },
                 {
@@ -136,15 +136,15 @@ export default defineComponent({
                             .then(({ removed }) => {
                                 $toast.success(`${removed} 삭제되었습니다.`)
                                 router
-                                    .replace({ name: 'dashboard' })
+                                    .replace({ name: 'diary' })
                                     .catch((e) => e)
-                                    .finally(() => appStore.toggleMenu(false))
+                                    .finally(() => diaryStore.toggleMenu(false))
                             })
                             .catch((e) => $toast.error(e))
                     }
                 }
             ]
-            appStore.toggleMenu(true, {
+            diaryStore.toggleMenu(true, {
                 path: props.path,
                 isDir: props.isDir,
                 pageX: event.pageX,
@@ -179,7 +179,7 @@ export default defineComponent({
                 if (route.params.path == target) {
                     router
                         .replace({
-                            name: 'diary',
+                            name: 'diary-editor',
                             params: { path: moved }
                         })
                         .catch((e) => e)
@@ -205,7 +205,7 @@ export default defineComponent({
         return () =>
             props.depth >= 0 &&
             props.depth <= props.maxDepth && (
-                <v-card class="diary-category" flat transparent>
+                <v-card class="diary-tree" flat transparent>
                     {
                         <v-row
                             v-ripple={!unref(isRenaming)}
@@ -256,7 +256,7 @@ export default defineComponent({
                                                 onToggle={toggleEditable}
                                             />
                                         ) : (
-                                            <b class="dc-text-title">{props.title}</b>
+                                            <b class="diary-tree__title">{props.title}</b>
                                         )}
                                     </v-col>
                                 </v-row>
@@ -267,7 +267,7 @@ export default defineComponent({
                         <v-row no-gutters>
                             <v-col>
                                 {props.items.map((item) => (
-                                    <diary-category {...item} depth={props.depth + 1} />
+                                    <diary-tree {...item} depth={props.depth + 1} />
                                 ))}
                             </v-col>
                         </v-row>

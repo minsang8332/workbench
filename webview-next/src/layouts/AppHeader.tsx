@@ -19,16 +19,6 @@ export default defineComponent({
             <v-app-bar class="app-header native-drag" height="40" flat>
                 <v-row no-gutters>
                     <v-col>
-                        <v-btn
-                            class="skip-native-drag"
-                            size="large"
-                            onClick={appStore.toggleDrawer}
-                        >
-                            <v-icon class="ico-menu">fa-solid fa-bars</v-icon>
-                            <v-tooltip activator="parent" location="top">
-                                <p class="text-white">문서 탐색</p>
-                            </v-tooltip>
-                        </v-btn>
                         <v-btn class="skip-native-drag" size="large" onClick={diaryStore.dirDiary}>
                             <v-icon class="ico-folder">fa-solid fa-folder</v-icon>
                             <v-tooltip activator="parent" location="top">

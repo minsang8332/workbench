@@ -1,7 +1,7 @@
 import { defineComponent, computed, ref, unref, watch, nextTick, type PropType } from 'vue'
-import '@/layouts/AppMenu.scoped.scss'
+import './DiaryMenu.scoped.scss'
 export default defineComponent({
-    name: 'AppMenu',
+    name: 'DiaryMenu',
     props: {
         modelValue: {
             type: Boolean as PropType<boolean>,
@@ -29,7 +29,7 @@ export default defineComponent({
         }
     },
     setup(props, { emit }) {
-        const appMenuRef = ref<HTMLDivElement | null>(null)
+        const menuRef = ref<HTMLDivElement | null>(null)
         const styleAppMenu = computed(() => {
             return {
                 top: props.pageY + 10 + 'px',
@@ -38,8 +38,8 @@ export default defineComponent({
         })
         const onFocus = () => {
             nextTick(() => {
-                if (appMenuRef.value) {
-                    appMenuRef.value.focus()
+                if (menuRef.value) {
+                    menuRef.value.focus()
                 }
             })
         }
@@ -69,8 +69,8 @@ export default defineComponent({
         )
         return () => (
             <div
-                ref={appMenuRef}
-                class="app-menu"
+                ref={menuRef}
+                class="diary-menu"
                 style={unref(styleAppMenu)}
                 v-show={props.modelValue}
                 onFocusout={onFocusout}
@@ -95,14 +95,14 @@ export default defineComponent({
                                     onClick={() => onClickItem(item)}
                                 >
                                     <div class="d-flex">
-                                        <v-icon class="ico-app-menu mr-1" color={item.color}>
+                                        <v-icon class="mr-1" color={item.color}>
                                             {item.icon}
                                         </v-icon>
-                                        <b class="am-text-menu">{item.desc}</b>
+                                        <b class="diary-menu__desc">{item.desc}</b>
                                     </div>
                                     <div class="d-flex">
                                         {item.shortcut && (
-                                            <b class="text-app-menu">({item.shortcut})</b>
+                                            <b class="diary-menu__shortcut">({item.shortcut})</b>
                                         )}
                                     </div>
                                 </v-btn>
