@@ -15,11 +15,13 @@ import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useDiaryStore } from '@/stores/diary'
 import DiaryPreview from '@/components/diary/DiaryPreview'
+import DiaryDrawer from '@/components/diary/DiaryDrawer'
 import '@/views/DiaryEditorPage.scoped.scss'
 export default defineComponent({
     name: 'DiaryEditorPage',
     components: {
-        DiaryPreview
+        DiaryPreview,
+        DiaryDrawer,
     },
     props: {
         path: {
@@ -182,11 +184,13 @@ export default defineComponent({
                 onMousemove={onResize}
                 onMouseup={onMouseUp}
             >
-                <v-card class="dep-card fill-height" flat tile outlined>
-                    <v-row class="dep-row-header text-truncate" no-gutters>
+                <diary-drawer />
+                <v-card class="diary-editor-page__card fill-height" flat tile outlined>
+                    <v-row class="diary-editor-page__card-header text-truncate" no-gutters>
                         <v-col class="d-flex align-center">
                             <v-btn
                                 variant="text"
+                                size="large"
                                 onClick={diaryStore.toggleDrawer}
                             >
                                 <v-icon class="ico-menu">fa-solid fa-bars</v-icon>
@@ -200,14 +204,14 @@ export default defineComponent({
                                 inline
                                 dot
                             >
-                                <h3 class="mr-1">{unref(printFilePath)}</h3>
+                                <h3 class="text-title d2-coding mr-1">{unref(printFilePath)}</h3>
                             </v-badge>
                         </v-col>
                         <v-col class="d-flex align-center justify-end">
                             <v-btn
                                 color={appStore.scss('--dark-color')}
-                                class="pa-0"
                                 variant="text"
+                                size="large"
                                 tile
                                 depressed
                                 onclick={onMoveBack}
@@ -220,27 +224,17 @@ export default defineComponent({
                         </v-col>
                     </v-row>
                     <v-divider color={appStore.scss('--theme-color-1')} />
-                    <v-row class="dep-row-main pa-0" no-gutters>
+                    <v-row class="diary-editor-page__card-editor" no-gutters>
                         <v-col class="d-flex fill-height">
                             <textarea
                                 v-model={state.updatedText}
-                                class="dep-editor d2coding pa-2"
+                                class="d2coding pa-2"
                                 style={{
                                     width: state.widths.editor + 'px'
                                 }}
                                 onKeydown={onKeyDown}
                             />
-                            <div class="dep-resizer" onMousedown={onMouseDown}>
-                                <v-btn
-                                    class="dep-btn-resizer"
-                                    variant="text"
-                                    size="large"
-                                    rounded
-                                    color={appStore.scss('--theme-color-1')}
-                                >
-                                    <v-icon>fa-solid fa-compress</v-icon>
-                                </v-btn>
-                            </div>
+                            <div class="resizer" onMousedown={onMouseDown} />
                             <diary-preview
                                 preview={state.previewText}
                                 style={{
@@ -250,11 +244,11 @@ export default defineComponent({
                         </v-col>
                     </v-row>
                     <v-divider color={appStore.scss('--theme-color-1')} />
-                    <v-row class="dep-row-footer text-truncate px-1" no-gutters>
+                    <v-row class="diary-editor-page__card-actions text-truncate px-1" no-gutters>
                         <v-col class="align-self-center">
                             <v-btn
                                 color={appStore.scss('--dark-color')}
-                                class="dep-btn-save pulsing pa-0"
+                                class="btn-save pulsing pa-0"
                                 variant="text"
                                 tile
                                 block

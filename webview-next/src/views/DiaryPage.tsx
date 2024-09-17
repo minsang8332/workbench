@@ -1,12 +1,14 @@
 import { defineComponent, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import DiaryCard from '@/components/diary/DiaryCard'
 import { useDiaryStore } from '@/stores/diary'
+import DiaryCard from '@/components/diary/DiaryCard'
+import DiaryDrawer from '@/components/diary/DiaryDrawer'
 import '@/views/DiaryPage.scoped.scss'
 export default defineComponent({
     name: 'DiaryPage',
     components: {
-        DiaryCard
+        DiaryCard,
+        DiaryDrawer,
     },
     setup() {
         const router = useRouter()
@@ -22,7 +24,6 @@ export default defineComponent({
                 })
                 .catch((e) => e)
         }
-
         watch(
             () => diaryStore.getDiaries,
             () =>
@@ -48,11 +49,13 @@ export default defineComponent({
         })
         return () => (
             <v-container class="diary-page pa-0" fluid>
+                <diary-drawer />
                 <v-card flat>
-                    <v-row no-gutters>
-                        <v-col class="diary-page__header">
+                    <v-row class="diary-page__header" no-gutters>
+                        <v-col class="d-flex align-center" align-self="center">
                             <v-btn
                                 variant="text"
+                                size="large"
                                 onClick={diaryStore.toggleDrawer}
                             >
                                 <v-icon class="ico-menu">fa-solid fa-bars</v-icon>
@@ -62,9 +65,17 @@ export default defineComponent({
                             </v-btn>
                             <h3 class="text-title">최근 작성한 문서</h3>
                         </v-col>
+                        <v-col align="end" align-self="center">
+                            <v-btn class="btn-folder" size="large" variant="text" onClick={diaryStore.dirDiary}>
+                                <v-icon class="ico-folder">fa-solid fa-folder</v-icon>
+                                <v-tooltip activator="parent" location="top">
+                                    <p class="text-white">문서 열기</p>
+                                </v-tooltip>
+                            </v-btn>
+                        </v-col>
                     </v-row>
                     <v-divider class="pa-1" />
-                    <v-row no-gutters>
+                    <v-row class="px-2" no-gutters>
                         {recentDiaries.value.map((diary) => (
                             <v-col cols="12" md="4" class="pa-4">
                                 <div class="diary-page__recently-items">

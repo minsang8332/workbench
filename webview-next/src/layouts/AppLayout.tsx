@@ -1,22 +1,19 @@
 import { defineComponent } from 'vue'
 import { RouterView } from 'vue-router'
+import { useAppStore } from '@/stores/app'
 import AppHeader from '@/layouts/AppHeader'
 import AppModal from '@/layouts/AppModal'
-import DiaryDrawer from '@/components/diary/DiaryDrawer'
-import { useAppStore } from '@/stores/app'
 export default defineComponent({
     name: 'AppLayout',
     components: {
         AppHeader,
         AppModal,
-        DiaryDrawer,
     },
     setup() {
         const appStore = useAppStore()
         return () => (
             <v-app>
                 <app-header />
-                <diary-drawer />
                 <v-main>
                     <RouterView />
                 </v-main>

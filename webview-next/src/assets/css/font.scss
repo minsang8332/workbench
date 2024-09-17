@@ -12,13 +12,13 @@
     src: url(@/assets/fonts/NanumGothic-Regular.woff2) format('woff2');
 }
 @font-face {
-    font-family: 'NanumGothic';
+    font-family: 'NanumGothic Bold';
     font-style: bold;
     font-weight: 700;
     src: url(@/assets/fonts/NanumGothic-Bold.woff2) format('woff2');
 }
 @font-face {
-    font-family: 'Pretendard';
+    font-family: 'Pretendard Light';
     font-weight: 300;
     font-style: normal;
     src: url(@/assets/fonts/Pretendard-Light.woff2) format('woff2');
@@ -32,28 +32,28 @@
     font-display: swap;
 }
 @font-face {
-    font-family: 'Pretendard';
+    font-family: 'Pretendard Medium';
     font-weight: 500;
     font-style: normal;
     src: url(@/assets/fonts/Pretendard-Medium.woff2) format('woff2');
     font-display: swap;
 }
 @font-face {
-    font-family: 'Pretendard';
+    font-family: 'Pretendard SemiBold';
     font-weight: 600;
     font-style: normal;
     src: url(@/assets/fonts/Pretendard-SemiBold.woff2) format('woff2');
     font-display: swap;
 }
 @font-face {
-    font-family: 'Pretendard';
+    font-family: 'Pretendard Bold';
     font-weight: 700;
     font-style: normal;
     src: url(@/assets/fonts/Pretendard-Bold.woff2) format('woff2');
     font-display: swap;
 }
 @font-face {
-    font-family: 'Pretendard';
+    font-family: 'Pretendard ExtraBold';
     font-weight: 800;
     font-style: normal;
     src: url(@/assets/fonts/Pretendard-ExtraBold.woff2) format('woff2');
@@ -64,7 +64,4 @@
     src: url(@/assets/fonts/D2Coding.woff) format('woff');
     font-weight: normal;
     font-style: normal;
-}
-.d2coding {
-    font-family: 'D2Coding' !important;
 }

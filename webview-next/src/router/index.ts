@@ -13,13 +13,18 @@ const router = createRouter({
                 {
                     name: 'diary',
                     path: '/diary',
-                    component: () => import('@/views/DiaryPage')
+                    component: () => import('@/views/DiaryPage'),
                 },
                 {
                     name: 'diary-editor',
                     path: '/diary/:path',
                     component: () => import('@/views/DiaryEditorPage'),
                     props: true
+                },
+                {
+                    name: 'todo',
+                    path: '/todo',
+                    component: () => import('@/views/TodoPage'),
                 }
             ]
         },

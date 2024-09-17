@@ -1,27 +1,10 @@
 import _ from 'lodash'
 import commonTool from '@/tools/common'
-export class TodoStatus implements ITodoStatus {
-    id: string = ''
-    name: string
-    backgroundColor: string
-    createdAt: Date | null
-    updatedAt: Date | null
-    constructor ({
-        name = '',
-        backgroundColor = ''
-    } = {}) {
-        this.id = commonTool.randomHex()
-        this.name = name
-        this.backgroundColor = backgroundColor
-        this.createdAt = new Date()
-        this.updatedAt = null
-    }
-}
 export class Todo implements ITodo {
     id: string
     title: string
     description: string
-    status: ITodoStatus
+    status: TodoStatus
     tasks: ITodoTask[]
     startedAt: Date | null
     endedAt: Date | null
@@ -29,12 +12,13 @@ export class Todo implements ITodo {
     updatedAt: Date | null
     constructor ({
         title = '',
+        status = TodoStatus.PREPARE,
         description = ''
     } = {}) {
         this.id = commonTool.randomHex()
         this.title = title
         this.description = description
-        this.status = new TodoStatus()
+        this.status = status
         this.tasks = []
         this.startedAt = null
         this.endedAt = null

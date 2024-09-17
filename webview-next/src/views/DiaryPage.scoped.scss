@@ -1,8 +1,6 @@
 .diary-page {
     $rowHeader: 48px;
     &__header {
-        display: flex;
-        align-items: center;
         height: $rowHeader;
     }
     &__recently-items {
@@ -10,5 +8,10 @@
         min-height: 320px;
         max-height: 320px;
         width: 100%;
+    }
+    .btn-folder {
+        i {
+            color: var(--folder-color);
+        }
     }
 }

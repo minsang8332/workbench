@@ -1,0 +1,33 @@
+.todo-page {
+    height: 100%;
+    &__card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    &__container {
+        position: relative;
+        flex: 1;
+        flex-wrap: nowrap;
+        overflow-x: scroll;
+        &-box {
+            height: 100%;
+            $boxWidth: 240px;
+            // flex 넓이가 고정이 되도록 한다
+            min-width: $boxWidth;
+            h5 {
+                font-size: 16px;
+            }
+        }
+        // 우측 공간 뿌옇게 함
+        &:after {
+            position: fixed;
+            right: 0;
+            width: 24px;
+            height: 100%;
+            content: "";
+            z-index: 1;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, .7) 40%, #fff 70%);
+        }
+    }
+}

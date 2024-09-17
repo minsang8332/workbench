@@ -20,6 +20,9 @@ $folder: #ffe9a2;
 *::-webkit-scrollbar {
     display: none;
 }
+* {
+    scroll-behavior: smooth;
+}
 html {
     scroll-behavior: smooth;
 }
@@ -31,17 +34,18 @@ p {
 }
 p,
 span,
-input {
-    font-family: 'Pretendard';
+input,
+label {
+    font-family: 'NanumGothic';
     color: $dark;
 }
 b,
 button {
-    font-family: 'Pretendard';
+    font-family: 'NanumGothic SemiBold';
     color: $dark;
 }
-h1 {
-    font-family: 'Pretendard';
+h1, h2, h3, h4, h5 {
+    font-family: 'NanumGothic Bold';
 }
 ul {
     list-style: none;
@@ -49,6 +53,9 @@ ul {
 }
 code {
     background-color: unset !important;
+}
+.d2coding {
+    font-family: 'D2Coding' !important;
 }
 // 배경 색상
 .bg-theme-1 {
@@ -88,4 +95,11 @@ code {
 }
 .native-drag {
     -webkit-app-region: drag;
+}
+.full-height {
+    height: 100%;
+}
+.text-title {
+    font-size: 20px;
+    letter-spacing: -1px;
 }

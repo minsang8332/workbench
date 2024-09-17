@@ -26,7 +26,6 @@ export const useDiaryStore = defineStore('diary', () => {
     const getDiaries = computed(() => state.diaries)
     const cntDiaries = computed(() => state.diaries.filter((diary) => diary.isDir == false).length)
     const recentDiaries = computed(() => {
-        
         return state.diaries
             .map((diary: IDiary) => {
                 let filename
