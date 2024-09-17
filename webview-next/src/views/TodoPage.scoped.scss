@@ -13,7 +13,6 @@
         &-box {
             height: 100%;
             $boxWidth: 240px;
-            // flex 넓이가 고정이 되도록 한다
             min-width: $boxWidth;
             h5 {
                 font-size: 16px;

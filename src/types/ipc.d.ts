@@ -9,23 +9,6 @@ namespace IpcHandle {
     }
 }
 namespace IpcPayload {
-    namespace Receipt {
-        interface IRead {
-            id: string
-        }
-        interface ISave {
-            id?: string
-            title: string
-            desc?: string
-            price?: number
-            quantity?: number
-            tax?: number
-            status?: ReceiptStatusType
-        }
-        interface IRemove {
-            id: string
-        }
-    }
     namespace Diary {
         interface IRead {
             target: string
@@ -50,6 +33,20 @@ namespace IpcPayload {
         interface IMove {
             target: string
             dest: string
+        }
+    }
+    namespace Todo {
+        interface ISave {
+            id?: ITodo.id
+            title: ITodo.title
+            description?: ITodo.description
+            status: TodoStatus
+            tasks?: ITodoTask[]
+            startedAt?: ITodo.startedAt
+            endedAt?: ITodo.endedAt
+        }
+        interface IRemove {
+            id: ITodo.id
         }
     }
 }

@@ -7,19 +7,19 @@ export default defineComponent({
         const state = reactive({
             todos: [
                 {
-                    status: 'PREPARE',
+                    status: 0,
                     label: '해야할일',
                 },
                 {
-                    status: 'PROCESS',
+                    status: 1,
                     label: '진행중',
                 },
                 {
-                    status: 'DONE',
+                    status: 2,
                     label: '완료',
                 },
                 {
-                    status: 'HOLD',
+                    status: 3,
                     label: '보류',
                 }
             ],
