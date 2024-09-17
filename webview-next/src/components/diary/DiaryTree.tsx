@@ -69,7 +69,7 @@ export default defineComponent({
             }
             const items = [
                 {
-                    name: 'add-folder',
+                    name: 'refresh',
                     desc: '새로고침',
                     shortcut: 'R',
                     icon: 'mdi:mdi-refresh',

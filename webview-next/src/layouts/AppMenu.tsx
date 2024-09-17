@@ -86,17 +86,17 @@ export default defineComponent({
                                     block
                                     onClick={() => onClickItem(item)}
                                 >
-                                    <div class="d-flex">
-                                        <v-icon class="mr-1" color={item.color}>
-                                            {item.icon}
-                                        </v-icon>
-                                        <b class="diary-menu__desc">{item.desc}</b>
-                                    </div>
-                                    <div class="d-flex">
-                                        {item.shortcut && (
-                                            <b class="diary-menu__shortcut">({item.shortcut})</b>
-                                        )}
-                                    </div>
+                                    {{
+                                        default: () => <div class="d-flex align-center">
+                                            <v-icon class="mr-1" color={item.color}>
+                                                {item.icon}
+                                            </v-icon>
+                                            <b class="app-menu__desc">{item.desc}</b>
+                                        </div>,
+                                        append: () => item.shortcut && (
+                                            <b class="app-menu__shortcut">({item.shortcut})</b>
+                                        )
+                                    }}
                                 </v-btn>
                             ))}
                         </ul>
