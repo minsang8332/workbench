@@ -2,7 +2,7 @@ import _ from 'lodash'
 import ElectronStore from 'electron-store'
 import commonTool from '@/tools/common'
 import logger from '@/logger'
-export default class Store<T extends StoreField> {
+export default class Store<T extends IStoreField> {
     key: string
     instance: ElectronStore
     constructor(key: string) {

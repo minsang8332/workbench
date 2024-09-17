@@ -1,10 +1,10 @@
-interface StoreField {
+interface IStoreField {
     [props]: string | number | boolean | Date | null
     id?: string
     createdAt?: Date | null
     updatedAt?: Date | null
 }
-interface StoreTable<T extends StoreField> {
+interface IStoreTable<T extends IStoreField> {
     [props: string]: T[]
 }
 // 파일 시스템
@@ -17,7 +17,7 @@ interface IFile {
 // 문서
 interface IDiary extends IFile {}
 // 해야 할 일
-interface ITodo extends StoreField {
+interface ITodo extends IStoreField {
     title: string, // 제목
     description: string, // 내용
     status: TodoStatus // 상태
@@ -26,7 +26,7 @@ interface ITodo extends StoreField {
     endedAt: Date | null // 목표일
 }
 // 소 작업 목록
-interface ITodoTask extends StoreField {
+interface ITodoTask extends IStoreField {
     title: string
     description: string,
     checked: boolean

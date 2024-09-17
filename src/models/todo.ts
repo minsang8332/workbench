@@ -7,7 +7,7 @@ export const TodoStatus = {
 }
 type TodoStatus = typeof TodoStatus[keyof typeof TodoStatus]
 export class Todo implements ITodo {
-    id?: string
+    id: string
     title: string
     description: string
     status: TodoStatus
@@ -15,10 +15,12 @@ export class Todo implements ITodo {
     startedAt: Date | null
     endedAt: Date | null
     constructor ({
+        id = '',
         title = '',
         status = TodoStatus.PREPARE,
         description = ''
     } = {}) {
+        this.id = id
         this.title = title
         this.description = description
         this.status = status
@@ -28,17 +30,19 @@ export class Todo implements ITodo {
     }
 }
 export class TodoTask implements ITodoTask {
-    id?: string
+    id: string
     title: string
     description: string
     checked: boolean
     startedAt: Date | null
     endedAt: Date | null
     constructor ({
+        id = '',
         title = '',
         description = '',
         checked = false
     } = {}) {
+        this.id = id
         this.title = title
         this.description = description
         this.checked = checked
