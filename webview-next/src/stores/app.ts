@@ -12,12 +12,24 @@ const initModalProps = () => {
         ok: null
     }
 }
+const initMenuProps = () => {
+    return {
+        path: null,
+        isDir: false,
+        pageX: 0,
+        pageY: 0,
+        items: []
+    }
+}
 // 어플리케이션 전반적인 동작 관련 전역 스토어
 export const useAppStore = defineStore('app', () => {
     const state = reactive<IAppState>({
         // 모달 관련
         modal: false,
         modalProps: initModalProps(),
+        // 메뉴
+        menu: false,
+        menuProps: initMenuProps()
     })
     const toggleModal = (modal: boolean, modalProps?: IAppModalProps) => {
         if (typeof modal == 'boolean') {
@@ -31,6 +43,20 @@ export const useAppStore = defineStore('app', () => {
             }
         } else {
             state.modal = !state.modal
+        }
+    }
+    const toggleMenu = (menu: boolean, menuProps?: IAppMenuProps) => {
+        if (typeof menu == 'boolean') {
+            state.menu = menu
+            if (menu && menuProps) {
+                state.menuProps = _.mergeWith(state.menuProps, menuProps, (a, b) =>
+                    b == undefined ? a : b
+                )
+            } else {
+                state.menuProps = initMenuProps()
+            }
+        } else {
+            state.menu = !state.menu
         }
     }
     // 앱 종료
@@ -53,6 +79,7 @@ export const useAppStore = defineStore('app', () => {
         state,
         scss,
         toggleModal,
+        toggleMenu,
         powerOff,
         waitUpdate,
         availableUpdate,

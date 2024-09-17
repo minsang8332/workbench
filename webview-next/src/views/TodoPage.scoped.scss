@@ -1,5 +1,6 @@
 .todo-page {
     height: 100%;
+    max-width: unset !important;
     &__card {
         display: flex;
         flex-direction: column;

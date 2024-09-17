@@ -1,12 +1,6 @@
 import { computed, unref, reactive } from 'vue'
 import { defineStore } from 'pinia'
 import _ from 'lodash'
-const initMenuProps = () => {
-    return {
-        pageX: 0,
-        pageY: 0,
-    }
-}
 export const useTodoStore = defineStore('todo', () => {
     const state = reactive<ITodoState>({
         todos: [],
@@ -28,7 +22,6 @@ export const useTodoStore = defineStore('todo', () => {
                 label: '보류',
             }
         ],
-        menuProps: initMenuProps()
     })
     const getTodos = computed(() => state.todos)
     const getStatus = computed(() => state.status)

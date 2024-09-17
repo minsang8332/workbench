@@ -63,7 +63,7 @@ export default defineComponent({
             router.replace({ name: 'diary-editor', params: { path: props.path } }).catch((e) => e)
         }
         // 메뉴창 열기
-        const onMouseUpRight = (event: MouseEvent) => {
+        const onMenu = (event: MouseEvent) => {
             if (event.button != 2) {
                 return
             }
@@ -78,7 +78,7 @@ export default defineComponent({
                         diaryStore
                             .loadDiaries()
                             .catch((e) => console.error(e))
-                            .finally(() => diaryStore.toggleMenu(false))
+                            .finally(() => appStore.toggleMenu(false))
                     }
                 },
                 {
@@ -94,7 +94,7 @@ export default defineComponent({
                             })
                             .then(({ writed }) => $toast.success(`${writed} 생성 되었습니다.`))
                             .catch((e) => $toast.error(e))
-                            .finally(() => diaryStore.toggleMenu(false))
+                            .finally(() => appStore.toggleMenu(false))
                     }
                 },
                 {
@@ -110,7 +110,7 @@ export default defineComponent({
                             })
                             .then(({ writed }) => $toast.success(`${writed} 생성 되었습니다.`))
                             .catch((e) => $toast.error(e))
-                            .finally(() => diaryStore.toggleMenu(false))
+                            .finally(() => appStore.toggleMenu(false))
                     }
                 },
                 {
@@ -121,7 +121,7 @@ export default defineComponent({
                     color: appStore.scss('--dark-color'),
                     cb() {
                         editable.value = true
-                        diaryStore.toggleMenu(false)
+                        appStore.toggleMenu(false)
                     }
                 },
                 {
@@ -138,15 +138,13 @@ export default defineComponent({
                                 router
                                     .replace({ name: 'diary' })
                                     .catch((e) => e)
-                                    .finally(() => diaryStore.toggleMenu(false))
+                                    .finally(() => appStore.toggleMenu(false))
                             })
                             .catch((e) => $toast.error(e))
                     }
                 }
             ]
-            diaryStore.toggleMenu(true, {
-                path: props.path,
-                isDir: props.isDir,
+            appStore.toggleMenu(true, {
                 pageX: event.pageX,
                 pageY: event.pageY,
                 items
@@ -211,7 +209,7 @@ export default defineComponent({
                             v-ripple={!unref(isRenaming)}
                             ondblclick={onDblClick}
                             onclick={toggleVisible}
-                            onmouseup={onMouseUpRight}
+                            onmouseup={onMenu}
                             no-gutters
                         >
                             <v-col>

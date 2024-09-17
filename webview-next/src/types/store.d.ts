@@ -1,6 +1,8 @@
 interface IAppState {
     modal: boolean
     modalProps: IAppModalProps
+    menu: boolean,
+    menuProps: IAppMenuProps,
 }
 interface IAppModalProps {
     title?: string
@@ -9,18 +11,14 @@ interface IAppModalProps {
 }
 interface IDiaryState {
     drawer: boolean,
-    menu: boolean
-    menuProps: IDiaryMenuProps,
     diaries: IDiary[],
 }
-interface IDiaryMenuProps {
-    path: string | null
-    isDir: boolean
+interface IAppMenuProps {
     pageX: number
     pageY: number
-    items?: IDiaryMenuItem[]
+    items?: IAppMenuItem[]
 }
-interface IDiaryMenuItem {
+interface IAppMenuItem {
     name: string
     icon: string
     color: string
@@ -41,7 +39,6 @@ interface IDiaryWithPreview extends IDiary {
 interface ITodoState {
     todos: ITodo[]
     status: ITodoStatus[]
-    menuProps: ITodoMenuProps
 }
 interface ITodo  {
     id?: string
@@ -67,8 +64,4 @@ interface ITodoTask  {
 interface ITodoStatus {
     label: string
     value: number
-}
-interface ITodoMenuProps {
-    pageX: number
-    pageY: number
 }
