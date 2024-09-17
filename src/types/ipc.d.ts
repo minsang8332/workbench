@@ -40,7 +40,7 @@ namespace IpcPayload {
             id?: ITodo.id
             title: ITodo.title
             description?: ITodo.description
-            status: TodoStatus
+            status?: TodoStatus
             tasks?: ITodoTask[]
             startedAt?: ITodo.startedAt
             endedAt?: ITodo.endedAt

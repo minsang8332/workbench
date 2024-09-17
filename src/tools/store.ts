@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import ElectronStore from 'electron-store'
-import dayjs from 'dayjs'
+import commonTool from '@/tools/common'
 import logger from '@/logger'
 export default class Store<T extends StoreField> {
     key: string
@@ -9,60 +9,64 @@ export default class Store<T extends StoreField> {
         this.key = key
         this.instance = new ElectronStore()
     }
-    get = (option?: { id: string }) => {
-        let storeTable = null
+    get = (option?: { id?: string }) => {
+        let table = null
         try {
-            storeTable = <T[]>this.instance.get(this.key)
+            table = <T[]>this.instance.get(this.key)
+            if (table && option && option.id) {
+                return table.find(t => t.id == option.id)
+            }
         } catch (e) {
             logger.error(e)
         }
-        return storeTable
+        return table
     }
-    set(storeTables: T[]) {
-        this.instance.set(this.key, storeTables)
+    set(table: T[]) {
+        this.instance.set(this.key, table)
     }
     unset() {
         this.instance.delete(this.key)
     }
     insert(payload: T) {
-        let payloads = <T[]>this.get()
-        if (_.isNil(payloads)) {
-            payloads = []
+        let table = <T[]>this.get()
+        if (_.isNil(table)) {
+            table = []
         }
-        const createdAt = new Date()
-        if (_.isEmpty(payload.id)) {
-            payload.id = dayjs(createdAt).unix().toString()
+        payload.id = commonTool.randomHex()
+        payload.createdAt = new Date()
+        if (table.find(record => record.id == payload.id)) {
+            throw new Error('스토어 id 가 이미 존재합니다.')
         }
-        if (_.isNil(payload.createdAt)) {
-            payload.createdAt = createdAt
-        }
-        payloads.push(payload)
-        this.set(payloads)
+        table.push(payload)
+        this.set(table)
+        return payload.id
     }
     update(payload: T) {
-        let payloads = <T[]>this.get()
-        if (_.isNil(payloads) || _.isNil(payload.id)) {
+        let table = <T[]>this.get()
+        if (!(table && payload.id)) {
             throw new Error('스토어 update 조건이 유효하지 않습니다.')
         }
-        const foundIdx = payloads.findIndex((p) => p.id == payload.id)
-        if (foundIdx == -1) {
-            throw new Error('스토어 update 대상이 유효하지 않습니다.')
+        const idx = table.findIndex((record) => record.id == payload.id)
+        if (idx == -1) {
+            throw new Error('스토어 대상 id 를 찾을 수 없습니다.')
         }
         payload.updatedAt = new Date()
-        payloads.splice(foundIdx, 1, payload)
-        this.set(payloads)
+        table.splice(idx, 1, payload)
+        this.set(table)
+        return payload.id
     }
-    remove(id: string) {
+    remove(id: string): T | undefined {
+        let field
         try {
-            let storeTable = <T[]>this.instance.get(this.key)
-            if (storeTable) {
-                storeTable.filter((field) => field.id !== id)
-                this.set(storeTable)
-                return true
+            let table = <T[]>this.instance.get(this.key)
+            if (table) {
+                field = table.find(record => record.id == id)
+                table = table.filter((field) => field.id !== id)
+                this.set(table)
             }
         } catch (e) {
             logger.error(e)
         }
-        return false
+        return field
     }
 }
