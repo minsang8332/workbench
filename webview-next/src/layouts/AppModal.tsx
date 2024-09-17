@@ -64,7 +64,6 @@ export default defineComponent({
                                 <p class="am-text-message text-truncate">{message}</p>
                             ))}
                         </v-col>
-                        {JSON.stringify(props.ok)}
                     </v-row>
                     <v-row class="am-row-actions" no-gutters>
                         <v-col>

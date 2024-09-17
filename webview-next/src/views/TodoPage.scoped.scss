@@ -14,8 +14,9 @@
             height: 100%;
             $boxWidth: 240px;
             min-width: $boxWidth;
+            background: rgba(246, 246, 246);
             h5 {
-                font-size: 16px;
+                font-size: 1rem;
             }
         }
         // 우측 공간 뿌옇게 함

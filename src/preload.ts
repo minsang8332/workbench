@@ -59,8 +59,8 @@ contextBridge.exposeInMainWorld('$native', {
     /** @memo v1.0.0 에서는 [ markdown ] 으로 사용중. */
     markdown: diary,
     todo: {
-        read() {
-            return invoke('todo:read')
+        readAll() {
+            return invoke('todo:read-all')
         },
         save(payload: IpcPayload.Todo.ISave) {
             return invoke('todo:save', payload)

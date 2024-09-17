@@ -5,9 +5,10 @@ const scss = (property: string): string => {
     const style = getComputedStyle(document.body)
     return style.getPropertyValue(property)
 }
-const resetModalProps = () => {
+const initModalProps = () => {
     return {
-        message: null,
+        title: '',
+        message: '',
         ok: null
     }
 }
@@ -16,7 +17,7 @@ export const useAppStore = defineStore('app', () => {
     const state = reactive<IAppState>({
         // 모달 관련
         modal: false,
-        modalProps: resetModalProps(),
+        modalProps: initModalProps(),
     })
     const toggleModal = (modal: boolean, modalProps?: IAppModalProps) => {
         if (typeof modal == 'boolean') {
@@ -26,7 +27,7 @@ export const useAppStore = defineStore('app', () => {
                     b == undefined ? a : b
                 )
             } else {
-                state.modalProps = resetModalProps()
+                state.modalProps = initModalProps()
             }
         } else {
             state.modal = !state.modal

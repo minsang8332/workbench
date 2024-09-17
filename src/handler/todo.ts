@@ -4,13 +4,13 @@ import { Todo } from '@/models/todo'
 import Store from '@/tools/store'
 import handlerTool from '@/tools/handler'
 // 작업 관리 목록
-ipcMain.handle('todo:read', async () => {
+ipcMain.handle('todo:read-all', async () => {
     let response: IpcHandle.IResponse = handlerTool.createResponse()
     try {
         const store = new Store('todo')
-        const items = store.get() ?? []
+        const todos = store.get() ?? []
         response.data = {
-            items
+            todos
         }
     } catch (e) {
         response.error = handlerTool.createError(e)
@@ -26,7 +26,6 @@ ipcMain.handle(
             const store = new Store('todo')
             const todo = new Todo(payload)
             const id = payload.id ? store.update(todo) : store.insert(todo)
-            console.log(id)
             response.data = {
                 id
             }

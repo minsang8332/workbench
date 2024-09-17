@@ -36,16 +36,16 @@ p,
 span,
 input,
 label {
-    font-family: 'NanumGothic';
+    font-family: 'Pretendard';
     color: $dark;
 }
 b,
 button {
-    font-family: 'NanumGothic SemiBold';
+    font-family: 'Pretendard SemiBold';
     color: $dark;
 }
 h1, h2, h3, h4, h5 {
-    font-family: 'NanumGothic Bold';
+    font-family: 'Pretendard Bold';
 }
 ul {
     list-style: none;
@@ -56,6 +56,9 @@ code {
 }
 .d2coding {
     font-family: 'D2Coding' !important;
+}
+.theme-color-1 {
+    color: var(--theme-color-1)
 }
 // 배경 색상
 .bg-theme-1 {

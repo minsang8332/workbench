@@ -1,29 +1,15 @@
-import { defineComponent, ref, unref, reactive, type ComponentPublicInstance } from 'vue'
+import { defineComponent, ref, unref, reactive, type ComponentPublicInstance, onMounted } from 'vue'
+import { useTodoStore } from '@/stores/todo'
+import TodoCard from '@/components/todo/TodoCard'
 import '@/views/TodoPage.scoped.scss'
 export default defineComponent({
     name: 'TodoPage',
+    components: {
+        TodoCard
+    },
     setup() {
+        const todoStore = useTodoStore()
         const containerRef = ref<ComponentPublicInstance<HTMLElement> | null>(null)
-        const state = reactive({
-            todos: [
-                {
-                    status: 0,
-                    label: '해야할일',
-                },
-                {
-                    status: 1,
-                    label: '진행중',
-                },
-                {
-                    status: 2,
-                    label: '완료',
-                },
-                {
-                    status: 3,
-                    label: '보류',
-                }
-            ],
-        })
         const onScrollX = (event: WheelEvent) => {
             const container = unref(containerRef)
             if (!(container && container.$el)) {
@@ -31,6 +17,9 @@ export default defineComponent({
             }
             container.$el.scrollLeft += event.deltaY
         }
+        onMounted(() => {
+            todoStore.loadTodos()
+        })
         return () => (
             <v-container class="todo-page pa-0">
                 <v-card class="todo-page__card" flat>
@@ -62,14 +51,24 @@ export default defineComponent({
                     <v-divider class="pa-1" />
                     <v-row ref={containerRef} class="todo-page__container px-6 pt-4 pb-6 ga-3" no-gutters onWheel={onScrollX}>
                         {
-                            state.todos.map(todo => <v-col>
+                            todoStore.getTodosByStatus.map((todos: any) => <v-col>
                                 <v-card class="todo-page__container-box" outlined>
                                     <v-row class="bg-theme-1 py-2 px-4" no-gutters>
                                         <v-col>
-                                            <h5 class="text-title">{ todo.label }</h5>
+                                            <h5 class="text-title">{ todos.label }</h5>
+                                        </v-col>
+                                        <v-col align="end">
+                                            <h5 class="text-title">{ todos.items.length }</h5>
                                         </v-col>
                                     </v-row>
                                     <v-divider />
+                                    <v-row no-gutters>
+                                        <v-col class="d-flex flex-column ga-3 pa-2">
+                                            {
+                                                todos.items.map((todo: ITodo) => <todo-card {...todo} />)
+                                            }
+                                        </v-col>
+                                    </v-row>
                                 </v-card>
                             </v-col>)
                         }
