@@ -109,14 +109,12 @@ export default defineComponent({
                     v-model={state.inputTitle}
                     rules={state.rules}
                     label="제목을 입력해 주세요"
-                    focused={false}
                     variant="outlined"
                     color="#3c3c3c"
                 />
                 <v-textarea
                     v-model={state.inputDescription}
                     label="내용을 입력해 주세요"
-                    focused={false}
                     variant="outlined"
                     color="#3c3c3c"
                     auto-grow
