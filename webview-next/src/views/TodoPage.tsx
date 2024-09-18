@@ -129,6 +129,39 @@ export default defineComponent({
                 items
             })
         }
+        const onPrevent = (event: Event) => event.preventDefault()
+        // 취소하기
+        const onCancel = () => {
+            onRefresh()
+            toggleForm(false)
+        }
+        const onSubmit = async (todo: ITodo) => {
+            if (await todoStore.saveTodo(todo)) {
+                $toast.success('정상적으로 등록 및 편집되었습니다.')
+                onCancel()
+            }
+        }
+        const onDragstart = (event: DragEvent, todo: ITodo) => {
+            if (!(event && event.dataTransfer)) {
+                return false
+            }
+            event.dataTransfer.setData('dragstart-todo', JSON.stringify(todo))
+        }
+        const onDrop = async (event: DragEvent, status: number) => {
+            if (!(event && event.dataTransfer)) {
+                return
+            }
+            let todoJSON = event.dataTransfer.getData('dragstart-todo')
+            if (_.isEmpty(todoJSON)) {
+                return
+            }
+            const todo = JSON.parse(todoJSON) as ITodo
+            // 이동 대상의 상태로 변환해 준다.
+            todo.status = status
+            if (await todoStore.saveTodo(todo)) {
+                onRefresh()
+            }
+        }
         onMounted(() => {
             onRefresh()
         })
@@ -149,14 +182,8 @@ export default defineComponent({
                     >
                         <todo-form 
                             {...state.formProps} 
-                            onSubmit={() => {
-                                onRefresh()
-                                toggleForm(false)
-                            }}
-                            onCancel={() => {
-                                onRefresh()
-                                toggleForm(false)
-                            }}
+                            onSubmit={onSubmit}
+                            onCancel={onCancel}
                         />
                     </app-modal>
                 </Teleport>
@@ -192,9 +219,12 @@ export default defineComponent({
                         {
                             todoStore.getTodosByStatus.map((todos: any) => <v-col>
                                 <v-card 
-                                    class="todo-page__container-box" 
-                                    outlined 
+                                    class="todo-page__container-box"
+                                    outlined
                                     onMouseup={(event: MouseEvent) => onMenu(event, { payload: todos })}
+                                    onDragenter={onPrevent}
+                                    onDragover={onPrevent}
+                                    onDrop={(event: DragEvent) => onDrop(event, todos.value)}
                                 >
                                     <v-row class="bg-theme-1 py-2 px-4" no-gutters>
                                         <v-col>
@@ -214,6 +244,10 @@ export default defineComponent({
                                                         onClick={() => toggleForm(true, todo)}
                                                         onMouseup={(event: MouseEvent) => onMenu(event, { type: 'card', payload: todo  })}
                                                         onRemove={onBeforeRemove}
+                                                        draggable
+                                                        onDragenter={onPrevent}
+                                                        onDragover={onPrevent}
+                                                        onDragstart={(event: DragEvent) => onDragstart(event, todo)}
                                                     />
                                                 )
                                             }

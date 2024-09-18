@@ -79,7 +79,7 @@ export default defineComponent({
                 if (state.inputStartedAt && state.inputEndedAt && unref(validPeriod) == false) {
                     throw new Error('시작일과 마감일의 기한을 확인해 주세요.')
                 }
-                if (await todoStore.saveTodo({
+                emit('submit', {
                     id: props.id,
                     title: state.inputTitle,
                     description: state.inputDescription,
@@ -87,10 +87,7 @@ export default defineComponent({
                     tasks: [],
                     startedAt: state.inputStartedAt,
                     endedAt: state.inputEndedAt
-                })) {
-                    emit('submit')
-                    $toast.success('정상적으로 등록 및 편집되었습니다.')
-                }
+                })
             } catch (e) {
                 $toast.error(e as Error)
             }

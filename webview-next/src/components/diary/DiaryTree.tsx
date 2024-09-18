@@ -153,21 +153,21 @@ export default defineComponent({
         const onPrevent = (event: DragEvent) => {
             event.preventDefault()
         }
-        const onDragStart = (event: DragEvent, target: string = props.path) => {
+        const onDragstart = (event: DragEvent, target: string = props.path) => {
             if (!(event && event.dataTransfer)) {
                 return
             }
             if (!target) {
                 return
             }
-            event.dataTransfer.setData('target', target)
+            event.dataTransfer.setData('dragstart-diary', target)
         }
         const onDrop = async (event: DragEvent) => {
             if (!(event && event.dataTransfer)) {
                 return
             }
             try {
-                const target = event.dataTransfer.getData('target')
+                const target = event.dataTransfer.getData('dragstart-diary')
                 const dest = props.path
                 if (!(target && target != dest)) {
                     return
@@ -217,7 +217,7 @@ export default defineComponent({
                                     draggable={!unref(isRenaming)}
                                     onDragenter={onPrevent}
                                     onDragover={onPrevent}
-                                    onDragstart={onDragStart}
+                                    onDragstart={onDragstart}
                                     onDrop={onDrop}
                                     no-gutters
                                 >
