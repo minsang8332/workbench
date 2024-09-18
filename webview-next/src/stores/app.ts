@@ -14,8 +14,6 @@ const initModalProps = () => {
 }
 const initMenuProps = () => {
     return {
-        path: null,
-        isDir: false,
         pageX: 0,
         pageY: 0,
         items: []

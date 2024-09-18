@@ -15,6 +15,7 @@
         "format": "prettier --write src/"
     },
     "dependencies": {
+        "@vuepic/vue-datepicker": "^9.0.3",
         "dayjs": "^1.11.10",
         "github-markdown-css": "^5.5.1",
         "lodash": "^4.17.21",

@@ -1,37 +1,48 @@
 .app-modal {
     width: calc(100vw / 2);
-    .am-card {
+    &__card {
+        $titleHeight: 3.5rem;
+        $actionsHeight: 3.5rem;
         width: 100%;
-        .am-row-title {
-            height: 20%;
-            max-height: 20%;
+        &-title {
             display: flex;
             justify-content: center;
             align-items: center;
+            height: $titleHeight;
+            min-height: $titleHeight;
+            max-height: $titleHeight;
             b {
-                font-size: 20px;
+                font-size: 1.25rem;
             }
         }
-        .am-row-message {
+        &-content {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 60%;
+            height: calc(100% - $titleHeight - $actionsHeight) !important;
+            min-height: 6rem !important;
             overflow-y: auto;
             p {
-                font-size: 20px;
+                font-size: 1.25rem;
                 text-align: center;
             }
         }
-        .am-row-actions {
-            height: 20%;
+        &-actions {
+            height: $actionsHeight;
+            min-height: $actionsHeight;
+            max-height: $actionsHeight;
             .v-btn {
-                font-size: 20px;
+                font-size: 1.25rem;
                 height: 100%;
             }
-            .am-btn-ok span {
-                color: var(--theme-color-1);
+            .btn-ok {
+                .v-btn__content {
+                    color: var(--theme-color-1) !important;
+                }
             }
         }
+    }
+    .v-overlay__content {
+        min-height: calc(100vh / 3);
     }
 }

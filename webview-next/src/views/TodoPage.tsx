@@ -1,21 +1,41 @@
 import _ from 'lodash'
-import { defineComponent, ref, unref, inject, type ComponentPublicInstance, onMounted } from 'vue'
+import { defineComponent, nextTick, ref, unref, inject, type ComponentPublicInstance, onMounted, Teleport, reactive } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useTodoStore } from '@/stores/todo'
 import AppMenu from '@/layouts/AppMenu'
+import AppModal from '@/layouts/AppModal'
 import TodoCard from '@/components/todo/TodoCard'
+import TodoForm from '@/components/todo/TodoForm'
 import '@/views/TodoPage.scoped.scss'
 export default defineComponent({
     name: 'TodoPage',
     components: {
         AppMenu,
-        TodoCard
+        AppModal,
+        TodoCard,
+        TodoForm
     },
     setup() {
         const $toast = inject('toast') as IToastPlugin
         const appStore = useAppStore()
         const todoStore = useTodoStore()
+        const state = reactive<{
+            form: boolean
+            formProps: ITodo | null
+        }>({
+            form: false,
+            formProps: null
+        })
         const containerRef = ref<ComponentPublicInstance<HTMLElement> | null>(null)
+        const toggleForm = (value: boolean, props?: ITodo) => {
+            state.form = value
+            if (value && props) {
+                state.formProps = props
+            }
+            else if (value == false) {
+                state.formProps = null
+            }
+        }
         const onScrollX = (event: WheelEvent) => {
             const container = unref(containerRef)
             if (!(container && container.$el)) {
@@ -96,7 +116,10 @@ export default defineComponent({
                         shortcut: 'N',
                         icon: 'fa-regular fa-pen-to-square',
                         color: appStore.scss('--dark-color'),
-                        cb () {}
+                        cb () {
+                            toggleForm(true)
+                            appStore.toggleMenu(false)
+                        }
                     },
                 ]
             }
@@ -113,9 +136,30 @@ export default defineComponent({
             <v-container class="todo-page pa-0">
                 <app-menu
                     {...appStore.state.menuProps}
-                    model-value={appStore.state.menu}
+                    modelValue={appStore.state.menu}
                     onUpdate:modelValue={appStore.toggleMenu}
                 />
+                <Teleport to="body">
+                    <app-modal
+                        title={state.formProps && state.formProps.title ? state.formProps.title : '카드생성'}
+                        modelValue={state.form}
+                        onUpdate:modelValue={toggleForm}
+                        persistent
+                        hide-actions
+                    >
+                        <todo-form 
+                            {...state.formProps} 
+                            onSubmit={() => {
+                                onRefresh()
+                                toggleForm(false)
+                            }}
+                            onCancel={() => {
+                                onRefresh()
+                                toggleForm(false)
+                            }}
+                        />
+                    </app-modal>
+                </Teleport>
                 <v-card class="todo-page__card" flat>
                     <v-row class="flex-0-0" no-gutters>
                         <v-col class="d-flex align-center pl-6">
@@ -144,7 +188,7 @@ export default defineComponent({
                         </v-col>
                     </v-row>
                     <v-divider class="pa-1" />
-                    <v-row ref={containerRef} class="todo-page__container px-6 pt-4 pb-6 ga-3" no-gutters on:wheel={onScrollX}>
+                    <v-row ref={containerRef} class="todo-page__container px-6 pt-4 pb-6 ga-3" no-gutters onWheel={onScrollX}>
                         {
                             todoStore.getTodosByStatus.map((todos: any) => <v-col>
                                 <v-card 
@@ -166,7 +210,8 @@ export default defineComponent({
                                             {
                                                 todos.items.map((todo: ITodo) => 
                                                     <todo-card 
-                                                        {...todo} 
+                                                        {...todo}
+                                                        onClick={() => toggleForm(true, todo)}
                                                         onMouseup={(event: MouseEvent) => onMenu(event, { type: 'card', payload: todo  })}
                                                         onRemove={onBeforeRemove}
                                                     />

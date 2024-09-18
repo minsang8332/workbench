@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { type App } from 'vue'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'

@@ -52,6 +52,11 @@ export const useTodoStore = defineStore('todo', () => {
         state.todos = todos
         return { todos }
     }
+    const saveTodo = async (payload: ITodo) => {
+        const response = await window.$native.todo.save(payload)
+        const { id } = response.data
+        return { id }    
+    }
     const removeTodo = async (id: string) => {
         const response = await window.$native.todo.remove({ id })
         const { todos } = response.data
@@ -63,6 +68,7 @@ export const useTodoStore = defineStore('todo', () => {
         getStatus,
         getTodosByStatus,
         loadTodos,
+        saveTodo,
         removeTodo
     }
 })

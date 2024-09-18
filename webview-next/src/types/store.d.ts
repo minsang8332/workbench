@@ -7,6 +7,8 @@ interface IAppState {
 interface IAppModalProps {
     title?: string
     message: string | string[] | null
+    persistent?: false,
+    hideActions?: false,
     ok: (() => void) | null
 }
 interface IDiaryState {

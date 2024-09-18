@@ -1,4 +1,4 @@
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, Transition } from 'vue'
 import type { PropType } from 'vue'
 import _ from 'lodash'
 import '@/layouts/AppModal.scoped.scss'
@@ -6,23 +6,31 @@ export default defineComponent({
     name: 'AppModal',
     props: {
         modelValue: {
-            type: Boolean as PropType<boolean>,
+            type: Boolean,
             default: false
         },
         title: {
-            type: String as PropType<string>,
+            type: String,
             default: ''
         },
         message: {
             type: [String, Array, null] as PropType<string | string[] | null>,
             default: ''
         },
+        persistent: {
+            type: Boolean,
+            default: false
+        },
+        hideActions: {
+            type: Boolean,
+            default: false
+        },
         ok: {
             type: [Function, null] as PropType<() => {} | null>,
             default: null
         }
     },
-    setup(props, { emit }) {
+    setup(props, { emit, slots }) {
         const getMessage = computed(() => {
             let messages: string[] = []
             try {
@@ -47,37 +55,45 @@ export default defineComponent({
             <v-dialog
                 class="app-modal"
                 scrollable
-                height="calc(100vh/3)"
                 modelValue={props.modelValue}
                 onUpdate:modelValue={onUpdateModelValue}
+                persistent={props.persistent}
             >
-                <v-card class="am-card fill-height" flat>
-                    <v-row class="am-row-title bg-theme-1" no-gutters>
-                        <v-col align="center">
-                            <b class="am-text-title text-white">{props.title}</b>
-                        </v-col>
-                    </v-row>
-                    <v-divider />
-                    <v-row class="am-row-message" no-gutters>
-                        <v-col class="px-4">
-                            {getMessage.value.map((message) => (
-                                <p class="am-text-message text-truncate">{message}</p>
-                            ))}
-                        </v-col>
-                    </v-row>
-                    <v-row class="am-row-actions" no-gutters>
-                        <v-col>
-                            <v-btn variant="text" block class="am-btn-no" onClick={onClose}>
-                                <span>취소</span>
-                            </v-btn>
-                        </v-col>
-                        <v-col>
-                            <v-btn variant="text" block class="am-btn-ok" onClick={props.ok}>
-                                <span>확인</span>
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                </v-card>
+                <Transition name="fade">
+                    {
+                        props.modelValue && 
+                        <v-card class="app-modal__card">
+                            <v-row class="app-modal__card-title bg-theme-1" no-gutters>
+                                <v-col align="center">
+                                    <b class="text-white">{props.title}</b>
+                                </v-col>
+                            </v-row>
+                            <v-divider />
+                            <v-row class="app-modal__card-content" no-gutters>
+                                <v-col class="px-4">
+                                    {
+                                        slots.default 
+                                            ? slots.default() 
+                                            : getMessage.value.map((message) => (
+                                                <p class="text-truncate">{message}</p>
+                                            ))
+                                    }
+                                    
+                                </v-col>
+                            </v-row>
+                            {
+                                props.hideActions == false && <v-row class="app-modal__card-actions" no-gutters>
+                                    <v-col>
+                                        <v-btn variant="text" block class="btn-no" onClick={onClose}>취소</v-btn>
+                                    </v-col>
+                                    <v-col>
+                                        <v-btn variant="text" block class="btn-ok" onClick={props.ok}>확인</v-btn>
+                                    </v-col>
+                                </v-row>
+                            }
+                        </v-card>
+                    }
+                </Transition>
             </v-dialog>
         )
     }

@@ -1,0 +1,9 @@
+.todo-form {
+    .v-messages {
+        opacity: unset !important;
+    }
+    .dp__theme_light {
+        --dp-danger-color: #B00020 !important;
+        --dp-border-color-focus: #000;
+    }
+}

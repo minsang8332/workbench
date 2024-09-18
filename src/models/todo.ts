@@ -18,15 +18,17 @@ export class Todo implements ITodo {
         id = '',
         title = '',
         status = TodoStatus.PREPARE,
-        description = ''
+        description = '',
+        startedAt = null,
+        endedAt = null
     } = {}) {
         this.id = id
         this.title = title
         this.description = description
         this.status = status
         this.tasks = []
-        this.startedAt = null
-        this.endedAt = null
+        this.startedAt = startedAt
+        this.endedAt = endedAt
     }
 }
 export class TodoTask implements ITodoTask {
@@ -34,20 +36,15 @@ export class TodoTask implements ITodoTask {
     title: string
     description: string
     checked: boolean
-    startedAt: Date | null
-    endedAt: Date | null
     constructor ({
         id = '',
         title = '',
         description = '',
-        checked = false
+        checked = false,
     } = {}) {
         this.id = id
         this.title = title
         this.description = description
-        this.checked = checked
-        this.startedAt = null
-        this.endedAt = null
         this.checked = checked
     }
 }

@@ -214,7 +214,7 @@ export default defineComponent({
                                 size="large"
                                 tile
                                 depressed
-                                onclick={onMoveBack}
+                                onClick={onMoveBack}
                             >
                                 <v-icon>mdi:mdi-arrow-left</v-icon>
                                 <v-tooltip activator="parent" location="top">
@@ -253,7 +253,7 @@ export default defineComponent({
                                 tile
                                 block
                                 depressed
-                                onclick={onSave}
+                                onClick={onSave}
                             >
                                 <v-icon class="text-white">mdi:mdi-send</v-icon>
                                 <v-tooltip activator="parent" location="top">

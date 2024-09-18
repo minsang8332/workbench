@@ -30,6 +30,4 @@ interface ITodoTask extends IStoreField {
     title: string
     description: string,
     checked: boolean
-    startedAt: Date | null
-    endedAt: Date | null
 }

@@ -207,18 +207,18 @@ export default defineComponent({
                     {
                         <v-row
                             v-ripple={!unref(isRenaming)}
-                            ondblclick={onDblClick}
-                            onclick={toggleVisible}
-                            onmouseup={onMenu}
+                            onDblclick={onDblClick}
+                            onClick={toggleVisible}
+                            onMouseup={onMenu}
                             no-gutters
                         >
                             <v-col>
                                 <v-row
                                     draggable={!unref(isRenaming)}
-                                    ondragenter={onPrevent}
-                                    ondragover={onPrevent}
-                                    ondragstart={onDragStart}
-                                    ondrop={onDrop}
+                                    onDragenter={onPrevent}
+                                    onDragover={onPrevent}
+                                    onDragstart={onDragStart}
+                                    onDrop={onDrop}
                                     no-gutters
                                 >
                                     {props.depth > 0 && (
