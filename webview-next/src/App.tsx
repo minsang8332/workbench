@@ -1,12 +1,26 @@
 import { defineComponent, onBeforeMount } from 'vue'
 import { RouterView } from 'vue-router'
-import { useDiaryStore } from '@/stores/diary'
+import { useAppStore } from '@/stores/app'
 export default defineComponent({
     name: 'App',
     setup() {
-        const diaryStore = useDiaryStore()
+        const appStore = useAppStore()
         onBeforeMount(() => {
-            diaryStore.loadDiaries().catch((e) => e)
+            // 앱 업데이트 확인
+            appStore.waitUpdate()
+                .then(() => {
+                    appStore.toggleModal(true, {
+                        message: [
+                            '새로운 버전이 업데이트 되었습니다.',
+                            '업데이트 하시겠습니까 ?',
+                        ],
+                        ok() {
+                            appStore.installUpdate()
+                            appStore.toggleModal(false)
+                        },
+                    })
+                })
+                .catch((e: Error) => e)
         })
         return () => <RouterView />
     }

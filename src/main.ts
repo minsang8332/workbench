@@ -1,10 +1,11 @@
-import { app, BrowserWindow, nativeImage } from 'electron'
+import { app } from 'electron'
 import _ from 'lodash'
 import '@/handler'
 import * as protocolTool from '@/tools/protocol'
 import windowTool from '@/tools/window'
 if (app.requestSingleInstanceLock() == false) {
     app.quit()
+    process.exit(0)
 }
 app.on('will-finish-launching', () => {
     protocolTool.registerScheme('app')

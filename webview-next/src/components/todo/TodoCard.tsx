@@ -50,7 +50,7 @@ export default defineComponent({
                 </v-col>
                 <v-col align="end">
                     <v-btn size="small" variant="text" on:click={onBeforeRemove}>
-                        <v-icon>fa-solid fa-close</v-icon>
+                        <v-icon>mdi:mdi-close</v-icon>
                         <v-tooltip activator="parent" location="top">
                             <p class="text-white">삭제하기</p>
                         </v-tooltip>

@@ -123,7 +123,7 @@ export default defineComponent({
                         name: 'edit-todo',
                         desc: '카드편집',
                         shortcut: 'E',
-                        icon: 'fa-regular fa-pen-to-square',
+                        icon: 'mdi:mdi-file-edit-outline',
                         color: appStore.scss('--dark-color'),
                         cb () {}
                     },
@@ -146,7 +146,7 @@ export default defineComponent({
                         name: 'add-todo',
                         desc: '카드생성',
                         shortcut: 'N',
-                        icon: 'fa-regular fa-pen-to-square',
+                        icon: 'mdi:mdi-file-edit-outline',
                         color: appStore.scss('--dark-color'),
                         cb () {
                             toggleForm(true)
@@ -230,7 +230,7 @@ export default defineComponent({
                                 size="large"
                                 onClick={onRefresh}
                             >
-                                <v-icon class="ico-menu">fa-solid fa-rotate-right</v-icon>
+                                <v-icon class="ico-menu">mdi:mdi-refresh</v-icon>
                                 <v-tooltip activator="parent" location="top">
                                     <p class="text-white">새로고침</p>
                                 </v-tooltip>
@@ -240,7 +240,7 @@ export default defineComponent({
                                 size="large"
                                 onClick={() => toggleForm(true)}
                             >
-                                <v-icon class="ico-menu">fa-regular fa-square-plus</v-icon>
+                                <v-icon class="ico-menu">mdi:mdi-file-edit-outline</v-icon>
                                 <v-tooltip activator="parent" location="top">
                                     <p class="text-white">카드생성</p>
                                 </v-tooltip>

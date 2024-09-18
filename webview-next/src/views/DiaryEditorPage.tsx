@@ -193,7 +193,7 @@ export default defineComponent({
                                 size="large"
                                 onClick={diaryStore.toggleDrawer}
                             >
-                                <v-icon class="ico-menu">fa-solid fa-bars</v-icon>
+                                <v-icon class="ico-menu">mdi:mdi-menu</v-icon>
                                 <v-tooltip activator="parent" location="top">
                                     <p class="text-white">문서 탐색</p>
                                 </v-tooltip>

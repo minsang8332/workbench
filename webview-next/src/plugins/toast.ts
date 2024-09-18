@@ -57,7 +57,7 @@ export default {
         const success = (
             message = '정상적으로 처리되었습니다.',
             {
-                icon = 'fa-regular fa-face-laugh-squint',
+                icon = 'mdi:mdi-emoticon-excited-outline',
                 style = {
                     background: String(appStore.scss('--success-color'))
                 }
@@ -76,7 +76,7 @@ export default {
         const error = (
             { message = '작업을 처리할 수 없습니다.' }: Error,
             {
-                icon = 'fa-regular fa-face-tired',
+                icon = 'mdi:mdi-emoticon-neutral-outline',
                 style = {
                     background: String(appStore.scss('--failed-color'))
                 }

@@ -85,7 +85,7 @@ export default defineComponent({
                     name: 'add-folder',
                     desc: '새 폴더',
                     shortcut: 'N',
-                    icon: 'fa-solid fa-folder',
+                    icon: 'mdi:mdi-folder',
                     color: appStore.scss('--folder-color'),
                     cb() {
                         diaryStore
@@ -238,7 +238,7 @@ export default defineComponent({
                                                 class="mr-1"
                                                 size="small"
                                                 color={appStore.scss('--folder-color')}
-                                                icon="fa-solid fa-folder"
+                                                icon="mdi:mdi-folder"
                                             />
                                         ) : (
                                             <v-icon
