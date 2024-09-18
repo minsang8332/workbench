@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { defineComponent, nextTick, ref, unref, inject, type ComponentPublicInstance, onMounted, Teleport, reactive } from 'vue'
+import { defineComponent, computed, ref, unref, inject, type ComponentPublicInstance, onMounted, Teleport, reactive } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useTodoStore } from '@/stores/todo'
 import AppMenu from '@/layouts/AppMenu'
@@ -21,12 +21,44 @@ export default defineComponent({
         const todoStore = useTodoStore()
         const state = reactive<{
             form: boolean
-            formProps: ITodo | null
+            formProps: ITodo | null,
+            keyword: string
         }>({
             form: false,
-            formProps: null
+            formProps: null,
+            keyword: ''
         })
         const containerRef = ref<ComponentPublicInstance<HTMLElement> | null>(null)
+        const filterTodosByStatus = computed(() => {
+            let todoMap = []
+            try {
+                const status = unref(todoStore.getStatus)
+                const todos = unref(todoStore.getTodos)
+                todoMap = status.reduce((acc: any, s: ITodoStatus) => {
+                    let items = [] as ITodo[]
+                    if (todos && todos.length > 0) {
+                        items = todos.filter((todo: ITodo) => {
+                            if (todo.status !== s.value) {
+                                return false
+                            }
+                            // 만약 검색 키워드가 있다면
+                            if (state.keyword) {
+                                return _.find(todo, (v: keyof ITodo) => _.isString(v) && v.includes(state.keyword)) ? true : false
+                            }
+                            return true
+                        })
+                    }
+                    acc.push({
+                        ...s,
+                        items
+                    })
+                    return acc
+                }, [])
+            } catch (e) {
+                console.error(e)
+            }
+            return todoMap
+        })
         const toggleForm = (value: boolean, props?: ITodo) => {
             state.form = value
             if (value && props) {
@@ -47,7 +79,7 @@ export default defineComponent({
         const onBeforeRemove = ({ title, id }: { title: string, id: string }) => {
             appStore.toggleModal(true, {
                 title: _.toString(title),
-                message: ['이 작업을 제거하시겠습니까 ?'],
+                message: ['이 카드를 제거하시겠습니까 ?'],
                 ok() {
                     todoStore.removeTodo(id)
                         .then(() => {
@@ -189,7 +221,7 @@ export default defineComponent({
                 </Teleport>
                 <v-card class="todo-page__card" flat>
                     <v-row class="flex-0-0" no-gutters>
-                        <v-col class="d-flex align-center pl-6">
+                        <v-col class="d-flex align-center ga-2 pl-6">
                             <h3 class="text-title">작업 관리</h3>
                         </v-col>
                         <v-col class="align-center" align="end">
@@ -206,18 +238,32 @@ export default defineComponent({
                             <v-btn
                                 variant="text"
                                 size="large"
+                                onClick={() => toggleForm(true)}
                             >
                                 <v-icon class="ico-menu">fa-regular fa-square-plus</v-icon>
                                 <v-tooltip activator="parent" location="top">
-                                    <p class="text-white">작업 생성</p>
+                                    <p class="text-white">카드생성</p>
                                 </v-tooltip>
                             </v-btn>
                         </v-col>
                     </v-row>
-                    <v-divider class="pa-1" />
+                    <v-divider />
+                    <v-row class="px-6 pt-4 flex-0-0" no-gutters>
+                        <v-col align="end">
+                            <v-text-field
+                                v-model={state.keyword}
+                                label="검색하기"
+                                append-inner-icon="mdi:mdi-magnify"
+                                variant="outlined"
+                                density="compact"
+                                hide-details
+                                width="15rem"
+                            />
+                        </v-col>
+                    </v-row>
                     <v-row ref={containerRef} class="todo-page__container px-6 pt-4 pb-6 ga-3" no-gutters onWheel={onScrollX}>
                         {
-                            todoStore.getTodosByStatus.map((todos: any) => <v-col>
+                            unref(filterTodosByStatus).map((todos: any) => <v-col>
                                 <v-card 
                                     class="todo-page__container-box"
                                     outlined
