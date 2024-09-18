@@ -48,7 +48,7 @@ export default defineComponent({
             inputEndedAt: props.endedAt,
             rules: [
                 (value: any) => {
-                    return /^(?!\s).+$/.test(value) ? true : '최소 한 글자 이상은 입력해 주세요.'
+                    return value && /^[^\s].*$/.test(value) ? true : '최소 한 글자 이상은 입력해 주세요.'
                 },
             ],
         })
@@ -94,13 +94,6 @@ export default defineComponent({
             try {
                 const form = unref(formRef)
                 if (!form) return submit
-                const validation = await form.validate()
-                if (!(validation && validation.valid)) {
-                    throw new Error('양식이 유효하지 않아 카드를 생성 할 수 없습니다.')
-                }
-                if (state.inputStartedAt && state.inputEndedAt && unref(validPeriod) == false) {
-                    throw new Error('시작일과 마감일의 기한을 확인해 주세요.')
-                }
                 emit('submit', {
                     id: props.id,
                     title: state.inputTitle,
@@ -130,6 +123,7 @@ export default defineComponent({
                     label="제목을 입력해 주세요"
                     variant="outlined"
                     color="#3c3c3c"
+                    required
                 />
                 <v-textarea
                     v-model={state.inputDescription}

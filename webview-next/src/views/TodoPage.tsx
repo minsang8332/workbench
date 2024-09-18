@@ -43,7 +43,7 @@ export default defineComponent({
                             }
                             // 만약 검색 키워드가 있다면
                             if (state.keyword) {
-                                return _.find(todo, (v: keyof ITodo) => _.isString(v) && v.includes(state.keyword)) ? true : false
+                                return _.find(todo, (v: keyof ITodo, k: string) => k !== 'id' && _.isString(v) && v.includes(state.keyword)) ? true : false
                             }
                             return true
                         })
