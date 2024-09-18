@@ -26,6 +26,7 @@ export const useTodoStore = defineStore('todo', () => {
     const getTodos = computed(() => state.todos)
     const getStatus = computed(() => state.status)
     const loadTodos = async () => {
+        state.todos = []
         const response = await window.$native.todo.readAll()
         const { todos } = response.data
         state.todos = todos

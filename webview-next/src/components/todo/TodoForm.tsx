@@ -1,12 +1,11 @@
 import _ from 'lodash'
 import dayjs from 'dayjs'
 import type { VForm } from 'vuetify/components'
-import { defineComponent, reactive, computed, unref, ref, inject } from "vue"
+import { defineComponent, reactive, computed, unref, ref, inject, nextTick } from "vue"
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import './TodoForm.scoped.scss'
 import { useAppStore } from '@/stores/app'
-import { useTodoStore } from '@/stores/todo'
 export default defineComponent({
     name: 'TodoForm',
     emits: ['cancel', 'submit'],
@@ -39,9 +38,9 @@ export default defineComponent({
     setup (props, { emit }) {
         const $toast = inject('toast') as IToastPlugin
         const appStore = useAppStore()
-        const todoStore = useTodoStore()
         const formRef = ref<VForm | null>(null)
         const state = reactive<any>({
+            tabSize: 4,
             inputTitle: props.title,
             inputDescription: props.description,
             inputStartedAt: props.startedAt,
@@ -64,6 +63,29 @@ export default defineComponent({
             }
             return false
         })
+        const onKeyDown = (event: KeyboardEvent) => {
+            // ctrl + a 는 전체 포커스
+            if (event.key === 'a' && event.ctrlKey
+            ||  event.key === 'a' && event.metaKey
+            ) {
+                event.preventDefault()
+                const el = event.target as HTMLTextAreaElement
+                el.select()
+                el.focus()
+            }
+            //
+            // 탭 누르면 띄워쓰기
+            if (event.key == 'Tab') {
+                event.preventDefault()
+                let indent = ''
+                for (let i=0; i<state.tabSize; i++) {
+                    indent += ' '
+                }
+                nextTick(() => {
+                    state.inputDescription += indent
+                })
+            }
+        }
         const onDatePickerFormat = (date: Date) => {
             return dayjs(date).format('YYYY.MM.DD')
         }
@@ -115,6 +137,7 @@ export default defineComponent({
                     variant="outlined"
                     color="#3c3c3c"
                     auto-grow
+                    onKeydown={onKeyDown}
                 />
                 <VueDatePicker
                     v-model={state.inputStartedAt}
