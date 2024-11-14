@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, ref, watch } from 'vue'
+import { defineComponent, onMounted, ref, unref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDiaryStore } from '@/stores/diary'
 import DiaryCard from '@/components/diary/DiaryCard'
@@ -13,7 +13,7 @@ export default defineComponent({
     setup() {
         const router = useRouter()
         const diaryStore = useDiaryStore()
-        const recentDiaries = ref<IDiaryWithPreview[]>([])
+        const recentDiaries = ref<IDiaryWithText[]>([])
         const onMoveDiary = (diary: IDiary) => {
             router
                 .replace({
@@ -24,28 +24,20 @@ export default defineComponent({
                 })
                 .catch((e) => e)
         }
-        watch(
-            () => diaryStore.getDiaries,
-            () =>
-                diaryStore
-                    .loadDiariesWithPreview()
-                    .then((value: IDiaryWithPreview[]) => {
-                        recentDiaries.value = value
-                    })
-                    .catch((e) => console.error(e))
-        )
         onMounted(() => {
-            diaryStore
-                .loadDiaries()
-                .then(() => {
-                    diaryStore
-                        .loadDiariesWithPreview()
-                        .then((value: IDiaryWithPreview[]) => {
-                            recentDiaries.value = value
-                        })
-                        .catch((e) => console.error(e))
-                })
-                .catch((e) => console.error(e))
+            diaryStore.loadDiaries()
+        })
+        watch(() => diaryStore.recentDiaries, async (newValue) => {
+            recentDiaries.value = await Promise.all(newValue.map(async (diary: IDiary) => {
+                let text = ''
+                try {
+                    const response = await diaryStore.readDiary({ target: diary.path })
+                    text = response.text ?? ''
+                } catch (e) {
+                    console.error(e)
+                }
+                return {...diary, text }
+            }))
         })
         return () => (
             <v-container class="diary-page pa-0" fluid>
@@ -76,13 +68,15 @@ export default defineComponent({
                     </v-row>
                     <v-divider class="pa-1" />
                     <v-row class="px-2" no-gutters>
-                        {recentDiaries.value.map((diary) => (
-                            <v-col cols="12" md="4" class="pa-4">
-                                <div class="diary-page__recently-items">
-                                    <diary-card {...diary} onclick={() => onMoveDiary(diary)} />
-                                </div>
-                            </v-col>
-                        ))}
+                        {
+                            unref(recentDiaries).map((diary: IDiaryWithText) => (
+                                <v-col cols="12" md="4" class="pa-4">
+                                    <div class="diary-page__recently-items">
+                                        <diary-card {...diary} onclick={() => onMoveDiary(diary)} />
+                                    </div>
+                                </v-col>
+                            ))
+                        }
                     </v-row>
                 </v-card>
             </v-container>

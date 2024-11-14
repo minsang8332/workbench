@@ -8,9 +8,10 @@ import {
     watch,
     nextTick,
     inject,
-    onMounted
+    onBeforeMount
 } from 'vue'
 import type { ComponentPublicInstance, PropType } from 'vue'
+import { onBeforeRouteUpdate , onBeforeRouteLeave, type NavigationGuardNext } from 'vue-router'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useDiaryStore } from '@/stores/diary'
@@ -34,7 +35,6 @@ export default defineComponent({
             resizable: false,
             text: '',
             updatedText: '',
-            previewText: '',
             widths: {
                 editor: 0,
                 preview: 0
@@ -54,7 +54,7 @@ export default defineComponent({
             }
             return path
         })
-        const isUpdated = computed(() => {
+        const edited = computed(() => {
             return state.text !== state.updatedText
         })
         const onKeyDown = (event: KeyboardEvent) => {
@@ -77,12 +77,13 @@ export default defineComponent({
             // 탭 누르면 띄워쓰기
             if (event.key == 'Tab') {
                 event.preventDefault()
-                let indent = ''
-                for (let i=0; i<state.tabSize; i++) {
-                    indent += ' '
-                }
+                const el = event.target as HTMLTextAreaElement
+                const start = el.selectionStart
+                const end = el.selectionEnd
+                state.updatedText = state.updatedText.slice(0, start) + '\t' + state.updatedText.slice(end)
                 nextTick(() => {
-                    state.updatedText += indent
+                    el.selectionStart = start + 1
+                    el.selectionEnd = start + 1
                 })
             }
         }
@@ -129,16 +130,14 @@ export default defineComponent({
         }
         const onReset = () => {
             state.text = ''
-            state.updatedText = ''
         }
         const onLoad = () => {
             onReset()
             diaryStore
-                .readDiaryWithPreview({ target: props.path })
-                .then((response) => {
+                .readDiary({ target: props.path })
+                .then(response => {
                     if (response) {
                         state.text = response.text
-                        state.previewText = response.preview
                     }
                 })
                 .catch((e) => {
@@ -158,6 +157,18 @@ export default defineComponent({
                 })
                 .catch((e) => $toast.error(e))
         }
+        const preventRoute = (next: NavigationGuardNext) => {
+            if (unref(edited)) {
+                $toast.error(new Error('문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.'))
+                return next(false)
+            }
+            next()
+        }
+        const isMarkdown = computed(() => {
+            const base = _.last(props.path.split('/'))
+            const ext = _.last(base?.split('.'))
+            return _.includes(['md'], ext)
+        })
         watch(
             () => props.path,
             (newValue) => {
@@ -172,10 +183,19 @@ export default defineComponent({
                 state.updatedText = newValue
             }
         )
-        onMounted(() => {
+        watch(
+            edited,
+            (newValue) => diaryStore.updateEdited(newValue)
+        )
+        onBeforeMount(() => {
+            diaryStore.updateEdited(false)
             onLoad()
-            onResize(null, true)
+            if (unref(isMarkdown)) {
+                onResize(null, true)
+            }
         })
+        onBeforeRouteLeave((to, from, next) => preventRoute(next))
+        onBeforeRouteUpdate((to, from, next) => preventRoute(next))
         return () => (
             <v-container
                 ref={containerRef}
@@ -200,7 +220,7 @@ export default defineComponent({
                             </v-btn>
                             <v-badge
                                 title={unref(printFilePath)}
-                                color={unref(isUpdated) ? 'red' : 'transparent'}
+                                color={unref(edited) ? 'red' : 'transparent'}
                                 inline
                                 dot
                             >
@@ -230,17 +250,21 @@ export default defineComponent({
                                 v-model={state.updatedText}
                                 class="d2coding pa-2"
                                 style={{
-                                    width: state.widths.editor + 'px'
+                                    width: unref(isMarkdown) ? state.widths.editor + 'px' : '100%'
                                 }}
                                 onKeydown={onKeyDown}
                             />
-                            <div class="resizer" onMousedown={onMouseDown} />
-                            <diary-preview
-                                preview={state.previewText}
-                                style={{
-                                    width: state.widths.preview + 'px'
-                                }}
-                            />
+                            {
+                                unref(isMarkdown) && <>
+                                    <div class="resizer" onMousedown={onMouseDown} />
+                                    <diary-preview
+                                        value={state.updatedText}
+                                        style={{
+                                            width: state.widths.preview + 'px'
+                                        }}
+                                    />
+                                </>
+                            }
                         </v-col>
                     </v-row>
                     <v-divider color={appStore.scss('--theme-color-1')} />

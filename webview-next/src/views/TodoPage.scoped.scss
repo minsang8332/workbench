@@ -13,8 +13,9 @@
         overflow-x: scroll;
         &-box {
             height: 100%;
-            $boxWidth: 240px;
+            $boxWidth: 16 * 1rem;
             min-width: $boxWidth;
+            max-width: $boxWidth;
             background: rgba(246, 246, 246);
             h5 {
                 font-size: 1rem;

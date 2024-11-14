@@ -1,5 +1,5 @@
-import _, { countBy } from 'lodash'
-import { computed, defineComponent, ref, watch, inject, unref } from 'vue'
+import _ from 'lodash'
+import { computed, defineComponent, ref, watch, inject, unref, onMounted } from 'vue'
 import type { PropType } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAppStore } from '@/stores/app'
@@ -46,13 +46,16 @@ export default defineComponent({
         const appStore = useAppStore()
         const diaryStore = useDiaryStore()
         const visible = ref<boolean>(true)
-        const editable = ref<boolean>(false)
+        const renaming = ref<boolean>(false)
+        const isRenaming = computed(() => {
+            return unref(renaming)
+        })
         const toggleVisible = () => {
             visible.value = !visible.value
         }
-        const isRenaming = computed(() => {
-            return unref(editable)
-        })
+        const toggleRenaming = (toggle = false) => {
+            renaming.value = toggle
+        }
         const onDblClick = () => {
             if (!props.path) {
                 return
@@ -120,7 +123,11 @@ export default defineComponent({
                     icon: 'mdi:mdi-pencil-box-outline',
                     color: appStore.scss('--dark-color'),
                     cb() {
-                        editable.value = true
+                        if (unref(diaryStore.getEdited)) {
+                            $toast.error(new Error('문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.'))
+                            return
+                        }
+                        renaming.value = true
                         appStore.toggleMenu(false)
                     }
                 },
@@ -186,9 +193,6 @@ export default defineComponent({
                 $toast.error(e as Error)
             }
         }
-        const toggleEditable = (toggle = false) => {
-            editable.value = toggle
-        }
         watch(
             () => props.items,
             (oldValue, newValue) => {
@@ -200,6 +204,7 @@ export default defineComponent({
                 }
             }
         )
+        onMounted(() => diaryStore.loadDiaries())
         return () =>
             props.depth >= 0 &&
             props.depth <= props.maxDepth && (
@@ -235,14 +240,14 @@ export default defineComponent({
                                     <v-col class="d-flex align-center text-truncate">
                                         {props.isDir ? (
                                             <v-icon
-                                                class="mr-1"
+                                                class="diary-tree__gap"
                                                 size="small"
                                                 color={appStore.scss('--folder-color')}
                                                 icon="mdi:mdi-folder"
                                             />
                                         ) : (
                                             <v-icon
-                                                class="mr-1"
+                                                class="diary-tree__gap"
                                                 size="small"
                                                 color={appStore.scss('--dark-color')}
                                                 icon="mdi:mdi-file-document-outline"
@@ -251,7 +256,7 @@ export default defineComponent({
                                         {unref(isRenaming) ? (
                                             <diary-input-path
                                                 path={props.path}
-                                                onToggle={toggleEditable}
+                                                onToggle={toggleRenaming}
                                             />
                                         ) : (
                                             <b class="diary-tree__title">{props.title}</b>

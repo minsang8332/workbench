@@ -12,7 +12,7 @@ export default defineComponent({
             type: [String, null] as PropType<string | null>,
             default: null
         },
-        preview: {
+        text: {
             type: [String, null] as PropType<string | null>,
             default: null
         },
@@ -50,7 +50,7 @@ export default defineComponent({
                 <v-divider />
                 <v-row class="diary-card__preview" no-gutters>
                     <v-col class="fill-height">
-                        <diary-preview preview={props.preview} />
+                        <diary-preview value={props.text} />
                     </v-col>
                 </v-row>
                 <v-divider />

@@ -1,5 +1,7 @@
 import _ from 'lodash'
 import dayjs from 'dayjs'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+dayjs.extend(isSameOrBefore)
 import type { VForm } from 'vuetify/components'
 import { defineComponent, reactive, computed, unref, ref, inject, nextTick } from "vue"
 import VueDatePicker from '@vuepic/vue-datepicker'
@@ -16,11 +18,11 @@ export default defineComponent({
         },
         title: {
             type: [String, null],
-            default: null
+            default: ''
         },
         description: {
             type: [String, null],
-            default: null
+            default: ''
         },
         status: {
             type: [Number],
@@ -53,12 +55,18 @@ export default defineComponent({
             ],
         })
         const validPeriod = computed(() => {
-            const startedAt = dayjs(state.inputStartedAt)
+            if (state.inputStartedAt == null && state.inputEndedAt == null) {
+                return true
+            }
+            let startedAt = dayjs(state.inputStartedAt)
+            if (!startedAt.isValid()) {   
+                startedAt = dayjs()
+            }
             const endedAt = dayjs(state.inputEndedAt)
-            if (!(startedAt.isValid() && endedAt.isValid())) {   
+            if (!endedAt.isValid()) {   
                 return false
             }
-            if (startedAt.isBefore(endedAt)) {
+            if (startedAt.isSameOrBefore(endedAt)) {
                 return true
             }
             return false
@@ -93,7 +101,12 @@ export default defineComponent({
             let submit = false
             try {
                 const form = unref(formRef)
-                if (!form) return submit
+                if (!form) {
+                    return submit
+                }
+                if (unref(validPeriod) == false) {
+                    return submit
+                }
                 emit('submit', {
                     id: props.id,
                     title: state.inputTitle,
@@ -153,8 +166,8 @@ export default defineComponent({
                 />
                 {
                     <v-messages
-                        active={state.inputStartedAt && state.inputEndedAt && unref(validPeriod) == false}
-                        messages={['시작일과 마감일이 유효하지 않습니다']}
+                        active={unref(validPeriod) == false}
+                        messages={['기간이 옳바르지 않습니다']}
                         color="#B00020"
                     />
                 }

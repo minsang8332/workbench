@@ -1,15 +1,14 @@
 import { computed, reactive } from 'vue'
 import { defineStore } from 'pinia'
-import { marked } from 'marked'
 import _ from 'lodash'
 export const useDiaryStore = defineStore('diary', () => {
     const state = reactive<IDiaryState>({
         drawer: false,
-        diaries: []
+        diaries: [],
+        edited: false
     })
-    const getDrawer = computed(() => {
-        return state.drawer
-    })
+    const getDrawer = computed(() => state.drawer)
+    const getEdited = computed(() => state.edited)
     const getDiaries = computed(() => state.diaries)
     const cntDiaries = computed(() => state.diaries.filter((diary) => diary.isDir == false).length)
     const recentDiaries = computed(() => {
@@ -25,6 +24,7 @@ export const useDiaryStore = defineStore('diary', () => {
             })
             .filter((diary: IDiary) => diary.isDir == false)
             .sort((a: IDiary, b: IDiary) => b.updatedAt - a.updatedAt || b.createdAt - a.createdAt)
+            .slice(0, 9)
     })
     // 문서 계층화
     const treeDiaries = computed(() => {
@@ -148,48 +148,13 @@ export const useDiaryStore = defineStore('diary', () => {
         const { moved } = response.data
         return { moved }
     }
-    const readDiaryWithPreview = async ({
-        target
-    }: {
-        target: string
-    }): Promise<{ text: string; preview: string } | null> => {
-        let text = ''
-        let preview = ''
-        try {
-            const diary = await readDiary({ target })
-            text = diary.text
-            preview = await marked(_.toString(text))
-        } catch (e) {
-            console.error(e)
-        }
-        return {
-            text,
-            preview
-        }
-    }
-    const loadDiariesWithPreview = async () => {
-        let diariesWithPreview: IDiaryWithPreview[] = []
-        try {
-            diariesWithPreview = await Promise.all(
-                recentDiaries.value.map(async (d) => {
-                    const diary = await readDiary({
-                        target: d.path
-                    })
-                    const preview = await marked(_.toString(diary.text))
-                    return {
-                        ...d,
-                        preview
-                    }
-                })
-            )
-        } catch (e) {
-            console.error(e)
-        }
-        return diariesWithPreview
+    const updateEdited = (edited = false) => {
+        state.edited = edited
     }
     return {
         state,
         getDrawer,
+        getEdited,
         getDiaries,
         cntDiaries,
         recentDiaries,
@@ -203,7 +168,6 @@ export const useDiaryStore = defineStore('diary', () => {
         dirDiary,
         rmDiary,
         mvDiary,
-        readDiaryWithPreview,
-        loadDiariesWithPreview
+        updateEdited
     }
 })

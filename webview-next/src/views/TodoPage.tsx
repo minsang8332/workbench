@@ -115,6 +115,17 @@ export default defineComponent({
                         appStore.toggleMenu(false)
                     }
                 },
+                {
+                    name: 'add-todo',
+                    desc: '카드생성',
+                    shortcut: 'N',
+                    icon: 'mdi:mdi-file-edit-outline',
+                    color: appStore.scss('--dark-color'),
+                    cb () {
+                        toggleForm(true)
+                        appStore.toggleMenu(false)
+                    }
+                }
             ]
             if (type == 'card') {
                 items = [
@@ -135,21 +146,6 @@ export default defineComponent({
                         color: appStore.scss('--dark-color'),
                         cb () {
                             onBeforeRemove(payload)
-                            appStore.toggleMenu(false)
-                        }
-                    },
-                ]
-            } else {
-                items = [
-                    ...items,
-                    {
-                        name: 'add-todo',
-                        desc: '카드생성',
-                        shortcut: 'N',
-                        icon: 'mdi:mdi-file-edit-outline',
-                        color: appStore.scss('--dark-color'),
-                        cb () {
-                            toggleForm(true)
                             appStore.toggleMenu(false)
                         }
                     },

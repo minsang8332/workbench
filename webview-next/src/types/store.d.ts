@@ -14,6 +14,7 @@ interface IAppModalProps {
 interface IDiaryState {
     drawer: boolean,
     diaries: IDiary[],
+    edited: boolean
 }
 interface IAppMenuProps {
     pageX: number
@@ -35,8 +36,8 @@ interface IDiary {
     createdAt: number
     updatedAt: number
 }
-interface IDiaryWithPreview extends IDiary {
-    preview: string
+interface IDiaryWithText extends IDiary {
+    text: string
 }
 interface ITodoState {
     todos: ITodo[]

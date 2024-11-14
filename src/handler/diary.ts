@@ -101,7 +101,7 @@ ipcMain.handle('diary:write', async (event, payload: IpcPayload.Diary.IWrite) =>
         // 파일명이 없으면 신규 파일로 간주
         let filename = payload.filename
         if (_.isNil(filename)) {
-            let counts = 0
+            let counts = 1
             let newers = '새 문서'
             for (const file of fs.readdirSync(target)) {
                 // 폴더는 무시
@@ -109,12 +109,12 @@ ipcMain.handle('diary:write', async (event, payload: IpcPayload.Diary.IWrite) =>
                     continue
                 }
                 const { name } = path.parse(file)
-                if (name !== `${newers} (${counts})`) {
+                if (name !== `${newers} ${counts}`) {
                     continue
                 }
                 counts++
             }
-            filename = `${newers} (${counts})`
+            filename = `${newers} ${counts}`
         }
         let text = payload.text
         if (!_.isString(text)) {
@@ -144,7 +144,7 @@ ipcMain.handle('diary:write-dir', async (event, payload: IpcPayload.Diary.IWrite
         // 폴더명이 지정되지 않았다면
         let dirname = payload.dirname
         if (_.isNil(dirname)) {
-            let counts = 0
+            let counts = 1
             let newers = '새 폴더'
             for (const file of fs.readdirSync(target)) {
                 // 파일은 무시
@@ -152,12 +152,12 @@ ipcMain.handle('diary:write-dir', async (event, payload: IpcPayload.Diary.IWrite
                     continue
                 }
                 const { name } = path.parse(file)
-                if (name !== `${newers} (${counts})`) {
+                if (name !== `${newers} ${counts}`) {
                     continue
                 }
                 counts++
             }
-            dirname = `${newers} (${counts})`
+            dirname = `${newers} ${counts}`
         }
         target = path.join(target, dirname)
         fs.ensureDir(target)

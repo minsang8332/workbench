@@ -12,7 +12,7 @@ export default defineComponent({
     setup() {
         const appStore = useAppStore()
         return () => (
-            <v-app>
+            <v-app class="app-layout">
                 <app-header />
                 <v-main>
                     <RouterView />
