@@ -1,5 +1,7 @@
-@import '@/assets/css/font';
-@import '@/assets/css/animation';
+@use '@/assets/css/tailwind.css';
+@use '@/assets/css/font';
+@use '@/assets/css/animation';
+
 $themeColor1: #3614edff;
 $themeColor2: #5dc8e9ff;
 $themeColor3: #fdfdfdff;
