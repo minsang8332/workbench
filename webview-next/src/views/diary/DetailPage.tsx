@@ -17,7 +17,7 @@ import { useAppStore } from '@/stores/app'
 import { useDiaryStore } from '@/stores/diary'
 import DiaryPreview from '@/components/diary/DiaryPreview'
 import DiaryDrawer from '@/components/diary/DiaryDrawer'
-import '@/views/DiaryEditorPage.scoped.scss'
+import '@/views/diary/DetailPage.scoped.scss'
 export default defineComponent({
     name: 'DiaryEditorPage',
     components: {

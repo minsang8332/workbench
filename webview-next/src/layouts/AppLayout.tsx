@@ -13,6 +13,7 @@ export default defineComponent({
     setup() {
         const appStore = useAppStore()
         return () => (
+            <div>
             <v-app class="app-layout">
                 <v-main>
                     <RouterView />
@@ -24,6 +25,7 @@ export default defineComponent({
                     onUpdate:modelValue={appStore.toggleModal}
                 />
             </v-app>
+            </div>
         )
     }
 })

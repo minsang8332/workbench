@@ -1,0 +1,42 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.diary-page {
+    $article-header: 3rem;
+    height: calc(100vh - variables.$app-dock-height);
+    &__header {
+        @include mixins.glass(#f0f0f0);
+        height: $article-header;
+        button {
+            @include mixins.hover-button;
+            @include mixins.tooltip;
+            padding: 0 1rem;
+            &.btn-search-diary i {
+                font-size: 1.5rem;
+            }
+            &.btn-open-diary i {
+                font-size: 1.5rem;
+                color: var(--folder-color);
+            }
+        }
+    }
+    &__content {
+        $item-width: 20rem;
+        display: grid;
+        grid-template-rows: repeat(auto-fill, $item-width); 
+        grid-template-columns: repeat(auto-fill, $item-width);
+        height: calc(100vh - variables.$app-dock-height - $article-header);
+        justify-content: center;
+        overflow-y: scroll;
+        gap: 1rem;
+        padding: 1rem 0;
+        &-item {
+            height: $item-width;
+            width: $item-width;
+        }
+    }
+    .btn-folder {
+        i {
+            color: var(--folder-color);
+        }
+    }
+}

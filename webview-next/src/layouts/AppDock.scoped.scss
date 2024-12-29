@@ -1,7 +1,7 @@
 @use "@/assets/css/abstracts/variables";
 @use "@/assets/css/abstracts/mixins";
 .app-dock {
-    @include mixins.glass;
+    @include mixins.glass(#f0f0f0);
     height: variables.$app-dock-height;
     button {
         @include mixins.neon-button(var(--primary-color));

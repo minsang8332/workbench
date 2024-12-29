@@ -11,31 +11,63 @@
         0 0 100px $background-color;
     }
 }
-@mixin tooltip () {
-  position: relative;
-  &:hover .tooltip {
-    visibility: visible;
-    opacity: 1;
-  }
-  .tooltip {
-    visibility: hidden;
-    background-color: var(--dark-color);
-    padding: .25rem .5rem;
-    min-width: fit-content;
-    border-radius: .5rem;
-    text-align: center;
-    color: #fff;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%;
-    opacity: 0;
-    transition: opacity 0.3s;
-    white-space: nowrap;
-  }
+
+@mixin hover-button {
+    transition: all .5s ease-out;
+    &:hover {
+        background-color: rgba(170, 170, 170, 0.2);
+    }
+    &:active {
+        transform: scale(1.2);
+    }
 }
-@mixin glass () {
-  background-color: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(.75rem);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 .25rem 1rem rgba(0, 0, 0, 0.3);
+@mixin tooltip () {
+    position: relative;
+    .tooltip {
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        padding: .25rem .5rem;
+        background-color: var(--dark-color);
+        min-width: fit-content;
+        border-radius: .5rem;
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.3s;
+        transform: translateX(-50%);
+        // 폰트 관련
+        text-align: center;
+        white-space: nowrap;
+        color: #fff;
+    }
+    .tooltip::after {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        border-width: .25rem;
+        border-style: solid;
+        border-color: var(--dark-color) transparent transparent transparent;
+        transform: translateX(-50%);
+        content: "";
+    }
+    &:hover .tooltip {
+        visibility: visible;
+        opacity: 1;
+    }
+    & .tooltip-bottom {
+        top: 100%;
+        left: 50%;
+        bottom: unset !important;
+    }
+    & .tooltip-bottom::after {
+        top: -0.5rem;
+        border-color: transparent transparent  var(--dark-color) transparent !important;
+    }
+}
+@mixin glass ($background-color: #fff) {
+    border: 1px solid $background-color;
+    background-color: $background-color;
+    backdrop-filter: blur(.75rem);
+    box-shadow: 0 .25rem 1rem rgba(0, 0, 0, 0.3);
 }

@@ -10,12 +10,12 @@ const router = createRouter({
                 {
                     name: 'diary',
                     path: '/diary',
-                    component: () => import('@/views/DiaryPage'),
+                    component: () => import('@/views/diary/IndexPage'),
                 },
                 {
                     name: 'diary-editor',
                     path: '/diary/:path',
-                    component: () => import('@/views/DiaryEditorPage'),
+                    component: () => import('@/views/diary/DetailPage'),
                     props: true
                 },
                 {
