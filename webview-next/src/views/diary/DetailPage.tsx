@@ -8,10 +8,10 @@ import {
     watch,
     nextTick,
     inject,
-    onBeforeMount
+    onMounted
 } from 'vue'
 import type { ComponentPublicInstance, PropType } from 'vue'
-import { onBeforeRouteUpdate , onBeforeRouteLeave, type NavigationGuardNext } from 'vue-router'
+import { onBeforeRouteUpdate, onBeforeRouteLeave, type NavigationGuardNext } from 'vue-router'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useDiaryStore } from '@/stores/diary'
@@ -22,7 +22,7 @@ export default defineComponent({
     name: 'DiaryEditorPage',
     components: {
         DiaryPreview,
-        DiaryDrawer,
+        DiaryDrawer
     },
     props: {
         path: {
@@ -45,7 +45,7 @@ export default defineComponent({
         const router = useRouter()
         const appStore = useAppStore()
         const diaryStore = useDiaryStore()
-        const containerRef = ref<ComponentPublicInstance<HTMLElement> | null>(null)
+        const pageRef = ref<ComponentPublicInstance<HTMLElement> | null>(null)
         const printFilePath = computed(() => {
             let path: string | string[] = props.path
             if (path) {
@@ -59,15 +59,11 @@ export default defineComponent({
         })
         const onKeyDown = (event: KeyboardEvent) => {
             // ctrl + s 는 저장
-            if (event.key === 's' && event.ctrlKey
-            ||  event.key === 's' && event.metaKey
-            ) {
+            if ((event.key === 's' && event.ctrlKey) || (event.key === 's' && event.metaKey)) {
                 return onSave()
             }
             // ctrl + a 는 전체 포커스
-            if (event.key === 'a' && event.ctrlKey
-            ||  event.key === 'a' && event.metaKey
-            ) {
+            if ((event.key === 'a' && event.ctrlKey) || (event.key === 'a' && event.metaKey)) {
                 event.preventDefault()
                 const el = event.target as HTMLTextAreaElement
                 el.select()
@@ -80,7 +76,8 @@ export default defineComponent({
                 const el = event.target as HTMLTextAreaElement
                 const start = el.selectionStart
                 const end = el.selectionEnd
-                state.updatedText = state.updatedText.slice(0, start) + '\t' + state.updatedText.slice(end)
+                state.updatedText =
+                    state.updatedText.slice(0, start) + '\t' + state.updatedText.slice(end)
                 nextTick(() => {
                     el.selectionStart = start + 1
                     el.selectionEnd = start + 1
@@ -103,29 +100,25 @@ export default defineComponent({
         const onResize = (event: Event | null, reset = false) => {
             // reset 은 무조건 통과
             if (reset) {
-                nextTick(() => {
-                    const unrefed = unref(containerRef.value)
-                    if (!(unrefed && unrefed.$el)) {
-                        return
-                    }
-                    const domRect = unrefed.$el.getBoundingClientRect()
-                    state.widths.editor = domRect.width / 2
-                    state.widths.preview = domRect.width / 2
-                })
+                const unrefed = unref(pageRef.value) as HTMLElement
+                if (_.isUndefined(unrefed)) {
+                    return
+                }
+                const domRect = unrefed.getBoundingClientRect()
+                state.widths.editor = domRect.width / 2
+                state.widths.preview = domRect.width / 2
                 return
             }
             if (state.resizable && event) {
-                nextTick(() => {
-                    const unrefed = unref(containerRef.value)
-                    if (!(unrefed && unrefed.$el)) {
-                        return
-                    }
-                    const domRect = unrefed.$el.getBoundingClientRect()
-                    const { x } = event as MouseEvent
-                    const width = x - domRect.left
-                    state.widths.editor = x - domRect.left
-                    state.widths.preview = domRect.width - width - 4
-                })
+                const unrefed = unref(pageRef.value) as HTMLElement
+                if (_.isUndefined(unrefed)) {
+                    return
+                }
+                const domRect = unrefed.getBoundingClientRect()
+                const { x } = event as MouseEvent
+                const width = x - domRect.left
+                state.widths.editor = x - domRect.left
+                state.widths.preview = domRect.width - width - 4
             }
         }
         const onReset = () => {
@@ -135,7 +128,7 @@ export default defineComponent({
             onReset()
             diaryStore
                 .readDiary({ target: props.path })
-                .then(response => {
+                .then((response) => {
                     if (response) {
                         state.text = response.text
                     }
@@ -159,7 +152,9 @@ export default defineComponent({
         }
         const preventRoute = (next: NavigationGuardNext) => {
             if (unref(edited)) {
-                $toast.error(new Error('문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.'))
+                $toast.error(
+                    new Error('문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.')
+                )
                 return next(false)
             }
             next()
@@ -183,13 +178,11 @@ export default defineComponent({
                 state.updatedText = newValue
             }
         )
-        watch(
-            edited,
-            (newValue) => diaryStore.updateEdited(newValue)
-        )
-        onBeforeMount(() => {
+        watch(edited, (newValue) => diaryStore.updateEdited(newValue))
+        onMounted(() => {
             diaryStore.updateEdited(false)
             onLoad()
+            // 현재 문서가 마크다운 이라면 프리뷰 화면 사이즈를 배분한다.
             if (unref(isMarkdown)) {
                 onResize(null, true)
             }
@@ -197,97 +190,58 @@ export default defineComponent({
         onBeforeRouteLeave((to, from, next) => preventRoute(next))
         onBeforeRouteUpdate((to, from, next) => preventRoute(next))
         return () => (
-            <v-container
-            ref={containerRef}
-            class="diary-editor-page pa-0"
-            fluid
-            onMousemove={onResize}
-            onMouseup={onMouseUp}
-            >
+            <article ref={pageRef} class="detail-page" onMousemove={onResize} onMouseup={onMouseUp}>
                 <diary-drawer />
-                <v-card class="diary-editor-page__card" flat tile outlined>
-                    <v-row class="diary-editor-page__card-header text-truncate" no-gutters>
-                        <v-col class="d-flex align-center">
-                            <v-btn
-                                variant="text"
-                                size="large"
-                                onClick={diaryStore.toggleDrawer}
+                <div class="detail-page__header row-between px-2">
+                    <div class="flex items-center gap-2">
+                        <div class="flex items-center">
+                            <button
+                                type="button"
+                                class="btn-tree"
+                                onClick={() => diaryStore.toggleDrawer()}
                             >
-                                <v-icon class="ico-menu">mdi:mdi-menu</v-icon>
-                                <v-tooltip activator="parent" location="top">
-                                    <p class="text-white">문서 탐색</p>
-                                </v-tooltip>
-                            </v-btn>
-                            <v-badge
-                                title={unref(printFilePath)}
-                                color={unref(edited) ? 'red' : 'transparent'}
-                                inline
-                                dot
-                            >
-                                <h3 class="text-title d2-coding mr-1">{unref(printFilePath)}</h3>
-                            </v-badge>
-                        </v-col>
-                        <v-col class="d-flex align-center justify-end">
-                            <v-btn
-                                color={appStore.scss('--dark-color')}
-                                variant="text"
-                                size="large"
-                                tile
-                                depressed
-                                onClick={onMoveBack}
-                            >
-                                <v-icon>mdi:mdi-arrow-left</v-icon>
-                                <v-tooltip activator="parent" location="top">
-                                    <p class="text-white">뒤로가기</p>
-                                </v-tooltip>
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                    <v-divider color={appStore.scss('--theme-color-1')} />
-                    <v-row class="diary-editor-page__card-editor" no-gutters>
-                        <v-col class="d-flex">
-                            <textarea
-                                v-model={state.updatedText}
-                                class="d2coding pa-2"
+                                <i class="mdi mdi-menu" />
+                                <span class="tooltip tooltip-bottom">문서 탐색</span>
+                            </button>
+                            <h3 class="text-title">{unref(printFilePath)}</h3>
+                        </div>
+                        <div class="editing" style={{ opacity: unref(edited) ? 1 : 0 }} />
+                    </div>
+                    <div class="flex items-center">
+                        <button type="button" class="btn-back" onClick={onMoveBack}>
+                            <i class="mdi mdi-arrow-left" />
+                            <span class="tooltip tooltip-bottom">뒤로 가기</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="detail-page__content flex items-center w-100">
+                    <textarea
+                        v-model={state.updatedText}
+                        class="d2coding pa-2"
+                        style={{
+                            width: unref(isMarkdown) ? state.widths.editor + 'px' : '100%'
+                        }}
+                        onKeydown={onKeyDown}
+                    />
+                    {unref(isMarkdown) && (
+                        <>
+                            <div class="resizer" onMousedown={onMouseDown} />
+                            <diary-preview
+                                value={state.updatedText}
                                 style={{
-                                    width: unref(isMarkdown) ? state.widths.editor + 'px' : '100%'
+                                    width: state.widths.preview + 'px'
                                 }}
-                                onKeydown={onKeyDown}
                             />
-                            {
-                                unref(isMarkdown) && <>
-                                    <div class="resizer" onMousedown={onMouseDown} />
-                                    <diary-preview
-                                        value={state.updatedText}
-                                        style={{
-                                            width: state.widths.preview + 'px'
-                                        }}
-                                    />
-                                </>
-                            }
-                        </v-col>
-                    </v-row>
-                    <v-divider color={appStore.scss('--theme-color-1')} />
-                    <v-row class="diary-editor-page__card-actions text-truncate px-1" no-gutters>
-                        <v-col class="align-self-center">
-                            <v-btn
-                                color={appStore.scss('--dark-color')}
-                                class="btn-save pulsing pa-0"
-                                variant="text"
-                                tile
-                                block
-                                depressed
-                                onClick={onSave}
-                            >
-                                <v-icon class="text-white">mdi:mdi-send</v-icon>
-                                <v-tooltip activator="parent" location="top">
-                                    <p class="text-white">파일을 저장해 주세요.</p>
-                                </v-tooltip>
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                </v-card>
-            </v-container>
+                        </>
+                    )}
+                </div>
+                <div class="detail-page__actions flex items-center">
+                    <button type="button" class="btn-submit block h-100 w-100" onClick={onSave}>
+                        <i class="mdi mdi-send" />
+                        <span class="tooltip">문서를 저장합니다</span>
+                    </button>
+                </div>
+            </article>
         )
     }
 })

@@ -1,19 +1,31 @@
-@mixin neon-button ($background-color: #fff) {
-    border: none;
+@mixin pulse-animation($color) {
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba($color, 1);
+        }
+        50% {
+            box-shadow: 0 0 0 0.75rem rgba($color, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 3rem rgba($color, 0);
+        }
+    }
+    animation: pulse 1.5s infinite ease-out;
+}
+@mixin neon-button($background-color: #fff) {
     transition: 0.5s box-shadow ease;
     background: $background-color;
     box-shadow: 0 0 1.5rem $background-color;
     &:hover {
-      box-shadow: 
-        0 0 .5rem $background-color,
-        0 0 1rem $background-color,
-        0 0 3rem $background-color,
-        0 0 6rem $background-color;
+        box-shadow:
+            0 0 0.5rem $background-color,
+            0 0 1rem $background-color,
+            0 0 3rem $background-color,
+            0 0 6rem $background-color;
     }
 }
-
 @mixin hover-button {
-    transition: all .5s ease-out;
+    transition: all 0.5s ease-out;
     &:hover {
         background-color: rgba(170, 170, 170, 0.2);
     }
@@ -21,22 +33,23 @@
         transform: scale(1.2);
     }
 }
-@mixin tooltip () {
+@mixin tooltip() {
     position: relative;
     .tooltip {
         position: absolute;
-        z-index: 10000;
+        z-index: 10001;
         bottom: 125%;
         left: 50%;
-        padding: .25rem .5rem;
+        padding: 0.5rem 0.5rem;
         background-color: var(--dark-color);
         min-width: fit-content;
-        border-radius: .5rem;
+        border-radius: 0.5rem;
         visibility: hidden;
         opacity: 0;
         transition: opacity 0.3s;
         transform: translateX(-50%);
         // 폰트 관련
+        font-size: 0.9rem;
         text-align: center;
         white-space: nowrap;
         color: #fff;
@@ -45,33 +58,33 @@
         position: absolute;
         top: 100%;
         left: 50%;
-        border-width: .25rem;
+        border-width: 0.25rem;
         border-style: solid;
         border-color: var(--dark-color) transparent transparent transparent;
         transform: translateX(-50%);
-        content: "";
+        content: '';
     }
     &:hover .tooltip {
         visibility: visible;
         opacity: 1;
     }
     & .tooltip-bottom {
-        top: 100%;
+        top: 102%;
         left: 50%;
         bottom: unset !important;
     }
     & .tooltip-bottom::after {
         top: -0.5rem;
-        border-color: transparent transparent  var(--dark-color) transparent !important;
+        border-color: transparent transparent var(--dark-color) transparent !important;
     }
 }
-@mixin glass ($background-color: var(--window-color)) {
+@mixin glass($background-color: var(--window-color)) {
     border: 1px solid $background-color;
     background-color: $background-color;
-    backdrop-filter: blur(.75rem);
-    box-shadow: 0 .25rem 1rem rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(0.75rem);
+    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.3);
 }
-@mixin round-button($background-color, $height, $border-radius: .25rem) {
+@mixin round-button($background-color, $height, $border-radius: 0.25rem) {
     display: flex;
     justify-content: center;
     align-items: center;

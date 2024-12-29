@@ -1,6 +1,6 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
-.diary-page {
+.index-page {
     $article-header: 3rem;
     height: calc(100vh - variables.$app-dock-height);
     &__header {
@@ -10,18 +10,25 @@
             @include mixins.hover-button;
             @include mixins.tooltip;
             padding: 0 1rem;
-            &.btn-search-diary i {
-                font-size: 1.5rem;
+            &.btn-tree {
+                height: 2.25rem;
+                i {
+                    font-size: 1.5rem;
+                }
             }
-            &.btn-open-diary {
-                @include mixins.round-button(var(--folder-color), 2.25rem);
+            &.btn-files {
+                height: 2.25rem;
+                i {
+                    font-size: 1.5rem;
+                    color: var(--folder-color);
+                }
             }
         }
     }
     &__content {
         $item-width: 20rem;
         display: grid;
-        grid-template-rows: repeat(auto-fill, $item-width); 
+        grid-template-rows: repeat(auto-fill, $item-width);
         grid-template-columns: repeat(auto-fill, $item-width);
         height: calc(100vh - variables.$app-dock-height - $article-header);
         justify-content: center;

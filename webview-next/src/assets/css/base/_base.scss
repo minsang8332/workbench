@@ -30,6 +30,11 @@ li {
 code {
     background-color: unset !important;
 }
+textarea {
+    border: none;
+    resize: none;
+    outline: none;
+}
 p {
     margin: 0 !important;
 }

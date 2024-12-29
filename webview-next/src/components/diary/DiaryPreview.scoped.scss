@@ -1,7 +1,8 @@
 .diary-preview {
-    height: 100%;
     width: 100%;
-    overflow-y: scroll;
-    padding: .5rem;
+    height: 100%;
+    padding: 0.5rem;
     background-color: transparent;
+    min-height: unset !important;
+    overflow-y: scroll;
 }
