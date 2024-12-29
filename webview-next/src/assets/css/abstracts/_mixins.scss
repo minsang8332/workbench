@@ -1,0 +1,41 @@
+@mixin neon-button ($background-color: #fff) {
+    border: none;
+    transition: 0.5s box-shadow ease;
+    background: $background-color;
+    box-shadow: 0 0 25px $background-color;
+    &:hover {
+      box-shadow: 
+        0 0 5px $background-color,
+        0 0 25px $background-color,
+        0 0 50px $background-color,
+        0 0 100px $background-color;
+    }
+}
+@mixin tooltip () {
+  position: relative;
+  &:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+  .tooltip {
+    visibility: hidden;
+    background-color: var(--dark-color);
+    padding: .25rem .5rem;
+    min-width: fit-content;
+    border-radius: .5rem;
+    text-align: center;
+    color: #fff;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+  }
+}
+@mixin glass () {
+  background-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(.75rem);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 .25rem 1rem rgba(0, 0, 0, 0.3);
+}

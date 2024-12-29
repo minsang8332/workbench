@@ -2,7 +2,6 @@ import type { App } from 'vue'
 import Toastify from 'toastify-js'
 import { useAppStore } from '@/stores/app'
 import 'toastify-js/src/toastify.css'
-import '@/assets/css/toast.scss'
 export default {
     install(app: App) {
         const appStore = useAppStore()
@@ -78,7 +77,7 @@ export default {
             {
                 icon = 'mdi:mdi-emoticon-neutral-outline',
                 style = {
-                    background: String(appStore.scss('--failed-color'))
+                    background: String(appStore.scss('--danger-color'))
                 }
             } = {}
         ) => {

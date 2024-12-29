@@ -1,0 +1,20 @@
+@use "@/assets/css/abstracts/variables";
+@use "@/assets/css/abstracts/mixins";
+.app-dock {
+    @include mixins.glass;
+    height: variables.$app-dock-height;
+    button {
+        @include mixins.neon-button(var(--primary-color));
+        @include mixins.tooltip;
+        padding: 0 .75rem;
+        color: #fff;
+        height: 2rem;
+        i {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        &.btn-shutdown {
+            @include mixins.neon-button(var(--danger-color));
+        }
+    }
+}

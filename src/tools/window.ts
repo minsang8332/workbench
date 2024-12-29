@@ -1,5 +1,5 @@
-import { app, BrowserWindow, nativeImage } from 'electron'
 import path from 'path'
+import { app, BrowserWindow, nativeImage, Event } from 'electron'
 import { checkForUpdates } from '@/handler/updater'
 let mainWindow: BrowserWindow
 const creaateWindow = ({
@@ -27,9 +27,8 @@ const creaateWindow = ({
             contextIsolation: true,
         },
         title: `${app.getName()} v${app.getVersion()}`,
-        frame: false,
-        transparent: true,
         icon,
+        frame: !app.isPackaged,
         show: false,
     })
     window.setMenu(null)

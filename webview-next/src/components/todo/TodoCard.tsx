@@ -43,7 +43,7 @@ export default defineComponent({
                 const dDay = endedAt.diff(startedAt, 'day')
                 if (dDay >= 0) {
                     option.period = `D-${dDay}`
-                    option.color = appStore.scss('--failed-color')
+                    option.color = appStore.scss('--danger-color')
                 } 
                 /** @TODO 상수로 변경할 것 */
                 else if (props.status !== 2) {

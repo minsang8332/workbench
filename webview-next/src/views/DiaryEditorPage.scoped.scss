@@ -1,18 +1,20 @@
+@use '@/assets/css/abstracts/variables';
 .diary-editor-page {
     $rowHeader: 48px;
     $rowFooter: 48px;
-    height: calc(100vh - var(--app-header-height));
+    height: calc(100vh - variables.$app-dock-height);
+    max-height: calc(100vh - variables.$app-dock-height);
+    // padding-bottom: variables.$app-dock-height;
     &__card {
         &-header {
             height: $rowHeader;
             flex-shrink: 0;
         }
         &-editor {
-            height: calc(100% - $rowHeader - $rowFooter);
-            overflow-x: hidden;
+            height: calc(100vh - $rowHeader - $rowFooter - variables.$app-dock-height);
+            overflow-y: scroll;
             textarea {
                 background: rgba(246, 246, 246);
-                height: 100%;
                 font-family: 'd2coding', courier, monospace;
                 font-size: 14px;
                 border: none;
@@ -20,7 +22,6 @@
                 outline: none;
             }
             .resizer {
-                flex-shrink: 1;
                 position: relative;
                 height: 100%;
                 width: 4px;

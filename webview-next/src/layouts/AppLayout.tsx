@@ -1,21 +1,22 @@
 import { defineComponent } from 'vue'
 import { RouterView } from 'vue-router'
 import { useAppStore } from '@/stores/app'
-import AppHeader from '@/layouts/AppHeader'
+import AppDock from '@/layouts/AppDock'
 import AppModal from '@/layouts/AppModal'
+import '@/layouts/AppLayout.socped.scss'
 export default defineComponent({
     name: 'AppLayout',
     components: {
-        AppHeader,
+        AppDock,
         AppModal,
     },
     setup() {
         const appStore = useAppStore()
         return () => (
             <v-app class="app-layout">
-                <app-header />
                 <v-main>
                     <RouterView />
+                    <app-dock /> 
                 </v-main>
                 <app-modal
                     {...appStore.state.modalProps}

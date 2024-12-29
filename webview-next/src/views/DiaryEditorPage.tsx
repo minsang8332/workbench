@@ -198,14 +198,14 @@ export default defineComponent({
         onBeforeRouteUpdate((to, from, next) => preventRoute(next))
         return () => (
             <v-container
-                ref={containerRef}
-                class="diary-editor-page pa-0"
-                fluid
-                onMousemove={onResize}
-                onMouseup={onMouseUp}
+            ref={containerRef}
+            class="diary-editor-page pa-0"
+            fluid
+            onMousemove={onResize}
+            onMouseup={onMouseUp}
             >
                 <diary-drawer />
-                <v-card class="diary-editor-page__card fill-height" flat tile outlined>
+                <v-card class="diary-editor-page__card" flat tile outlined>
                     <v-row class="diary-editor-page__card-header text-truncate" no-gutters>
                         <v-col class="d-flex align-center">
                             <v-btn
@@ -245,7 +245,7 @@ export default defineComponent({
                     </v-row>
                     <v-divider color={appStore.scss('--theme-color-1')} />
                     <v-row class="diary-editor-page__card-editor" no-gutters>
-                        <v-col class="d-flex fill-height">
+                        <v-col class="d-flex">
                             <textarea
                                 v-model={state.updatedText}
                                 class="d2coding pa-2"

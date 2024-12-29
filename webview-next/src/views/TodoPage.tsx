@@ -218,7 +218,7 @@ export default defineComponent({
                 <v-card class="todo-page__card" flat>
                     <v-row class="flex-0-0" no-gutters>
                         <v-col class="d-flex align-center ga-2 pl-6">
-                            <h3 class="text-title">작업 관리</h3>
+                            <h3 class="text-3xl">작업 관리</h3>
                         </v-col>
                         <v-col class="align-center" align="end">
                             <v-btn
