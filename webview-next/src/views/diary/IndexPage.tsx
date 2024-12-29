@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, ref, unref, watch } from 'vue'
+import { defineComponent, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDiaryStore } from '@/stores/diary'
 import DiaryCard from '@/components/diary/DiaryCard'
@@ -17,7 +17,7 @@ export default defineComponent({
         const onMoveDiary = (diary: IDiary) => {
             router
                 .replace({
-                    name: 'diary-editor',
+                    name: 'diary-detail',
                     params: {
                         path: diary.path
                     }
@@ -67,7 +67,7 @@ export default defineComponent({
                     </div>
                 </div>
                 <div class="index-page__content">
-                    {unref(recentDiaries).map((diary: IDiaryWithText) => (
+                    {recentDiaries.value.map((diary: IDiaryWithText) => (
                         <div class="index-page__content-item">
                             <diary-card {...diary} onclick={() => onMoveDiary(diary)} />
                         </div>

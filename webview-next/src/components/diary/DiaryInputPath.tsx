@@ -85,7 +85,7 @@ export default defineComponent({
                 if (route.params.path == props.path) {
                     router
                         .replace({
-                            name: 'diary-editor',
+                            name: 'diary-detail',
                             params: { path: renamed }
                         })
                         .catch((e) => e)

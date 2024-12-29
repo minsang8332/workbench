@@ -1,0 +1,51 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.index-page {
+    $article-header: 3rem;
+    height: calc(100vh - variables.$app-dock-height);
+    &__header {
+        @include mixins.glass;
+        height: $article-header;
+        button {
+            @include mixins.hover-button;
+            @include mixins.tooltip;
+            padding: 0 1rem;
+            height: 2.25rem;
+            i {
+                font-size: 1.5rem;
+            }
+            i.mdi-flag-variant {
+                color: var(--todo-color);
+            }
+        }
+    }
+    &__content {
+        position: relative;
+        overflow: scroll;
+        &-item {
+            height: 100%;
+            $boxWidth: 16 * 1rem;
+            min-width: $boxWidth;
+            max-width: $boxWidth;
+            background: rgba(246, 246, 246);
+            h5 {
+                font-size: 1rem;
+            }
+        }
+        // 우측 공간 뿌옇게 함
+        &:after {
+            position: fixed;
+            right: 0;
+            width: 24px;
+            height: 100%;
+            content: '';
+            z-index: 1;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0,
+                rgba(255, 255, 255, 0.7) 40%,
+                #fff 70%
+            );
+        }
+    }
+}

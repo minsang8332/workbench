@@ -63,7 +63,7 @@ export default defineComponent({
             if (props.isDir) {
                 return
             }
-            router.replace({ name: 'diary-editor', params: { path: props.path } }).catch((e) => e)
+            router.replace({ name: 'diary-detail', params: { path: props.path } }).catch((e) => e)
         }
         // 메뉴창 열기
         const onMenu = (event: MouseEvent) => {
@@ -188,7 +188,7 @@ export default defineComponent({
                 if (route.params.path == target) {
                     router
                         .replace({
-                            name: 'diary-editor',
+                            name: 'diary-detail',
                             params: { path: moved }
                         })
                         .catch((e) => e)

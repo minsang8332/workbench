@@ -1,8 +1,13 @@
 import _ from 'lodash'
-import { unref, computed, defineComponent } from "vue"
+import { unref, computed, defineComponent } from 'vue'
 import dayjs from 'dayjs'
 import './TodoCard.scoped.scss'
-import { useAppStore } from '@/stores/app'
+interface TodoCard {
+    dDay?: number
+}
+enum TodoCardStatus {
+    EXPIRED = '기한만료'
+}
 export default defineComponent({
     name: 'TodoCard',
     emits: ['remove'],
@@ -26,64 +31,53 @@ export default defineComponent({
         endedAt: {
             type: [String, null],
             default: null
-        },
+        }
     },
-    setup (props, { emit }) {
-        const appStore = useAppStore()
-        const getOption = computed(() => {
+    setup(props, { emit }) {
+        const getProps = computed(() => {
             const startedAt = dayjs(unref(props.startedAt))
             const endedAt = dayjs(unref(props.endedAt))
-            const option: {
-                period: string | null
-                color?: string
-            } = {
-                period: null,
-            }
+            const value: TodoCard = {}
             if (startedAt.isValid() && endedAt.isValid()) {
-                const dDay = endedAt.diff(startedAt, 'day')
-                if (dDay >= 0) {
-                    option.period = `D-${dDay}`
-                    option.color = appStore.scss('--danger-color')
-                } 
-                /** @TODO 상수로 변경할 것 */
-                else if (props.status !== 2) {
-                    option.period = '기한 만료'
-                }
+                const dDay = endedAt.startOf('day').diff(dayjs(new Date()).startOf('day'), 'day')
+                value.dDay = dDay
             }
-            return option
+            return value
         })
+        const isExpired = computed(
+            () => _.isNumber(getProps.value.dDay) && getProps.value.dDay > 0 && props.status !== 2
+        )
         const onBeforeRemove = (event: Event) => {
             event.stopPropagation()
             emit('remove', props)
         }
-        return () => <v-card class="todo-card" outlined v-ripple>
-            <v-row class="pt-2 px-2 flex-grow-0" no-gutters>
-                <v-col cols="9" class="pl-2" align-self="center">
-                    <h5 class="text-truncate">{ props.title }</h5>
-                </v-col>
-                <v-col cols="3" align="end">
-                    <v-btn variant="text" density="comfortable" size="small" icon on:click={onBeforeRemove}>
-                        <v-icon>mdi:mdi-close</v-icon>
-                        <v-tooltip activator="parent" location="top">
-                            <p class="text-white">삭제하기</p>
-                        </v-tooltip>
-                    </v-btn>
-                </v-col>
-            </v-row>
-            <v-row class="py-2 px-2 d-flex align-end" no-gutters>
-                <v-col align="end">
+        return () => (
+            <div class="todo-card flex flex-col">
+                <div class="todo-card__header flex justify-between items-start">
+                    <div class="flex items-center gap-2 w-75">
+                        <b class="text-truncate">{props.title}</b>
+                    </div>
+                    <div class="flex justify-end items-center w-25">
+                        <button type="button" class="btn-close" onClick={onBeforeRemove}>
+                            <i class="mdi mdi-close" />
+                        </button>
+                    </div>
+                </div>
+                <div class="todo-card__actions flex justify-end items-end">
                     {
-                        unref(getOption).period &&
-                        <v-chip
-                            size="small"
-                            color={unref(getOption).color}
-                            variant="outlined"
+                        <div
+                            class={[
+                                'period',
+                                isExpired.value ? 'period--expired' : 'period--alive'
+                            ].join(' ')}
                         >
-                            { unref(getOption).period }
-                        </v-chip>
+                            {isExpired.value
+                                ? TodoCardStatus.EXPIRED
+                                : `${getProps.value.dDay}일 전`}
+                        </div>
                     }
-                </v-col>
-            </v-row>
-        </v-card>
+                </div>
+            </div>
+        )
     }
 })

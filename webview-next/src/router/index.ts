@@ -9,20 +9,20 @@ const router = createRouter({
             children: [
                 {
                     name: 'diary',
-                    path: '/diary',
-                    component: () => import('@/views/diary/IndexPage'),
+                    path: 'diary',
+                    component: () => import('@/views/diary/IndexPage')
                 },
                 {
-                    name: 'diary-editor',
-                    path: '/diary/:path',
+                    name: 'diary-detail',
+                    path: 'diary/:path',
                     component: () => import('@/views/diary/DetailPage'),
                     props: true
                 },
                 {
                     name: 'todo',
-                    path: '/todo',
-                    component: () => import('@/views/TodoPage'),
-                },
+                    path: 'todo',
+                    component: () => import('@/views/todo/IndexPage')
+                }
             ]
         },
         // not-found 핸들링

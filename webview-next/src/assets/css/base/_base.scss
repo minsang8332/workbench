@@ -7,6 +7,7 @@
     --danger-color: #{variables.$danger-color};
     --success-color: #{variables.$success-color};
     --window-color: #{variables.$window-color};
+    --todo-color: #{variables.$todo-color};
     /** TODO 걷어내기 */
     --theme-color: var(--primary-color);
     --app-drawer-width: 300;
@@ -16,6 +17,7 @@
 }
 * {
     scroll-behavior: smooth;
+    outline: none;
 }
 html {
     font-size: 16px;
@@ -30,16 +32,13 @@ li {
 code {
     background-color: unset !important;
 }
+input,
 textarea {
     border: none;
     resize: none;
-    outline: none;
 }
 p {
     margin: 0 !important;
-}
-button {
-    outline: none;
 }
 p,
 span,

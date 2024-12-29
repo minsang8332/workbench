@@ -1,13 +1,38 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
 .todo-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 6rem;
+    @include mixins.glass;
     cursor: pointer;
-    h5 {
-        font-size: 1rem;
+    padding: 0.5rem;
+    &__header {
+        flex: 0 1 50%;
+        button.btn-close {
+            @include mixins.hover-button;
+            border-radius: 0.25rem;
+            padding: 0.1rem;
+            i {
+                font-size: 1.2rem;
+            }
+        }
     }
-    .period {
-        font-size: .9rem;
+    &__actions {
+        flex: 0 1 50%;
+        .period {
+            background-color: #c3c3c3;
+            color: #fff;
+            height: fit-content;
+            width: fit-content;
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.9rem;
+            text-wrap: nowrap;
+            box-shadow: 0 0.1rem 0.25rem rgba(0, 0, 0, 0.3);
+            &--alive {
+                background-color: var(--success-color);
+            }
+            &--expired {
+                background-color: var(--danger-color);
+            }
+        }
     }
 }
