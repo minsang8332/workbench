@@ -42,7 +42,7 @@ export default defineComponent({
         return () => (
             <article class="diary-page">
                 <diary-drawer />
-                <div class="diary-page__header row-between">
+                <div class="diary-page__header row-between px-2">
                     <div class="flex items-center">
                         <button type="button" class="btn-search-diary" onClick={() => diaryStore.toggleDrawer()}>
                             <i class="mdi mdi-menu" />

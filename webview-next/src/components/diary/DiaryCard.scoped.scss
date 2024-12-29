@@ -1,21 +1,33 @@
+@use '@/assets/css/abstracts/mixins';
 .diary-card {
-    border: 1px solid var(--theme-color-1);
+    @include mixins.glass;
     height: 100%;
-    &__filename {
+    transition-property: transform, opacity;
+    transition: .5s ease;
+    &__header {
+        border-bottom: 1px solid var(--border-color);
         height: 10%;
         p {
-            font-size: 14px;
+            font-size: 1rem;
+            line-height: 1;
+            font-weight: 700;
         }
-
     }
-    &__preview {
+    &__content {
         height: 70%;
         overflow-y: hidden;
+        width: 100%;
     }
-    &__created-at {
+    &__footer {
+        border-top: 1px solid var(--border-color);
         height: 20%;
         p {
-            font-size: 14px;
+            font-size: .9rem;
+            line-height: 1;
         }
+    }
+    &:hover {
+        transform: scale(.95);
+        opacity: .5;
     }
 }

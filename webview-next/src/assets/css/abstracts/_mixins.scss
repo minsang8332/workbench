@@ -2,13 +2,13 @@
     border: none;
     transition: 0.5s box-shadow ease;
     background: $background-color;
-    box-shadow: 0 0 25px $background-color;
+    box-shadow: 0 0 1.5rem $background-color;
     &:hover {
       box-shadow: 
-        0 0 5px $background-color,
-        0 0 25px $background-color,
-        0 0 50px $background-color,
-        0 0 100px $background-color;
+        0 0 .5rem $background-color,
+        0 0 1rem $background-color,
+        0 0 3rem $background-color,
+        0 0 6rem $background-color;
     }
 }
 
@@ -25,7 +25,7 @@
     position: relative;
     .tooltip {
         position: absolute;
-        z-index: 1;
+        z-index: 10000;
         bottom: 125%;
         left: 50%;
         padding: .25rem .5rem;
@@ -65,9 +65,31 @@
         border-color: transparent transparent  var(--dark-color) transparent !important;
     }
 }
-@mixin glass ($background-color: #fff) {
+@mixin glass ($background-color: var(--window-color)) {
     border: 1px solid $background-color;
     background-color: $background-color;
     backdrop-filter: blur(.75rem);
     box-shadow: 0 .25rem 1rem rgba(0, 0, 0, 0.3);
+}
+@mixin round-button($background-color, $height, $border-radius: .25rem) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: $height;
+    height: $height;
+    border-radius: $border-radius;
+    background-color: $background-color;
+    transition: 0.3s;
+    i {
+        transition: 0.3s;
+        font-size: ($height * 0.75);
+        color: #fff;
+    }
+    &:hover {
+        background-color: #f2f2f2;
+        box-shadow: 0px 0px 6px 3px var(--dark-light-color);
+        i {
+            color: $background-color;
+        }
+    }
 }

@@ -1,20 +1,26 @@
 @use "@/assets/css/abstracts/variables";
 @use "@/assets/css/abstracts/mixins";
 .app-dock {
-    @include mixins.glass(#f0f0f0);
+    @include mixins.glass;
     height: variables.$app-dock-height;
     button {
-        @include mixins.neon-button(var(--primary-color));
+        @include mixins.hover-button;
         @include mixins.tooltip;
         padding: 0 .75rem;
         color: #fff;
         height: 2rem;
         i {
             font-size: 1.5rem;
-            line-height: 1;
+            color: var(--dark-color);
+        }
+        &.btn-diary {
+            @include mixins.round-button(#3E2723, 2.25rem);
+        }
+        &.btn-todo {
+            @include mixins.round-button(#9E2A2F, 2.25rem);
         }
         &.btn-shutdown {
-            @include mixins.neon-button(var(--danger-color));
+            @include mixins.round-button(var(--primary-color), 2.25rem);
         }
-    }
+    }    
 }

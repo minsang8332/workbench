@@ -4,7 +4,7 @@
     $article-header: 3rem;
     height: calc(100vh - variables.$app-dock-height);
     &__header {
-        @include mixins.glass(#f0f0f0);
+        @include mixins.glass;
         height: $article-header;
         button {
             @include mixins.hover-button;
@@ -13,9 +13,8 @@
             &.btn-search-diary i {
                 font-size: 1.5rem;
             }
-            &.btn-open-diary i {
-                font-size: 1.5rem;
-                color: var(--folder-color);
+            &.btn-open-diary {
+                @include mixins.round-button(var(--folder-color), 2.25rem);
             }
         }
     }

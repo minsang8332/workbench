@@ -3,11 +3,13 @@
     --dark-color: #{variables.$dark-color};
     --primary-color: #{variables.$primary-color};
     --folder-color: #{variables.$folder-color};
+    --border-color: #{variables.$border-color};
     --danger-color: #{variables.$danger-color};
+    --theme-color-1: #{variables.$dark-light-color};
+    --success-color: #{variables.$success-color};
+    --window-color: #{variables.$window-color};
     /** */
     --app-drawer-width: 300;
-    --theme-color-1: #{variables.$dark-light-color};
-    --success-color: #06d6a0;
 }
 *::-webkit-scrollbar {
     display: none;
@@ -38,8 +40,10 @@ h1, h2, h3, h4, h5 {
     font-family: 'Pretendard Bold';
 }
 ul {
-    list-style: none;
     padding-left: unset !important;
+}
+li {
+    list-style: none;
 }
 code {
     background-color: unset !important;

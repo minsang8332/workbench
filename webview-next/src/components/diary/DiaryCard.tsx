@@ -41,30 +41,22 @@ export default defineComponent({
             return print
         }
         return () => (
-            <v-card class="diary-card" width={props.width} hover v-ripple>
-                <v-row class="diary-card__filename bg-theme-1 px-2" no-gutters>
-                    <v-col class="d-flex align-center fill-height text-truncate">
-                        <p class="d2coding">{props.filename}</p>
-                    </v-col>
-                </v-row>
-                <v-divider />
-                <v-row class="diary-card__preview" no-gutters>
-                    <v-col class="fill-height">
-                        <diary-preview value={props.text} />
-                    </v-col>
-                </v-row>
-                <v-divider />
-                <v-row class="diary-card__created-at bg-theme-1 px-2" no-gutters>
-                    <v-col class="d-flex flex-column justify-center text-truncate">
-                        <p class="d2coding text-truncate">
-                            작성일 {printDate(props.createdAt)}
-                        </p>
-                        <p class="d2coding text-truncate">
-                            수정일 {printDate(props.updatedAt)}
-                        </p>
-                    </v-col>
-                </v-row>
-            </v-card>
+            <div class="diary-card">
+                <div class="diary-card__header flex justify-between items-center px-2">
+                    <p>{props.filename}</p>
+                </div>
+                <div class="diary-card__content">
+                    <diary-preview value={props.text} />
+                </div>
+                <div class="diary-card__footer flex flex-start flex-col justify-evenly px-2">
+                    <p>
+                        작성일 {printDate(props.createdAt)}
+                    </p>
+                    <p>
+                        수정일 {printDate(props.updatedAt)}
+                    </p>
+                </div>
+            </div>
         )
     }
 })
