@@ -1,8 +1,11 @@
+@use '@/assets/css/abstracts/variables';
 .diary-tree {
-    &__title {
-        font-size: 14px;
+    i {
+        font-size: 1.25rem;
+        line-height: 1;
+        color: var(--dark-color);
     }
-    &__gap {
-        margin-right: 2px;
+    i.mdi-folder {
+        color: var(--folder-color);
     }
 }

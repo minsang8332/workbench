@@ -124,7 +124,11 @@ export default defineComponent({
                     color: appStore.scss('--dark-color'),
                     cb() {
                         if (unref(diaryStore.getEdited)) {
-                            $toast.error(new Error('문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.'))
+                            $toast.error(
+                                new Error(
+                                    '문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.'
+                                )
+                            )
                             return
                         }
                         renaming.value = true
@@ -208,74 +212,42 @@ export default defineComponent({
         return () =>
             props.depth >= 0 &&
             props.depth <= props.maxDepth && (
-                <v-card class="diary-tree" flat transparent>
-                    {
-                        <v-row
-                            v-ripple={!unref(isRenaming)}
-                            onDblclick={onDblClick}
-                            onClick={toggleVisible}
-                            onMouseup={onMenu}
-                            no-gutters
+                <div class="diary-tree">
+                    <div
+                        class="diary-tree__content"
+                        v-ripple={!unref(isRenaming)}
+                        onDblclick={onDblClick}
+                        onClick={toggleVisible}
+                        onMouseup={onMenu}
+                        no-gutters
+                    >
+                        <div
+                            class="flex items-center gap-1"
+                            style={{ marginLeft: props.depth * 1.5 + 'rem' }}
+                            draggable={!unref(isRenaming)}
+                            onDragenter={onPrevent}
+                            onDragover={onPrevent}
+                            onDragstart={onDragstart}
+                            onDrop={onDrop}
                         >
-                            <v-col>
-                                <v-row
-                                    draggable={!unref(isRenaming)}
-                                    onDragenter={onPrevent}
-                                    onDragover={onPrevent}
-                                    onDragstart={onDragstart}
-                                    onDrop={onDrop}
-                                    no-gutters
-                                >
-                                    {props.depth > 0 && (
-                                        <v-col class="text-right" cols={props.depth}>
-                                            {props.isDir && (
-                                                <v-icon
-                                                    color={appStore.scss('--dark-color')}
-                                                    size="small"
-                                                    icon="mdi:mdi-chevron-right"
-                                                />
-                                            )}
-                                        </v-col>
-                                    )}
-                                    <v-col class="d-flex align-center text-truncate">
-                                        {props.isDir ? (
-                                            <v-icon
-                                                class="diary-tree__gap"
-                                                size="small"
-                                                color={appStore.scss('--folder-color')}
-                                                icon="mdi:mdi-folder"
-                                            />
-                                        ) : (
-                                            <v-icon
-                                                class="diary-tree__gap"
-                                                size="small"
-                                                color={appStore.scss('--dark-color')}
-                                                icon="mdi:mdi-file-document-outline"
-                                            />
-                                        )}
-                                        {unref(isRenaming) ? (
-                                            <diary-input-path
-                                                path={props.path}
-                                                onToggle={toggleRenaming}
-                                            />
-                                        ) : (
-                                            <b class="diary-tree__title">{props.title}</b>
-                                        )}
-                                    </v-col>
-                                </v-row>
-                            </v-col>
-                        </v-row>
-                    }
-                    {_.isArray(props.items) && props.items.length > 0 && visible.value && (
-                        <v-row no-gutters>
-                            <v-col>
-                                {props.items.map((item) => (
-                                    <diary-tree {...item} depth={props.depth + 1} />
-                                ))}
-                            </v-col>
-                        </v-row>
-                    )}
-                </v-card>
+                            {props.depth > 0 && props.isDir && <i class="mdi mdi-chevron-right" />}
+                            {props.isDir ? (
+                                <i class="mdi mdi-folder" />
+                            ) : (
+                                <i class="mdi mdi-file-document-outline" />
+                            )}
+                            {unref(isRenaming) ? (
+                                <diary-input-path path={props.path} onToggle={toggleRenaming} />
+                            ) : (
+                                <b class="diary-tree__title">{props.title}</b>
+                            )}
+                        </div>
+                    </div>
+                    {_.isArray(props.items) &&
+                        props.items.length > 0 &&
+                        visible.value &&
+                        props.items.map((item) => <diary-tree {...item} depth={props.depth + 1} />)}
+                </div>
             )
     }
 })
