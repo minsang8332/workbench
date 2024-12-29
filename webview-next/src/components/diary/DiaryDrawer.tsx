@@ -27,18 +27,14 @@ export default defineComponent({
                     clipped
                     mobile-breakpoint="0"
                 >
-                    <v-card class="diary-drawer__container" tile flat>
-                        <v-row class="scroll-card" no-gutters>
-                            <v-col>
-                                <diary-tree
-                                    title={`전체 (${diaryStore.cntDiaries})`}
-                                    items={diaryStore.treeDiaries}
-                                    is-dir
-                                    class="pa-2"
-                                />
-                            </v-col>
-                        </v-row>
-                    </v-card>
+                    <div class="diary-drawer__content">
+                        <diary-tree
+                            title={`전체 (${diaryStore.cntDiaries})`}
+                            items={diaryStore.treeDiaries}
+                            is-dir
+                            class="pa-2"
+                        />
+                    </div>
                 </v-navigation-drawer>
             </>
         )

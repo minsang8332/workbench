@@ -68,40 +68,27 @@ export default defineComponent({
                 onFocusout={onFocusout}
                 tabindex="0"
             >
-                <v-row class="bg-theme-1" no-gutters dense>
-                    <v-col align="end">
-                        <v-btn size="small" dense variant="text" onClick={onClose}>
-                            <v-icon class="text-white">mdi:mdi-close</v-icon>
-                        </v-btn>
-                    </v-col>
-                </v-row>
-                <v-divider />
-                <v-row no-gutters>
-                    <v-col>
-                        <ul class="fill-width">
-                            {unref(props.items).map((item) => (
-                                <v-btn
-                                    class="d-flex justify-space-between"
-                                    variant="text"
-                                    block
-                                    onClick={() => onClickItem(item)}
-                                >
-                                    {{
-                                        default: () => <div class="d-flex align-center">
-                                            <v-icon class="mr-1" color={item.color}>
-                                                {item.icon}
-                                            </v-icon>
-                                            <b class="app-menu__desc">{item.desc}</b>
-                                        </div>,
-                                        append: () => item.shortcut && (
-                                            <b class="app-menu__shortcut">({item.shortcut})</b>
-                                        )
-                                    }}
-                                </v-btn>
-                            ))}
-                        </ul>
-                    </v-col>
-                </v-row>
+                <div class="app-menu__header flex justify-end items-center h-7 px-2 w-100">
+                    <button type="button" class="btn-close" onClick={onClose}>
+                        <i class="mdi mdi-close" />
+                    </button>
+                </div>
+                <div class="app-menu__content flex flex-col items-center gap-2">
+                    {unref(props.items).map((item) => (
+                        <button
+                            type="button"
+                            class="flex justify-between items-center h-6 px-2 w-100"
+                            v-ripple
+                            onClick={(event) => onClickItem(item)}
+                        >
+                            <div class="flex items-center gap-1">
+                                <i class={item.icon} style={{ color: item.color }}></i>
+                                <b class="text-label">{item.desc}</b>
+                            </div>
+                            {item.shortcut && <b class="text-shortcut">({item.shortcut})</b>}
+                        </button>
+                    ))}
+                </div>
             </div>
         )
     }

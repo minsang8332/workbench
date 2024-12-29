@@ -1,17 +1,34 @@
+@use '@/assets/css/abstracts/mixins';
 .app-menu {
+    @include mixins.glass;
     position: absolute;
-    z-index: 9999;
-    width: calc(12px * 18);
     top: 0;
     left: 0;
-    background: #fff;
-    border: 1px solid var(--dark-color);
-    border-radius: 4px;
-    outline: none;
-    &__desc  {
-        font-size: 14px;
+    z-index: 10000;
+    width: calc(1rem * 15);
+    border-radius: 0.25rem;
+    overflow: hidden;
+    &__header {
+        background-color: var(--theme-color);
+        button.btn-close {
+            @include mixins.hover-button;
+            border-radius: 0.25rem;
+            padding: 0.1rem;
+            i {
+                font-size: 1.2rem;
+                color: #fff;
+            }
+        }
+        box-shadow: 0 0.1rem 0.5rem rgba(0, 0, 0, 0.3);
     }
-    &__shortcut  {
-        font-size: 14px;
+    &__content {
+        padding: 0.5rem 0;
+        .text-label {
+            font-size: 0.9rem;
+        }
+        .text-shortcut {
+            font-size: 0.9rem;
+            letter-spacing: 0;
+        }
     }
 }

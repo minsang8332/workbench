@@ -1,11 +1,3 @@
 .diary-drwaer {
     height: 100%;
-    &__container {
-        position: relative;
-        height: 100%;
-        .scroll-card {
-            height: calc(100vh - var(--app-header-height));
-            overflow: scroll;
-        }
-    }
 }
