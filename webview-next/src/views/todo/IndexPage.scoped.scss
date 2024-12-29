@@ -20,24 +20,35 @@
         }
     }
     &__content {
-        position: relative;
+        height: 100%;
         overflow: scroll;
+        padding: 1rem;
         &-item {
+            &-header {
+                background-color: var(--todo-color);
+                color: #fff;
+            }
+            height: calc(100vh - variables.$app-dock-height - $article-header);
+            $item-size: 16rem;
             height: 100%;
-            $boxWidth: 16 * 1rem;
-            min-width: $boxWidth;
-            max-width: $boxWidth;
-            background: rgba(246, 246, 246);
+            width: calc($item-size + 2rem);
+            min-width: calc($item-size + 1rem);
+            background: #f6f6f6;
             h5 {
                 font-size: 1rem;
             }
+            .todo-card {
+                width: $item-size;
+                height: calc($item-size / 1.5);
+            }
         }
         // 우측 공간 뿌옇게 함
+        /*
         &:after {
             position: fixed;
             right: 0;
-            width: 24px;
-            height: 100%;
+            width: 1.5rem;
+            height: calc(100vh - variables.$app-dock-height - $article-header);
             content: '';
             z-index: 1;
             background: linear-gradient(
@@ -47,5 +58,6 @@
                 #fff 70%
             );
         }
+        */
     }
 }

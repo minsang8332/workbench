@@ -45,7 +45,7 @@ export default defineComponent({
             return value
         })
         const isExpired = computed(
-            () => _.isNumber(getProps.value.dDay) && getProps.value.dDay > 0 && props.status !== 2
+            () => _.isNumber(getProps.value.dDay) && getProps.value.dDay < 0 && props.status !== 2
         )
         const onBeforeRemove = (event: Event) => {
             event.stopPropagation()
@@ -68,7 +68,7 @@ export default defineComponent({
                         <div
                             class={[
                                 'period',
-                                isExpired.value ? 'period--expired' : 'period--alive'
+                                isExpired.value == true ? 'period--expired' : 'period--alive'
                             ].join(' ')}
                         >
                             {isExpired.value

@@ -1,7 +1,7 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
 .todo-card {
-    @include mixins.glass;
+    @include mixins.glass(#fff);
     cursor: pointer;
     padding: 0.5rem;
     &__header {

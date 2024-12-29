@@ -84,11 +84,11 @@ export default defineComponent({
             }
         }
         const onScrollX = (event: WheelEvent) => {
-            const container = unref(contentRef)
-            if (!(container && container.$el)) {
+            const content = unref(contentRef) as HTMLElement
+            if (_.isUndefined(content)) {
                 return
             }
-            container.$el.scrollLeft += event.deltaY
+            content.scrollLeft += event.deltaY
         }
         const onRefresh = () => todoStore.loadTodos().catch((e) => e)
         const onBeforeRemove = ({ title, id }: { title: string; id: string }) => {
@@ -234,7 +234,7 @@ export default defineComponent({
                         <todo-form {...state.formProps} onSubmit={onSubmit} onCancel={onCancel} />
                     </app-modal>
                 </Teleport>
-                <div class="index-page__header row-between px-2">
+                <div class="index-page__header flex justify-between items-center px-2">
                     <div class="flex items-center">
                         <button type="button" onClick={() => toggleForm(true)}>
                             <i class="mdi mdi-flag-variant" />
@@ -257,49 +257,44 @@ export default defineComponent({
                         </button>
                     </div>
                 </div>
-                <div ref={contentRef} class="index-page__content" onWheel={onScrollX}>
+                <div
+                    ref={contentRef}
+                    class="index-page__content flex justify-center items-center gap-4"
+                    onWheel={onScrollX}
+                >
                     {filterTodosByStatus.value.map((todos: any) => (
-                        <v-card
-                            class="todo-page__content-item"
-                            outlined
+                        <div
+                            class="index-page__content-item"
                             onMouseup={(event: MouseEvent) => onMenu(event, { payload: todos })}
                             onDragenter={onPrevent}
                             onDragover={onPrevent}
                             onDrop={(event: DragEvent) => onDrop(event, todos.value)}
                         >
-                            <v-row class="bg-theme-1 py-2 px-4" no-gutters>
-                                <v-col>
-                                    <h5 class="text-title">{todos.label}</h5>
-                                </v-col>
-                                <v-col align="end">
-                                    <h5 class="text-title">{todos.items.length}</h5>
-                                </v-col>
-                            </v-row>
-                            <v-row no-gutters>
-                                <v-col class="d-flex flex-column ga-3 pa-2">
-                                    {todos.items.map((todo: ITodo) => (
-                                        <todo-card
-                                            {...todo}
-                                            onClick={() => toggleForm(true, todo)}
-                                            onMouseup={(event: MouseEvent) =>
-                                                onMenu(event, {
-                                                    type: 'card',
-                                                    payload: todo
-                                                })
-                                            }
-                                            onRemove={onBeforeRemove}
-                                            draggable
-                                            onDragenter={onPrevent}
-                                            onDragover={onPrevent}
-                                            onDragstart={(event: DragEvent) =>
-                                                onDragstart(event, todo)
-                                            }
-                                            class="h-40 w-80"
-                                        />
-                                    ))}
-                                </v-col>
-                            </v-row>
-                        </v-card>
+                            <div class="index-page__content-item-header flex justify-between items-center p-3 px-4">
+                                <h5 class="text-title">{todos.label}</h5>
+                                <h5 class="text-title">{todos.items.length}</h5>
+                            </div>
+                            <div class="flex flex-col justify-center items-center pa-4 gap-4">
+                                {todos.items.map((todo: ITodo) => (
+                                    <todo-card
+                                        {...todo}
+                                        class="todo-card"
+                                        onClick={() => toggleForm(true, todo)}
+                                        onMouseup={(event: MouseEvent) =>
+                                            onMenu(event, {
+                                                type: 'card',
+                                                payload: todo
+                                            })
+                                        }
+                                        onRemove={onBeforeRemove}
+                                        draggable
+                                        onDragenter={onPrevent}
+                                        onDragover={onPrevent}
+                                        onDragstart={(event: DragEvent) => onDragstart(event, todo)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
                     ))}
                 </div>
             </div>
