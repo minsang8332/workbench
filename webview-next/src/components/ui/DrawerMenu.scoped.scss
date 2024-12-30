@@ -4,8 +4,8 @@
     @include mixins.glass;
     height: 100vh;
     max-width: variables.$drawer-menu-width;
-    transition-property: width, padding;
-    transition: 0.25s ease-in-out;
+    transition-property: width;
+    transition: 0.3s ease-out;
     overflow: hidden;
     width: 0;
     padding: 0;

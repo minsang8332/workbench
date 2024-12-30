@@ -15,7 +15,14 @@ export default defineComponent({
         })
         return () => (
             <aside class={getClassList.value}>
-                <div class="drawer-menu__content">{slots.default && slots.default()}</div>
+                <div
+                    class="drawer-menu__content"
+                    style={{
+                        display: !appStore.getDrawer ? 'none' : 'block'
+                    }}
+                >
+                    {slots.default && slots.default()}
+                </div>
             </aside>
         )
     }

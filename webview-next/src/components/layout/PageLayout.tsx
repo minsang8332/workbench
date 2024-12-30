@@ -18,7 +18,7 @@ export default defineComponent({
         const route = useRoute()
         const appStore = useAppStore()
         return () => (
-            <main class="page-layout flex justify-between">
+            <main class={'page-layout flex justify-between'}>
                 <modal-dialog
                     {...appStore.state.modalProps}
                     model-value={appStore.state.modal}
@@ -30,14 +30,14 @@ export default defineComponent({
                     model-value={appStore.state.menu}
                     onUpdate:modelValue={appStore.toggleMenu}
                 />
-                <section class="flex-shrink-1">
+                <section class="shrink">
                     {route.matched.some((r) => r && r.components && r.components.drawer) && (
-                        <drawer-menu>
+                        <drawer-menu class={appStore.getDrawer && 'mr-1'}>
                             <router-view name="drawer" />
                         </drawer-menu>
                     )}
                 </section>
-                <section class="flex flex-col flex-grow-1">
+                <section class="flex flex-col grow">
                     <router-view />
                     <dock-menu />
                 </section>
