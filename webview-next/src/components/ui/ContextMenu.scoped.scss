@@ -1,6 +1,6 @@
 @use '@/assets/css/abstracts/mixins';
-.app-menu {
-    @include mixins.glass;
+.context-menu {
+    @include mixins.glass(#fff);
     position: absolute;
     top: 0;
     left: 0;
@@ -9,14 +9,13 @@
     border-radius: 0.25rem;
     overflow: hidden;
     &__header {
-        background-color: var(--theme-color);
+        @include mixins.glass;
         button.btn-close {
             @include mixins.hover-button;
             border-radius: 0.25rem;
             padding: 0.1rem;
             i {
                 font-size: 1.2rem;
-                color: #fff;
             }
         }
         box-shadow: 0 0.1rem 0.5rem rgba(0, 0, 0, 0.3);

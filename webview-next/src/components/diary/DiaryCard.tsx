@@ -1,11 +1,11 @@
 import { defineComponent, type PropType } from 'vue'
 import dayjs from 'dayjs'
-import DiaryPreview from '@/components/diary/DiaryPreview'
+import MarkdownPreview from '@/components/ui/MarkdownPreview'
 import '@/components/diary/DiaryCard.scoped.scss'
 export default defineComponent({
     name: 'DiaryCard',
     components: {
-        DiaryPreview
+        MarkdownPreview
     },
     props: {
         filename: {
@@ -46,15 +46,11 @@ export default defineComponent({
                     <p>{props.filename}</p>
                 </div>
                 <div class="diary-card__content">
-                    <diary-preview value={props.text} />
+                    <markdown-preview value={props.text} />
                 </div>
                 <div class="diary-card__footer flex flex-start flex-col justify-evenly px-2">
-                    <p>
-                        작성일 {printDate(props.createdAt)}
-                    </p>
-                    <p>
-                        수정일 {printDate(props.updatedAt)}
-                    </p>
+                    <p>작성일 {printDate(props.createdAt)}</p>
+                    <p>수정일 {printDate(props.updatedAt)}</p>
                 </div>
             </div>
         )

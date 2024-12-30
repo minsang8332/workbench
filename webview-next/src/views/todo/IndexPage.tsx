@@ -12,15 +12,15 @@ import {
 } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useTodoStore } from '@/stores/todo'
-import AppMenu from '@/layouts/AppMenu'
-import AppModal from '@/layouts/AppModal'
+import ContextMenu from '@/components/ui/ContextMenu'
+import AppModal from '@/components/ui/ModalDialog'
 import TodoCard from '@/components/todo/TodoCard'
 import TodoForm from '@/components/todo/TodoForm'
 import '@/views/todo/IndexPage.scoped.scss'
 export default defineComponent({
-    name: 'IndexPage',
+    name: 'TodoPage',
     components: {
-        AppMenu,
+        ContextMenu,
         AppModal,
         TodoCard,
         TodoForm
@@ -213,8 +213,8 @@ export default defineComponent({
             onRefresh()
         })
         return () => (
-            <div class="index-page">
-                <app-menu
+            <div class="todo-page">
+                <context-menu
                     {...appStore.state.menuProps}
                     modelValue={appStore.state.menu}
                     onUpdate:modelValue={appStore.toggleMenu}
@@ -234,7 +234,7 @@ export default defineComponent({
                         <todo-form {...state.formProps} onSubmit={onSubmit} onCancel={onCancel} />
                     </app-modal>
                 </Teleport>
-                <div class="index-page__header flex justify-between items-center px-2">
+                <div class="todo-page__header flex justify-between items-center px-2">
                     <div class="flex items-center">
                         <button type="button" onClick={() => toggleForm(true)}>
                             <i class="mdi mdi-flag-variant" />
@@ -259,22 +259,22 @@ export default defineComponent({
                 </div>
                 <div
                     ref={contentRef}
-                    class="index-page__content flex justify-center items-center gap-4"
+                    class="todo-page__content flex justify-center items-center gap-4"
                     onWheel={onScrollX}
                 >
                     {filterTodosByStatus.value.map((todos: any) => (
                         <div
-                            class="index-page__content-item"
+                            class="todo-page__content-item"
                             onMouseup={(event: MouseEvent) => onMenu(event, { payload: todos })}
                             onDragenter={onPrevent}
                             onDragover={onPrevent}
                             onDrop={(event: DragEvent) => onDrop(event, todos.value)}
                         >
-                            <div class="index-page__content-item-header flex justify-between items-center p-3 px-4">
-                                <h5 class="text-title">{todos.label}</h5>
-                                <h5 class="text-title">{todos.items.length}</h5>
+                            <div class="todo-page__content-item-header flex justify-between items-center p-3 px-3">
+                                <b class="text-title">{todos.label}</b>
+                                <b class="text-title">{todos.items.length}</b>
                             </div>
-                            <div class="flex flex-col justify-center items-center pa-4 gap-4">
+                            <div class="flex flex-col justify-center items-center p-3 gap-3">
                                 {todos.items.map((todo: ITodo) => (
                                     <todo-card
                                         {...todo}

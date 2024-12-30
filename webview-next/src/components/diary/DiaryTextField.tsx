@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import {
     defineComponent,
     computed,
@@ -9,12 +10,10 @@ import {
     type PropType
 } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAppStore } from '@/stores/app'
 import { useDiaryStore } from '@/stores/diary'
-import _ from 'lodash'
-import styles from '@/components/diary/DiaryInputPath.module.scss'
+import './DiaryTextField.scoped.scss'
 export default defineComponent({
-    name: 'DiaryInputPath',
+    name: 'DiaryTextField',
     emits: ['toggle'],
     props: {
         path: {
@@ -24,7 +23,6 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const $toast = inject('toast') as IToastPlugin
-        const appStore = useAppStore()
         const route = useRoute()
         const router = useRouter()
         const diaryStore = useDiaryStore()
@@ -107,9 +105,8 @@ export default defineComponent({
         return () => (
             <input
                 ref={inputRef}
+                class="diary-text-field"
                 value={unref(printFileName)}
-                class={`${styles['diary-input-path']} pa-0 ma-0`}
-                color={appStore.scss('--theme-color-1')}
                 onInput={onInput}
                 onFocusout={onFocusout}
                 onKeydown={onUpdate}

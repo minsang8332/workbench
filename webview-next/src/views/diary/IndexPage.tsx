@@ -1,17 +1,17 @@
 import { defineComponent, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAppStore } from '@/stores/app'
 import { useDiaryStore } from '@/stores/diary'
 import DiaryCard from '@/components/diary/DiaryCard'
-import DiaryDrawer from '@/components/diary/DiaryDrawer'
-import '@/views/diary/IndexPage.scoped.scss'
+import './IndexPage.scoped.scss'
 export default defineComponent({
     name: 'DiaryPage',
     components: {
-        DiaryCard,
-        DiaryDrawer
+        DiaryCard
     },
     setup() {
         const router = useRouter()
+        const appStore = useAppStore()
         const diaryStore = useDiaryStore()
         const recentDiaries = ref<IDiaryWithText[]>([])
         const onMoveDiary = (diary: IDiary) => {
@@ -45,14 +45,13 @@ export default defineComponent({
             }
         )
         return () => (
-            <article class="index-page">
-                <diary-drawer />
-                <div class="index-page__header row-between px-2">
+            <article class="diary-page">
+                <div class="diary-page__header row-between px-2">
                     <div class="flex items-center">
                         <button
                             type="button"
                             class="btn-tree"
-                            onClick={() => diaryStore.toggleDrawer()}
+                            onClick={() => appStore.toggleDrawer()}
                         >
                             <i class="mdi mdi-menu" />
                             <span class="tooltip tooltip-bottom">문서 탐색</span>
@@ -66,9 +65,9 @@ export default defineComponent({
                         </button>
                     </div>
                 </div>
-                <div class="index-page__content">
+                <div class="diary-page__content">
                     {recentDiaries.value.map((diary: IDiaryWithText) => (
-                        <div class="index-page__content-item">
+                        <div class="diary-page__content-item">
                             <diary-card {...diary} onclick={() => onMoveDiary(diary)} />
                         </div>
                     ))}

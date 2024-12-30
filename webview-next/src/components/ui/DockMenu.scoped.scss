@@ -1,8 +1,8 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
-.app-dock {
+.dock-menu {
     @include mixins.glass;
-    height: variables.$app-dock-height;
+    height: variables.$dock-menu-height;
     button {
         @include mixins.hover-button;
         @include mixins.tooltip;

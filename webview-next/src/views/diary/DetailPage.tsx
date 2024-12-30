@@ -15,14 +15,12 @@ import { onBeforeRouteUpdate, onBeforeRouteLeave, type NavigationGuardNext } fro
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useDiaryStore } from '@/stores/diary'
-import DiaryPreview from '@/components/diary/DiaryPreview'
-import DiaryDrawer from '@/components/diary/DiaryDrawer'
+import MarkdownPreview from '@/components/ui/MarkdownPreview'
 import '@/views/diary/DetailPage.scoped.scss'
 export default defineComponent({
-    name: 'DiaryEditorPage',
+    name: 'DiaryDetailPage',
     components: {
-        DiaryPreview,
-        DiaryDrawer
+        MarkdownPreview
     },
     props: {
         path: {
@@ -191,14 +189,13 @@ export default defineComponent({
         onBeforeRouteUpdate((to, from, next) => preventRoute(next))
         return () => (
             <article ref={pageRef} class="detail-page" onMousemove={onResize} onMouseup={onMouseUp}>
-                <diary-drawer />
                 <div class="detail-page__header row-between px-2">
                     <div class="flex items-center gap-2">
                         <div class="flex items-center">
                             <button
                                 type="button"
                                 class="btn-tree"
-                                onClick={() => diaryStore.toggleDrawer()}
+                                onClick={() => appStore.toggleDrawer()}
                             >
                                 <i class="mdi mdi-menu" />
                                 <span class="tooltip tooltip-bottom">문서 탐색</span>
@@ -226,7 +223,7 @@ export default defineComponent({
                     {unref(isMarkdown) && (
                         <>
                             <div class="resizer" onMousedown={onMouseDown} />
-                            <diary-preview
+                            <markdown-preview
                                 value={state.updatedText}
                                 style={{
                                     width: state.widths.preview + 'px'

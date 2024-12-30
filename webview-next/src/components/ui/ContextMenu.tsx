@@ -1,7 +1,7 @@
 import { defineComponent, computed, ref, unref, watch, nextTick, type PropType } from 'vue'
-import './AppMenu.scoped.scss'
+import './ContextMenu.scoped.scss'
 export default defineComponent({
-    name: 'AppMenu',
+    name: 'ContextMenu',
     props: {
         modelValue: {
             type: Boolean as PropType<boolean>,
@@ -62,18 +62,18 @@ export default defineComponent({
         return () => (
             <div
                 ref={menuRef}
-                class="app-menu"
+                class="context-menu"
                 style={unref(styleMenu)}
                 v-show={props.modelValue}
                 onFocusout={onFocusout}
                 tabindex="0"
             >
-                <div class="app-menu__header flex justify-end items-center h-7 px-2 w-100">
+                <div class="context-menu__header flex justify-end items-center h-7 px-2 w-100">
                     <button type="button" class="btn-close" onClick={onClose}>
                         <i class="mdi mdi-close" />
                     </button>
                 </div>
-                <div class="app-menu__content flex flex-col items-center gap-2">
+                <div class="context-menu__content flex flex-col items-center gap-2">
                     {unref(props.items).map((item) => (
                         <button
                             type="button"

@@ -1,9 +1,9 @@
 import { computed, defineComponent, Transition } from 'vue'
 import type { PropType } from 'vue'
 import _ from 'lodash'
-import '@/layouts/AppModal.scoped.scss'
+import './ModalDialog.scoped.scss'
 export default defineComponent({
-    name: 'AppModal',
+    name: 'Modal',
     props: {
         modelValue: {
             type: Boolean,
@@ -53,46 +53,56 @@ export default defineComponent({
         }
         return () => (
             <v-dialog
-                class="app-modal"
+                class="modal-dialog"
                 scrollable
                 modelValue={props.modelValue}
                 onUpdate:modelValue={onUpdateModelValue}
                 persistent={props.persistent}
             >
                 <Transition name="fade">
-                    {
-                        props.modelValue && 
-                        <v-card class="app-modal__card">
-                            <v-row class="app-modal__card-title bg-theme-1" no-gutters>
+                    {props.modelValue && (
+                        <v-card class="modal-dialog__card">
+                            <v-row class="modal-dialog__card-title bg-theme-1" no-gutters>
                                 <v-col align="center">
                                     <b class="text-white">{props.title}</b>
                                 </v-col>
                             </v-row>
                             <v-divider />
-                            <v-row class="app-modal__card-content" no-gutters>
+                            <v-row class="modal-dialog__card-content" no-gutters>
                                 <v-col class="px-4">
-                                    {
-                                        slots.default 
-                                            ? slots.default() 
-                                            : getMessage.value.map((message) => (
-                                                <p class="text-truncate">{message}</p>
-                                            ))
-                                    }
-                                    
+                                    {slots.default
+                                        ? slots.default()
+                                        : getMessage.value.map((message) => (
+                                              <p class="text-truncate">{message}</p>
+                                          ))}
                                 </v-col>
                             </v-row>
-                            {
-                                props.hideActions == false && <v-row class="app-modal__card-actions" no-gutters>
+                            {props.hideActions == false && (
+                                <v-row class="modal-dialog__card-actions" no-gutters>
                                     <v-col>
-                                        <v-btn variant="text" block class="btn-no" onClick={onClose}>취소</v-btn>
+                                        <v-btn
+                                            variant="text"
+                                            block
+                                            class="btn-no"
+                                            onClick={onClose}
+                                        >
+                                            취소
+                                        </v-btn>
                                     </v-col>
                                     <v-col>
-                                        <v-btn variant="text" block class="btn-ok" onClick={props.ok}>확인</v-btn>
+                                        <v-btn
+                                            variant="text"
+                                            block
+                                            class="btn-ok"
+                                            onClick={props.ok}
+                                        >
+                                            확인
+                                        </v-btn>
                                     </v-col>
                                 </v-row>
-                            }
+                            )}
                         </v-card>
-                    }
+                    )}
                 </Transition>
             </v-dialog>
         )

@@ -4,18 +4,24 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            component: () => import('@/layouts/AppLayout'),
+            component: () => import('@/components/layout/PageLayout'),
             redirect: 'todo',
             children: [
                 {
                     name: 'diary',
                     path: 'diary',
-                    component: () => import('@/views/diary/IndexPage')
+                    components: {
+                        default: () => import('@/views/diary/IndexPage'),
+                        drawer: () => import('@/components/diary/DiaryTree')
+                    }
                 },
                 {
                     name: 'diary-detail',
                     path: 'diary/:path',
-                    component: () => import('@/views/diary/DetailPage'),
+                    components: {
+                        default: () => import('@/views/diary/DetailPage'),
+                        drawer: () => import('@/components/diary/DiaryTree')
+                    },
                     props: true
                 },
                 {

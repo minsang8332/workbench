@@ -3,7 +3,7 @@
 .detail-page {
     $article-header: 3rem;
     $article-actions: 3rem;
-    height: calc(100vh - variables.$app-dock-height);
+    height: calc(100vh - variables.$dock-menu-height);
     &__header {
         @include mixins.glass;
         height: $article-header;
@@ -34,7 +34,7 @@
         }
     }
     &__content {
-        height: calc(100vh - $article-header - $article-actions - variables.$app-dock-height);
+        height: calc(100vh - $article-header - $article-actions - variables.$dock-menu-height);
         overflow-y: scroll;
         textarea {
             font-size: 0.9rem;

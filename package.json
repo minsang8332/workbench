@@ -31,7 +31,9 @@
             "target": "nsis"
         },
         "nsis": {
-            "shortcutName": "업무작업대 ${version}"
+            "shortcutName": "업무작업대 ${version}",
+            "perMachine": true,
+            "allowElevation": true
         },
         "files": [
             "build/**",

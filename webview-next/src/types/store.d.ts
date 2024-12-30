@@ -1,19 +1,19 @@
 interface IAppState {
+    drawer: boolean
     modal: boolean
     modalProps: IAppModalProps
-    menu: boolean,
-    menuProps: IAppMenuProps,
+    menu: boolean
+    menuProps: IAppMenuProps
 }
 interface IAppModalProps {
     title?: string
     message: string | string[] | null
-    persistent?: false,
-    hideActions?: false,
+    persistent?: false
+    hideActions?: false
     ok: (() => void) | null
 }
 interface IDiaryState {
-    drawer: boolean,
-    diaries: IDiary[],
+    diaries: IDiary[]
     edited: boolean
 }
 interface IAppMenuProps {
@@ -43,7 +43,7 @@ interface ITodoState {
     todos: ITodo[]
     status: ITodoStatus[]
 }
-interface ITodo  {
+interface ITodo {
     id?: string
     title: string // 제목
     description: string // 내용
@@ -54,7 +54,7 @@ interface ITodo  {
     createdAt?: Date | null
     updatedAt?: Date | null
 }
-interface ITodoTask  {
+interface ITodoTask {
     id?: string
     title: string
     description: string

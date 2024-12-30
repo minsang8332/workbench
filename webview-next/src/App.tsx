@@ -1,5 +1,4 @@
 import { defineComponent, onBeforeMount } from 'vue'
-import { RouterView } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 export default defineComponent({
     name: 'App',
@@ -7,21 +6,19 @@ export default defineComponent({
         const appStore = useAppStore()
         onBeforeMount(() => {
             // 앱 업데이트 확인
-            appStore.waitUpdate()
+            appStore
+                .waitUpdate()
                 .then(() => {
                     appStore.toggleModal(true, {
-                        message: [
-                            '새로운 버전이 업데이트 되었습니다.',
-                            '업데이트 하시겠습니까 ?',
-                        ],
+                        message: ['새로운 버전이 업데이트 되었습니다.', '업데이트 하시겠습니까 ?'],
                         ok() {
                             appStore.installUpdate()
                             appStore.toggleModal(false)
-                        },
+                        }
                     })
                 })
                 .catch((e: Error) => e)
         })
-        return () => <RouterView />
+        return () => <router-view />
     }
 })

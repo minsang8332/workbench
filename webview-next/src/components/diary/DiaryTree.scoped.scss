@@ -1,13 +1,19 @@
 .diary-tree {
-    b {
-        font-size: 0.9rem;
-    }
-    i {
-        font-size: 1.25rem;
-        line-height: 1;
-        color: var(--dark-color);
-    }
-    i.mdi-folder {
-        color: var(--folder-color);
+    height: 100%;
+    &__content {
+        &-item {
+            gap: 0.1rem;
+        }
+        b {
+            font-size: 0.9rem;
+        }
+        i {
+            font-size: 1.25rem;
+            line-height: 1;
+            color: var(--dark-color);
+        }
+        i.mdi-folder {
+            color: var(--folder-color);
+        }
     }
 }

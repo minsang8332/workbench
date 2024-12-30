@@ -5,22 +5,11 @@
 .theme-color-1 {
     color: var(--theme-color-1);
 }
-// 배경 색상
-.bg-theme-1 {
-    background: var(--theme-color-1);
-    * {
-        color: #fff;
-    }
-}
 
 // 테두리 테마
 .full-width,
 .fill-width {
     width: 100%;
-}
-.text-title {
-    font-size: 20px;
-    letter-spacing: -1px;
 }
 /** */
 .skip-native-drag {

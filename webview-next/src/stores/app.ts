@@ -22,6 +22,7 @@ const initMenuProps = () => {
 // 어플리케이션 전반적인 동작 관련 전역 스토어
 export const useAppStore = defineStore('app', () => {
     const state = reactive<IAppState>({
+        drawer: false,
         // 모달 관련
         modal: false,
         modalProps: initModalProps(),
@@ -29,6 +30,14 @@ export const useAppStore = defineStore('app', () => {
         menu: false,
         menuProps: initMenuProps()
     })
+    const getDrawer = computed(() => state.drawer)
+    const toggleDrawer = (drawer?: boolean) => {
+        if (typeof drawer == 'boolean') {
+            state.drawer = drawer
+        } else {
+            state.drawer = !state.drawer
+        }
+    }
     const toggleModal = (modal: boolean, modalProps?: IAppModalProps) => {
         if (typeof modal == 'boolean') {
             state.modal = modal
@@ -76,6 +85,8 @@ export const useAppStore = defineStore('app', () => {
     return {
         state,
         scss,
+        getDrawer,
+        toggleDrawer,
         toggleModal,
         toggleMenu,
         powerOff,

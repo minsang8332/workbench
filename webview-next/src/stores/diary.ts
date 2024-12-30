@@ -3,11 +3,9 @@ import { defineStore } from 'pinia'
 import _ from 'lodash'
 export const useDiaryStore = defineStore('diary', () => {
     const state = reactive<IDiaryState>({
-        drawer: false,
         diaries: [],
         edited: false
     })
-    const getDrawer = computed(() => state.drawer)
     const getEdited = computed(() => state.edited)
     const getDiaries = computed(() => state.diaries)
     const cntDiaries = computed(() => state.diaries.filter((diary) => diary.isDir == false).length)
@@ -78,13 +76,6 @@ export const useDiaryStore = defineStore('diary', () => {
         }
         return tree
     })
-    const toggleDrawer = (drawer?: boolean) => {
-        if (typeof drawer == 'boolean') {
-            state.drawer = drawer
-        } else {
-            state.drawer = !state.drawer
-        }
-    }
     // 문서 목록 가져오기
     const loadDiaries = async () => {
         const response = await window.$native.diary.readAll()
@@ -153,13 +144,11 @@ export const useDiaryStore = defineStore('diary', () => {
     }
     return {
         state,
-        getDrawer,
         getEdited,
         getDiaries,
         cntDiaries,
         recentDiaries,
         treeDiaries,
-        toggleDrawer,
         loadDiaries,
         readDiary,
         saveDiary,

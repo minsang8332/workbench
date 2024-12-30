@@ -10,7 +10,6 @@
     --todo-color: #{variables.$todo-color};
     /** TODO 걷어내기 */
     --theme-color: var(--primary-color);
-    --app-drawer-width: 300;
 }
 *::-webkit-scrollbar {
     display: none;

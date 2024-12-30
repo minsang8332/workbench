@@ -1,8 +1,8 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
-.index-page {
+.todo-page {
     $article-header: 3rem;
-    height: calc(100vh - variables.$app-dock-height);
+    height: calc(100vh - variables.$dock-menu-height);
     &__header {
         @include mixins.glass;
         height: $article-header;
@@ -20,22 +20,20 @@
         }
     }
     &__content {
-        height: 100%;
+        height: calc(100vh - variables.$dock-menu-height - $article-header);
         overflow: scroll;
         padding: 1rem;
         &-item {
+            $item-size: 16rem;
+            width: calc($item-size + 1.5rem);
+            height: 100%;
+            min-width: calc($item-size + 1.5rem);
+            background-color: #f6f6f6;
             &-header {
                 background-color: var(--todo-color);
-                color: #fff;
-            }
-            height: calc(100vh - variables.$app-dock-height - $article-header);
-            $item-size: 16rem;
-            height: 100%;
-            width: calc($item-size + 2rem);
-            min-width: calc($item-size + 1rem);
-            background: #f6f6f6;
-            h5 {
-                font-size: 1rem;
+                b {
+                    color: #fff;
+                }
             }
             .todo-card {
                 width: $item-size;
@@ -48,7 +46,7 @@
             position: fixed;
             right: 0;
             width: 1.5rem;
-            height: calc(100vh - variables.$app-dock-height - $article-header);
+            height: calc(100vh - variables.$dock-menu-height - $article-header);
             content: '';
             z-index: 1;
             background: linear-gradient(

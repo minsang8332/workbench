@@ -4,12 +4,17 @@ import type { PropType } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useDiaryStore } from '@/stores/diary'
-import DiaryInputPath from '@/components/diary//DiaryInputPath'
-import '@/components/diary/DiaryTree.scoped.scss'
+import DiaryTextField from '@/components/diary/DiaryTextField'
+import './DiaryTree.scoped.scss'
+interface IDiaryTree extends IDiary {
+    title: string
+    parent: string
+    items: IDiaryTree[]
+}
 export default defineComponent({
     name: 'DiaryTree',
     components: {
-        DiaryInputPath
+        DiaryTextField
     },
     props: {
         title: {
@@ -21,9 +26,7 @@ export default defineComponent({
             default: ''
         },
         items: {
-            type: [Object, Array, null, undefined] as PropType<
-                object | object[] | null | undefined
-            >,
+            type: Array as PropType<IDiaryTree[]>,
             default: () => []
         },
         isDir: {
@@ -47,6 +50,16 @@ export default defineComponent({
         const diaryStore = useDiaryStore()
         const visible = ref<boolean>(true)
         const renaming = ref<boolean>(false)
+        const printTitle = computed(() => {
+            return props.depth == 0 ? `전체 (${diaryStore.cntDiaries})` : props.title
+        })
+        const getItems = computed(() => {
+            let items = props.items
+            if (props.depth == 0) {
+                items = diaryStore.treeDiaries as IDiaryTree[]
+            }
+            return items.sort((a, b) => (b.isDir ? 1 : 0) - (a.isDir ? 1 : 0))
+        })
         const isRenaming = computed(() => {
             return unref(renaming)
         })
@@ -70,7 +83,7 @@ export default defineComponent({
             if (event.button != 2) {
                 return
             }
-            const items = [
+            let items = [
                 {
                     name: 'refresh',
                     desc: '새로고침',
@@ -115,46 +128,50 @@ export default defineComponent({
                             .catch((e) => $toast.error(e))
                             .finally(() => appStore.toggleMenu(false))
                     }
-                },
-                {
-                    name: 'update-name',
-                    desc: '이름 바꾸기',
-                    shortcut: 'M',
-                    icon: 'mdi:mdi-pencil-box-outline',
-                    color: appStore.scss('--dark-color'),
-                    cb() {
-                        if (unref(diaryStore.getEdited)) {
-                            $toast.error(
-                                new Error(
-                                    '문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.'
-                                )
-                            )
-                            return
-                        }
-                        renaming.value = true
-                        appStore.toggleMenu(false)
-                    }
-                },
-                {
-                    name: 'remove',
-                    desc: '삭제',
-                    shortcut: 'D',
-                    icon: 'mdi:mdi-trash-can-outline',
-                    color: appStore.scss('--dark-color'),
-                    cb() {
-                        diaryStore
-                            .rmDiary({ target: props.path })
-                            .then(({ removed }) => {
-                                $toast.success(`${removed} 삭제되었습니다.`)
-                                router
-                                    .replace({ name: 'diary' })
-                                    .catch((e) => e)
-                                    .finally(() => appStore.toggleMenu(false))
-                            })
-                            .catch((e) => $toast.error(e))
-                    }
                 }
             ]
+            if (props.depth > 0) {
+                items = _.concat(items, [
+                    {
+                        name: 'update-name',
+                        desc: '이름 바꾸기',
+                        shortcut: 'M',
+                        icon: 'mdi:mdi-pencil-box-outline',
+                        color: appStore.scss('--dark-color'),
+                        cb() {
+                            if (unref(diaryStore.getEdited)) {
+                                $toast.error(
+                                    new Error(
+                                        '문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.'
+                                    )
+                                )
+                                return
+                            }
+                            renaming.value = true
+                            appStore.toggleMenu(false)
+                        }
+                    },
+                    {
+                        name: 'remove',
+                        desc: '삭제',
+                        shortcut: 'D',
+                        icon: 'mdi:mdi-trash-can-outline',
+                        color: appStore.scss('--dark-color'),
+                        cb() {
+                            diaryStore
+                                .rmDiary({ target: props.path })
+                                .then(({ removed }) => {
+                                    $toast.success(`${removed} 삭제되었습니다.`)
+                                    router
+                                        .replace({ name: 'diary' })
+                                        .catch((e) => e)
+                                        .finally(() => appStore.toggleMenu(false))
+                                })
+                                .catch((e) => $toast.error(e))
+                        }
+                    }
+                ])
+            }
             appStore.toggleMenu(true, {
                 pageX: event.pageX,
                 pageY: event.pageY,
@@ -208,45 +225,58 @@ export default defineComponent({
                 }
             }
         )
-        onMounted(() => diaryStore.loadDiaries())
+        onMounted(() => {
+            diaryStore.loadDiaries()
+            if (props.depth == 0) {
+            }
+        })
         return () =>
             props.depth >= 0 &&
             props.depth <= props.maxDepth && (
                 <div class="diary-tree">
                     <div
                         class="diary-tree__content"
-                        v-ripple={!unref(isRenaming)}
                         onDblclick={onDblClick}
                         onClick={toggleVisible}
                         onMouseup={onMenu}
-                        no-gutters
+                        v-ripple={!isRenaming.value}
                     >
                         <div
-                            class="flex items-center gap-1"
+                            class="diary-tree__content-item flex items-center text-truncate"
                             style={{ marginLeft: props.depth * 1.5 + 'rem' }}
-                            draggable={!unref(isRenaming)}
+                            draggable={!isRenaming.value}
                             onDragenter={onPrevent}
                             onDragover={onPrevent}
                             onDragstart={onDragstart}
                             onDrop={onDrop}
                         >
-                            {props.depth > 0 && props.isDir && <i class="mdi mdi-chevron-right" />}
-                            {props.isDir ? (
-                                <i class="mdi mdi-folder" />
-                            ) : (
+                            <i
+                                class="mdi mdi-chevron-right"
+                                style={{
+                                    visibility:
+                                        props.depth > 0 && props.isDir && getItems.value.length > 0
+                                            ? 'visible'
+                                            : 'hidden'
+                                }}
+                            />
+                            {props.depth > 0 && props.isDir == false ? (
                                 <i class="mdi mdi-file-document-outline" />
-                            )}
-                            {unref(isRenaming) ? (
-                                <diary-input-path path={props.path} onToggle={toggleRenaming} />
                             ) : (
-                                <b class="diary-tree__title">{props.title}</b>
+                                <i class="mdi mdi-folder" />
+                            )}
+                            {isRenaming.value ? (
+                                <diary-text-field path={props.path} onToggle={toggleRenaming} />
+                            ) : (
+                                <b class="diary-tree__title">{printTitle.value}</b>
                             )}
                         </div>
                     </div>
-                    {_.isArray(props.items) &&
-                        props.items.length > 0 &&
+                    {_.isArray(getItems.value) &&
+                        getItems.value.length > 0 &&
                         visible.value &&
-                        props.items.map((item) => <diary-tree {...item} depth={props.depth + 1} />)}
+                        getItems.value.map((item) => (
+                            <diary-tree {...item} depth={props.depth + 1} />
+                        ))}
                 </div>
             )
     }

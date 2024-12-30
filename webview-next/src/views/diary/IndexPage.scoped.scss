@@ -1,8 +1,8 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
-.index-page {
+.diary-page {
     $article-header: 3rem;
-    height: calc(100vh - variables.$app-dock-height);
+    height: calc(100vh - variables.$dock-menu-height);
     &__header {
         @include mixins.glass;
         height: $article-header;
@@ -26,18 +26,18 @@
         }
     }
     &__content {
-        $item-width: 20rem;
+        $item-size: 20rem;
         display: grid;
-        grid-template-rows: repeat(auto-fill, $item-width);
-        grid-template-columns: repeat(auto-fill, $item-width);
-        height: calc(100vh - variables.$app-dock-height - $article-header);
+        grid-template-rows: repeat(auto-fill, $item-size);
+        grid-template-columns: repeat(auto-fill, $item-size);
+        height: calc(100vh - variables.$dock-menu-height - $article-header);
         justify-content: center;
         overflow-y: scroll;
         gap: 1rem;
         padding: 1rem 0;
         &-item {
-            height: $item-width;
-            width: $item-width;
+            height: $item-size;
+            width: $item-size;
         }
     }
     .btn-folder {
