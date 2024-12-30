@@ -35,7 +35,6 @@ code {
 input,
 textarea {
     border: none;
-    resize: none;
 }
 p {
     margin: 0 !important;
@@ -44,10 +43,11 @@ p,
 span,
 input,
 button,
+textarea,
 label {
     font-size: 1rem;
-    font-weight: 400;
     font-family: 'Pretendard';
+    font-weight: 400;
     line-height: 1;
     color: var(--dark-color);
 }

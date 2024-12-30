@@ -27,6 +27,9 @@ export default defineComponent({
         },
         ok: {
             type: Function as PropType<() => {}>
+        },
+        maxWidth: {
+            type: String as PropType<string>
         }
     },
     setup(props, { emit, slots }) {
@@ -51,16 +54,14 @@ export default defineComponent({
         return () => (
             <div class="modal-dialog">
                 {props.modelValue && (
-                    <div
-                        class="fixed inset-0 z-[10001] h-screen w-screen bg-black/30 flex justify-center items-center"
-                        onClick={onClose}
-                    >
+                    <div class="fixed inset-0 z-[10001] h-screen w-screen bg-black/30 flex justify-center items-center">
                         <div
                             class="modal-dialog__card"
+                            style={{ maxWidth: props.maxWidth }}
                             onClick={(event) => event.stopPropagation()}
                         >
                             <div class="modal-dialog__card-header flex justify-between items-center">
-                                <b class="text-white">{props.title}</b>
+                                <b class="text-title text-truncate">{props.title}</b>
                                 <button type="button" class="btn-close" onClick={onClose}>
                                     <i class="mdi mdi-close" />
                                 </button>
@@ -68,9 +69,7 @@ export default defineComponent({
                             <div class="modal-dialog__card-content flex flex-col justify-center items-center">
                                 {slots.default
                                     ? slots.default()
-                                    : getMessage.value.map((message) => (
-                                          <p class="text-truncate">{message}</p>
-                                      ))}
+                                    : getMessage.value.map((message) => <p>{message}</p>)}
                             </div>
                             {props.hideActions == false && (
                                 <div class="modal-dialog__card-actions flex justify-evenly items-center">

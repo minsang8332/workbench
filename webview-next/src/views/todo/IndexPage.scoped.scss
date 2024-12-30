@@ -19,6 +19,12 @@
                 color: var(--todo-color);
             }
         }
+        .text-field__input {
+            border-color: var(--dark-color);
+            &::placeholder {
+                color: var(--dark-color);
+            }
+        }
     }
     &__content {
         height: calc(100vh - variables.$dock-menu-height - $article-header);

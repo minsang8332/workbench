@@ -13,7 +13,8 @@ import {
 import { useAppStore } from '@/stores/app'
 import { useTodoStore } from '@/stores/todo'
 import ContextMenu from '@/components/ui/ContextMenu'
-import AppModal from '@/components/ui/ModalDialog'
+import ModalDialog from '@/components/ui/ModalDialog'
+import TextField from '@/components/form/TextField'
 import TodoCard from '@/components/todo/TodoCard'
 import TodoForm from '@/components/todo/TodoForm'
 import '@/views/todo/IndexPage.scoped.scss'
@@ -21,7 +22,8 @@ export default defineComponent({
     name: 'TodoPage',
     components: {
         ContextMenu,
-        AppModal,
+        ModalDialog,
+        TextField,
         TodoCard,
         TodoForm
     },
@@ -93,8 +95,8 @@ export default defineComponent({
         const onRefresh = () => todoStore.loadTodos().catch((e) => e)
         const onBeforeRemove = ({ title, id }: { title: string; id: string }) => {
             appStore.toggleModal(true, {
-                title: _.toString(title),
-                message: ['이 카드를 제거하시겠습니까 ?'],
+                title,
+                message: '이 카드를 제거하시겠습니까 ?',
                 ok() {
                     todoStore
                         .removeTodo(id)
@@ -220,7 +222,7 @@ export default defineComponent({
                     onUpdate:modelValue={appStore.toggleMenu}
                 />
                 <Teleport to="body">
-                    <app-modal
+                    <modal-dialog
                         title={
                             state.formProps && state.formProps.title
                                 ? state.formProps.title
@@ -230,9 +232,10 @@ export default defineComponent({
                         onUpdate:modelValue={toggleForm}
                         persistent
                         hide-actions
+                        max-width="50vw"
                     >
                         <todo-form {...state.formProps} onSubmit={onSubmit} onCancel={onCancel} />
-                    </app-modal>
+                    </modal-dialog>
                 </Teleport>
                 <div class="todo-page__header flex justify-between items-center px-2">
                     <div class="flex items-center">
@@ -242,15 +245,7 @@ export default defineComponent({
                         <h3 class="text-title">해야 할 일</h3>
                     </div>
                     <div class="flex items-center gap-2">
-                        <v-text-field
-                            v-model={state.keyword}
-                            label="검색하기"
-                            append-inner-icon="mdi:mdi-magnify"
-                            variant="outlined"
-                            density="compact"
-                            hide-details
-                            width="15rem"
-                        />
+                        <text-field v-model={state.keyword} placeholder="검색하기" />
                         <button type="button" onClick={onRefresh}>
                             <i class="mdi mdi-refresh" />
                             <span class="tooltip tooltip-bottom">새로고침</span>

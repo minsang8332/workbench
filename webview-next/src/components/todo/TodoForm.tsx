@@ -1,28 +1,25 @@
 import _ from 'lodash'
 import dayjs from 'dayjs'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
-dayjs.extend(isSameOrBefore)
-import type { VForm } from 'vuetify/components'
-import { defineComponent, reactive, computed, unref, ref, inject, nextTick } from 'vue'
-import VueDatePicker from '@vuepic/vue-datepicker'
-import '@vuepic/vue-datepicker/dist/main.css'
+import { defineComponent, reactive, computed, unref, ref, inject } from 'vue'
+import TextField from '@/components/form/TextField'
 import '@/components/todo//TodoForm.scoped.scss'
-import { useAppStore } from '@/stores/app'
+dayjs.extend(isSameOrBefore)
 export default defineComponent({
     name: 'TodoForm',
     emits: ['cancel', 'submit'],
+    components: {
+        TextField
+    },
     props: {
         id: {
-            type: [String],
-            default: ''
+            type: [String]
         },
         title: {
-            type: [String, null],
-            default: ''
+            type: [String, null]
         },
         description: {
-            type: [String, null],
-            default: ''
+            type: [String, null]
         },
         status: {
             type: [Number],
@@ -39,8 +36,6 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const $toast = inject('toast') as IToastPlugin
-        const appStore = useAppStore()
-        const formRef = ref<VForm | null>(null)
         const state = reactive<any>({
             tabSize: 4,
             inputTitle: props.title,
@@ -48,65 +43,39 @@ export default defineComponent({
             inputStartedAt: props.startedAt,
             inputStatus: props.status,
             inputEndedAt: props.endedAt,
-            rules: [
-                (value: any) => {
+            inputTitleRules: [
+                (value: string) => {
                     return value && /^[^\s].*$/.test(value)
                         ? true
                         : '최소 한 글자 이상은 입력해 주세요.'
                 }
+            ],
+            inputEndedAtRules: [
+                (value: Date) => {
+                    // 날짜를 아무것도 입력하지 않았다면
+                    if (!(state.inputStartedAt && value)) {
+                        return true
+                    }
+                    // 마감일자가 유효하며 시작일자와 비교 했을 때 기간차이가 양수 값으로 유효하다면
+                    const endedAt = dayjs(value)
+                    if (endedAt.isValid() && dayjs(state.inputStartedAt).isSameOrBefore(endedAt)) {
+                        return true
+                    }
+                    return '마감일자는 시작일자 이후여야 합니다.'
+                }
             ]
         })
-        const validPeriod = computed(() => {
-            if (state.inputStartedAt == null && state.inputEndedAt == null) {
-                return true
-            }
-            let startedAt = dayjs(state.inputStartedAt)
-            if (!startedAt.isValid()) {
-                startedAt = dayjs()
-            }
-            const endedAt = dayjs(state.inputEndedAt)
-            if (!endedAt.isValid()) {
-                return false
-            }
-            if (startedAt.isSameOrBefore(endedAt)) {
-                return true
-            }
-            return false
+        const validate = computed(() => {
+            return (
+                state.inputEndedAtRules.every(
+                    (rule: Function) => rule(state.inputEndedAt) === true
+                ) &&
+                state.inputTitleRules.every((rule: Function) => rule(state.inputTitle) === true)
+            )
         })
-        const onKeyDown = (event: KeyboardEvent) => {
-            // ctrl + a 는 전체 포커스
-            if ((event.key === 'a' && event.ctrlKey) || (event.key === 'a' && event.metaKey)) {
-                event.preventDefault()
-                const el = event.target as HTMLTextAreaElement
-                el.select()
-                el.focus()
-            }
-            //
-            // 탭 누르면 띄워쓰기
-            if (event.key == 'Tab') {
-                event.preventDefault()
-                let indent = ''
-                for (let i = 0; i < state.tabSize; i++) {
-                    indent += ' '
-                }
-                nextTick(() => {
-                    state.inputDescription += indent
-                })
-            }
-        }
-        const onDatePickerFormat = (date: Date) => {
-            return dayjs(date).format('YYYY.MM.DD')
-        }
         const onSubmit = async () => {
             let submit = false
             try {
-                const form = unref(formRef)
-                if (!form) {
-                    return submit
-                }
-                if (unref(validPeriod) == false) {
-                    return submit
-                }
                 emit('submit', {
                     id: props.id,
                     title: state.inputTitle,
@@ -121,75 +90,50 @@ export default defineComponent({
             }
             return submit
         }
-        const onCancel = () => {
-            emit('cancel')
-        }
+        const onCancel = () => emit('cancel')
         return () => (
-            <v-form
-                ref={formRef}
-                class="todo-form d-flex flex-column pt-4 pb-4 ga-3"
-                submit={onSubmit}
-            >
-                <v-text-field
-                    v-model={state.inputTitle}
-                    rules={state.rules}
-                    label="제목을 입력해 주세요"
-                    variant="outlined"
-                    color="#3c3c3c"
-                    required
-                />
-                <v-textarea
-                    v-model={state.inputDescription}
-                    label="내용을 입력해 주세요"
-                    variant="outlined"
-                    color="#3c3c3c"
-                    auto-grow
-                    onKeydown={onKeyDown}
-                />
-                <VueDatePicker
-                    v-model={state.inputStartedAt}
-                    placeholder="시작일을 선택해 주세요."
-                    auto-apply
-                    enable-time-picker={false}
-                    teleport
-                    locale="ko-KR"
-                    format={onDatePickerFormat}
-                />
-                <VueDatePicker
-                    v-model={state.inputEndedAt}
-                    placeholder="마감일을 선택해 주세요."
-                    auto-apply
-                    enable-time-picker={false}
-                    teleport
-                    locale="ko-KR"
-                    format={onDatePickerFormat}
-                />
-                {
-                    <v-messages
-                        active={unref(validPeriod) == false}
-                        messages={['기간이 옳바르지 않습니다']}
-                        color="#B00020"
+            <form class="todo-form flex flex-col justify-between" onSubmit={onSubmit}>
+                <div class="todo-form__content flex flex-col justify-start items-center gap-2">
+                    <text-field
+                        v-model={state.inputTitle}
+                        rules={state.inputTitleRules}
+                        label="제목"
+                        placeholder="제목을 입력해 주세요"
                     />
-                }
-                <v-row class="todo-form__actions d-flex ga-4" no-gutters>
-                    <v-col>
-                        <v-btn block variant="tonal" class="btn-no" onClick={onCancel}>
-                            취소
-                        </v-btn>
-                    </v-col>
-                    <v-col>
-                        <v-btn
-                            type="submit"
-                            class="btn-submit text-white"
-                            block
-                            variant="flat"
-                            color={appStore.scss('--theme-color-1')}
-                        >
-                            <span class="text-white">등록</span>
-                        </v-btn>
-                    </v-col>
-                </v-row>
-            </v-form>
+                    <text-field
+                        v-model={state.inputDescription}
+                        type="textarea"
+                        label="내용"
+                        placeholder="내용을 입력해 주세요"
+                    />
+                    <text-field
+                        v-model={state.inputStartedAt}
+                        type="datepicker"
+                        label="시작일자"
+                        placeholder="시작일을 선택해 주세요"
+                    />
+                    <text-field
+                        v-model={state.inputEndedAt}
+                        rules={state.inputEndedAtRules}
+                        type="datepicker"
+                        label="마감일자"
+                        placeholder="마감일을 선택해 주세요"
+                    />
+                </div>
+                <div class="todo-form__actions flex justify-center items-center gap-4">
+                    <button type="button" class="btn-cancel" onClick={onCancel}>
+                        취소
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={!validate.value}
+                        class="btn-submit"
+                        onClick={() => {}}
+                    >
+                        확인
+                    </button>
+                </div>
+            </form>
         )
     }
 })

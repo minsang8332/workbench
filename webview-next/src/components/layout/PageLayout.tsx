@@ -23,6 +23,7 @@ export default defineComponent({
                     {...appStore.state.modalProps}
                     model-value={appStore.state.modal}
                     onUpdate:modelValue={appStore.toggleModal}
+                    max-width="30vw"
                 />
                 <context-menu
                     {...appStore.state.menuProps}
