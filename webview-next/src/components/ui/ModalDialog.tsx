@@ -26,8 +26,7 @@ export default defineComponent({
             default: false
         },
         ok: {
-            type: [Function, null] as PropType<() => {} | null>,
-            default: null
+            type: Function as PropType<() => {}>
         }
     },
     setup(props, { emit, slots }) {
@@ -45,66 +44,48 @@ export default defineComponent({
             }
             return messages
         })
-        const onUpdateModelValue = (event: Event) => {
-            emit('update:modelValue', event)
-        }
-        const onClose = () => {
+        const onClose = (event: Event) => {
+            event.stopPropagation()
             emit('update:modelValue', false)
         }
         return () => (
-            <v-dialog
-                class="modal-dialog"
-                scrollable
-                modelValue={props.modelValue}
-                onUpdate:modelValue={onUpdateModelValue}
-                persistent={props.persistent}
-            >
-                <Transition name="fade">
-                    {props.modelValue && (
-                        <v-card class="modal-dialog__card">
-                            <v-row class="modal-dialog__card-title bg-theme-1" no-gutters>
-                                <v-col align="center">
-                                    <b class="text-white">{props.title}</b>
-                                </v-col>
-                            </v-row>
-                            <v-divider />
-                            <v-row class="modal-dialog__card-content" no-gutters>
-                                <v-col class="px-4">
-                                    {slots.default
-                                        ? slots.default()
-                                        : getMessage.value.map((message) => (
-                                              <p class="text-truncate">{message}</p>
-                                          ))}
-                                </v-col>
-                            </v-row>
+            <div class="modal-dialog">
+                {props.modelValue && (
+                    <div
+                        class="fixed inset-0 z-[10001] h-screen w-screen bg-black/30 flex justify-center items-center"
+                        onClick={onClose}
+                    >
+                        <div
+                            class="modal-dialog__card"
+                            onClick={(event) => event.stopPropagation()}
+                        >
+                            <div class="modal-dialog__card-header flex justify-between items-center">
+                                <b class="text-white">{props.title}</b>
+                                <button type="button" class="btn-close" onClick={onClose}>
+                                    <i class="mdi mdi-close" />
+                                </button>
+                            </div>
+                            <div class="modal-dialog__card-content flex flex-col justify-center items-center">
+                                {slots.default
+                                    ? slots.default()
+                                    : getMessage.value.map((message) => (
+                                          <p class="text-truncate">{message}</p>
+                                      ))}
+                            </div>
                             {props.hideActions == false && (
-                                <v-row class="modal-dialog__card-actions" no-gutters>
-                                    <v-col>
-                                        <v-btn
-                                            variant="text"
-                                            block
-                                            class="btn-no"
-                                            onClick={onClose}
-                                        >
-                                            취소
-                                        </v-btn>
-                                    </v-col>
-                                    <v-col>
-                                        <v-btn
-                                            variant="text"
-                                            block
-                                            class="btn-ok"
-                                            onClick={props.ok}
-                                        >
-                                            확인
-                                        </v-btn>
-                                    </v-col>
-                                </v-row>
+                                <div class="modal-dialog__card-actions flex justify-evenly items-center">
+                                    <button type="button" class="btn-cancel" onClick={onClose}>
+                                        취소
+                                    </button>
+                                    <button type="button" class="btn-confirm" onClick={props.ok}>
+                                        확인
+                                    </button>
+                                </div>
                             )}
-                        </v-card>
-                    )}
-                </Transition>
-            </v-dialog>
+                        </div>
+                    </div>
+                )}
+            </div>
         )
     }
 })

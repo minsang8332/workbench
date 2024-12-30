@@ -11,7 +11,7 @@ export default {
             newWindow = false,
             escapeMarkup = false,
             style = {
-                background: String(appStore.scss('--theme-color-1'))
+                background: String(appStore.scss('--theme-color'))
             },
             offset = {
                 y: '10vh',
@@ -39,7 +39,7 @@ export default {
             {
                 icon = '',
                 style = {
-                    background: String(appStore.scss('--theme-color-1'))
+                    background: String(appStore.scss('--theme-color'))
                 }
             }
         ) => {

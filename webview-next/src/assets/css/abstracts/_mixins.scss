@@ -25,12 +25,13 @@
     }
 }
 @mixin hover-button {
-    transition: all 0.5s ease-out;
+    transition-property: opacity, transform;
+    transition: 0.2s ease-out;
     &:hover {
-        background-color: rgba(170, 170, 170, 0.2);
+        opacity: 0.6;
     }
     &:active {
-        transform: scale(1.2);
+        transform: scale(0.9);
     }
 }
 @mixin tooltip() {
@@ -94,13 +95,11 @@
     background-color: $background-color;
     transition: 0.3s;
     i {
-        transition: 0.3s;
         font-size: ($height * 0.75);
         color: #fff;
     }
     &:hover {
         background-color: #f2f2f2;
-        box-shadow: 0px 0px 6px 3px var(--dark-light-color);
         i {
             color: $background-color;
         }

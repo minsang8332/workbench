@@ -189,7 +189,7 @@ export default defineComponent({
         onBeforeRouteUpdate((to, from, next) => preventRoute(next))
         return () => (
             <article ref={pageRef} class="detail-page" onMousemove={onResize} onMouseup={onMouseUp}>
-                <div class="detail-page__header row-between px-2">
+                <div class="detail-page__header flex justify-between items-center px-2">
                     <div class="flex items-center gap-2">
                         <div class="flex items-center">
                             <button

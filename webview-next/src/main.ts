@@ -5,9 +5,9 @@ import toastPlugin from '@/plugins/toast'
 import App from '@/App'
 import router from '@/router'
 import '@/assets/css/main.scss'
-import Loading from '@/components/ui/Loading'
+import PopupLoading from '@/components/ui/PopupLoading'
 const app = createApp(App)
-app.component('Loading', Loading)
+app.component('PopupLoading', PopupLoading)
 app.use(createPinia())
 app.use(router)
 app.use(vuetifyPlugin)

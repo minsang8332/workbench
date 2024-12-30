@@ -88,7 +88,7 @@ export default defineComponent({
             if (_.isUndefined(content)) {
                 return
             }
-            content.scrollLeft += event.deltaY
+            content.scrollLeft += event.deltaY * 2
         }
         const onRefresh = () => todoStore.loadTodos().catch((e) => e)
         const onBeforeRemove = ({ title, id }: { title: string; id: string }) => {
@@ -259,7 +259,7 @@ export default defineComponent({
                 </div>
                 <div
                     ref={contentRef}
-                    class="todo-page__content flex justify-center items-center gap-4"
+                    class="todo-page__content flex justify-start items-center gap-4"
                     onWheel={onScrollX}
                 >
                     {filterTodosByStatus.value.map((todos: any) => (
@@ -270,11 +270,11 @@ export default defineComponent({
                             onDragover={onPrevent}
                             onDrop={(event: DragEvent) => onDrop(event, todos.value)}
                         >
-                            <div class="todo-page__content-item-header flex justify-between items-center p-3 px-3">
+                            <div class="todo-page__content-item-header flex justify-between items-center p-2 px-4">
                                 <b class="text-title">{todos.label}</b>
                                 <b class="text-title">{todos.items.length}</b>
                             </div>
-                            <div class="flex flex-col justify-center items-center p-3 gap-3">
+                            <div class="flex flex-col justify-center items-center p-2 gap-2">
                                 {todos.items.map((todo: ITodo) => (
                                     <todo-card
                                         {...todo}
@@ -291,6 +291,7 @@ export default defineComponent({
                                         onDragenter={onPrevent}
                                         onDragover={onPrevent}
                                         onDragstart={(event: DragEvent) => onDragstart(event, todo)}
+                                        onWheel={(event: WheelEvent) => event.stopPropagation()}
                                     />
                                 ))}
                             </div>

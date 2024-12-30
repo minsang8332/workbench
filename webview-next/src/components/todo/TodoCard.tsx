@@ -2,10 +2,10 @@ import _ from 'lodash'
 import { unref, computed, defineComponent } from 'vue'
 import dayjs from 'dayjs'
 import './TodoCard.scoped.scss'
-interface TodoCard {
+interface ITodoCard {
     dDay?: number
 }
-enum TodoCardStatus {
+enum TodoPeriod {
     EXPIRED = '기한만료'
 }
 export default defineComponent({
@@ -37,16 +37,34 @@ export default defineComponent({
         const getProps = computed(() => {
             const startedAt = dayjs(unref(props.startedAt))
             const endedAt = dayjs(unref(props.endedAt))
-            const value: TodoCard = {}
+            const value: ITodoCard = {}
             if (startedAt.isValid() && endedAt.isValid()) {
                 const dDay = endedAt.startOf('day').diff(dayjs(new Date()).startOf('day'), 'day')
                 value.dDay = dDay
             }
             return value
         })
-        const isExpired = computed(
-            () => _.isNumber(getProps.value.dDay) && getProps.value.dDay < 0 && props.status !== 2
-        )
+        const printPeriod = computed(() => {
+            let text = null
+            const dDay = getProps.value.dDay
+            if (_.isNumber(dDay)) {
+                text = `${dDay}일 전`
+                if (dDay < 0) {
+                    text = TodoPeriod.EXPIRED
+                }
+            }
+            return text
+        })
+        const classListPeriod = computed(() => {
+            const classList = ['period']
+            const dDay = getProps.value.dDay
+            if (_.isNumber(dDay) && dDay > 0) {
+                classList.push('period--alive')
+            } else {
+                classList.push('period--expired')
+            }
+            return _.join(classList, ' ')
+        })
         const onBeforeRemove = (event: Event) => {
             event.stopPropagation()
             emit('remove', props)
@@ -54,28 +72,17 @@ export default defineComponent({
         return () => (
             <div class="todo-card flex flex-col">
                 <div class="todo-card__header flex justify-between items-start">
-                    <div class="flex items-center gap-2 w-75">
+                    <div class="flex justify-between items-center gap-2 w-100">
                         <b class="text-truncate">{props.title}</b>
-                    </div>
-                    <div class="flex justify-end items-center w-25">
                         <button type="button" class="btn-close" onClick={onBeforeRemove}>
                             <i class="mdi mdi-close" />
                         </button>
                     </div>
                 </div>
                 <div class="todo-card__actions flex justify-end items-end">
-                    {
-                        <div
-                            class={[
-                                'period',
-                                isExpired.value == true ? 'period--expired' : 'period--alive'
-                            ].join(' ')}
-                        >
-                            {isExpired.value
-                                ? TodoCardStatus.EXPIRED
-                                : `${getProps.value.dDay}일 전`}
-                        </div>
-                    }
+                    {printPeriod.value && (
+                        <div class={classListPeriod.value}>{printPeriod.value}</div>
+                    )}
                 </div>
             </div>
         )

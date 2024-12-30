@@ -1,48 +1,44 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
 .modal-dialog {
-    width: calc(100vw / 2);
     &__card {
-        $titleHeight: 3.5rem;
-        $actionsHeight: 3.5rem;
-        width: 100%;
-        &-title {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: $titleHeight;
-            min-height: $titleHeight;
-            max-height: $titleHeight;
-            b {
-                font-size: 1.25rem;
-            }
-        }
-        &-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: calc(100% - $titleHeight - $actionsHeight) !important;
-            min-height: 6rem !important;
-            overflow-y: auto;
-            p {
-                font-size: 1.25rem;
-                text-align: center;
-            }
-        }
-        &-actions {
-            height: $actionsHeight;
-            min-height: $actionsHeight;
-            max-height: $actionsHeight;
-            .v-btn {
-                font-size: 1.25rem;
-                height: 100%;
-            }
-            .btn-ok {
-                .v-btn__content {
-                    color: var(--theme-color-1) !important;
+        min-width: calc(100vw / 3);
+        box-shadow: 0px 0.5rem 0.5rem rgba(0, 0, 0, 0.1);
+        border-radius: 0.5rem;
+        height: fit-content;
+        overflow: hidden;
+        background-color: #fff;
+        box-sizing: border-box;
+        padding: 0.25rem 0;
+        &-header {
+            padding: 0 2rem;
+            height: variables.$dock-menu-height;
+            button {
+                @include mixins.hover-button;
+                i {
+                    font-size: 1.75rem;
                 }
             }
         }
-    }
-    .v-overlay__content {
-        min-height: calc(100vh / 3);
+        &-content {
+            min-height: calc(variables.$dock-menu-height * 2);
+        }
+        &-actions {
+            height: calc(variables.$dock-menu-height * 1.5);
+            padding: 1rem;
+            button {
+                @include mixins.hover-button;
+                border-radius: 0.25rem;
+                width: 40%;
+                height: 100%;
+                &.btn-cancel {
+                    background-color: #ececec;
+                }
+                &.btn-confirm {
+                    background-color: var(--dark-color);
+                    color: #fff;
+                }
+            }
+        }
     }
 }

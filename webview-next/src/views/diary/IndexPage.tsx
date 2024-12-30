@@ -46,7 +46,7 @@ export default defineComponent({
         )
         return () => (
             <article class="diary-page">
-                <div class="diary-page__header row-between px-2">
+                <div class="diary-page__header flex justify-between items-center px-2">
                     <div class="flex items-center">
                         <button
                             type="button"

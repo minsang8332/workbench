@@ -20,7 +20,7 @@ export default defineComponent({
                 <div class="dock-menu__left flex justify-center items-center gap-2 full-height">
                     <button
                         type="button"
-                        class="btn-diary skip-native-drag row-center"
+                        class="btn-diary flex justify-center items-center"
                         onClick={() => router.replace({ name: 'diary' })}
                     >
                         <i class="mdi mdi-book-open-page-variant"></i>
@@ -28,7 +28,7 @@ export default defineComponent({
                     </button>
                     <button
                         type="button"
-                        class="btn-todo skip-native-drag row-center"
+                        class="btn-todo flex justify-center items-center"
                         onClick={() => router.replace({ name: 'todo' })}
                     >
                         <i class="mdi mdi-flag-variant" />
@@ -38,7 +38,7 @@ export default defineComponent({
                 <div class="dock-menu__right flex justify-center items-center full-height">
                     <button
                         type="button"
-                        class="btn-shutdown skip-native-drag row-center"
+                        class="btn-shutdown flex justify-center items-center"
                         onClick={onShutdown}
                     >
                         <i class="mdi mdi-power" />

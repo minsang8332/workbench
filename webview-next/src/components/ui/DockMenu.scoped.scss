@@ -20,7 +20,9 @@
             @include mixins.round-button(var(--todo-color), 2.25rem);
         }
         &.btn-shutdown {
-            @include mixins.round-button(var(--primary-color), 2.25rem);
+            i {
+                font-size: 2rem;
+            }
         }
     }
 }

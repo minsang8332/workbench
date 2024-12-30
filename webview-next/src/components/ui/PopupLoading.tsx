@@ -2,7 +2,7 @@ import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import VueElementLoading from 'vue-element-loading'
 export default defineComponent({
-    name: 'Loading',
+    name: 'PopupLoading',
     props: {
         active: {
             type: Boolean as PropType<boolean>,

@@ -1,6 +1,7 @@
 @use '@/assets/css/abstracts/variables';
 :root {
     --dark-color: #{variables.$dark-color};
+    --gray-color: #{variables.$gray-color};
     --primary-color: #{variables.$primary-color};
     --folder-color: #{variables.$folder-color};
     --border-color: #{variables.$border-color};
