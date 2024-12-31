@@ -29,11 +29,14 @@ contextBridge.exposeInMainWorld('$native', {
         },
     },
     setting: {
-        updatePasscode(payload: IpcController.IRequest.Setting.IUpdatePasscode) {
+        updatePasscode(payload: IpcController.Request.Setting.IUpdatePasscode) {
             return invoke(IPC_SETTING.UPDATE_PASSCODE, payload)
         },
-        verifyPasscode(payload: IpcController.IRequest.Setting.IVerifyPasscode) {
+        verifyPasscode(payload: IpcController.Request.Setting.IVerifyPasscode) {
             return invoke(IPC_SETTING.VERIFY_PASSCODE, payload)
+        },
+        activatePasscode(payload: IpcController.Request.Setting.IActivatePasscode) {
+            return invoke(IPC_SETTING.ACTIVATE_PASSCODE, payload)
         },
     },
     diary: {
@@ -43,22 +46,22 @@ contextBridge.exposeInMainWorld('$native', {
         load() {
             return invoke(IPC_DIARY.LOAD)
         },
-        read(payload: IpcController.IRequest.Diary.IRead) {
+        read(payload: IpcController.Request.Diary.IRead) {
             return invoke(IPC_DIARY.READ, payload)
         },
-        write(payload: IpcController.IRequest.Diary.IWrite) {
+        write(payload: IpcController.Request.Diary.IWrite) {
             return invoke(IPC_DIARY.WRITE, payload)
         },
-        writeDir(payload: IpcController.IRequest.Diary.IWriteDir) {
+        writeDir(payload: IpcController.Request.Diary.IWriteDir) {
             return invoke(IPC_DIARY.WRITE_DIR, payload)
         },
-        remove(payload: IpcController.IRequest.Diary.IRemove) {
+        remove(payload: IpcController.Request.Diary.IRemove) {
             return invoke(IPC_DIARY.REMOVE, payload)
         },
-        rename(payload: IpcController.IRequest.Diary.IRename) {
+        rename(payload: IpcController.Request.Diary.IRename) {
             return invoke(IPC_DIARY.RENAME, payload)
         },
-        move(payload: IpcController.IRequest.Diary.IMove) {
+        move(payload: IpcController.Request.Diary.IMove) {
             return invoke(IPC_DIARY.MOVE, payload)
         },
     },
@@ -66,10 +69,10 @@ contextBridge.exposeInMainWorld('$native', {
         load() {
             return invoke(IPC_TODO.LOAD)
         },
-        save(payload: IpcController.IRequest.Todo.ISave) {
+        save(payload: IpcController.Request.Todo.ISave) {
             return invoke(IPC_TODO.SAVE, payload)
         },
-        remove(payload: IpcController.IRequest.Todo.IRemove) {
+        remove(payload: IpcController.Request.Todo.IRemove) {
             return invoke(IPC_TODO.REMOVE, payload)
         },
     },

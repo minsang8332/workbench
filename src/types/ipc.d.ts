@@ -7,7 +7,7 @@ namespace IpcController {
         data: object
         error?: IError
     }
-    namespace IRequest {
+    namespace Request {
         interface Empty {}
         namespace Diary {
             interface ILoad {}
@@ -40,13 +40,13 @@ namespace IpcController {
         namespace Todo {
             // 저장하기
             interface ISave {
-                id: ITodo.id
-                title: ITodo.title
-                description: ITodo.description
-                status: ITodo.status
-                tasks: ITodo.tasks
-                startedAt: ITodo.startedAt
-                endedAt: ITodo.endedAt
+                id: ITodo['id']
+                title: ITodo['title']
+                description: ITodo['description']
+                status: ITodo['status']
+                tasks: ITodo['tasks']
+                startedAt: ITodo['startedAt']
+                endedAt: ITodo['endedAt']
             }
             // 제거하기
             interface IRemove {
@@ -57,14 +57,14 @@ namespace IpcController {
         namespace Setting {
             // 패스코드 변경하기
             interface IUpdatePasscode {
-                passcode: IPasscode.passcode
+                text: IPasscode['text']
             }
             // 패스코드 검증하기
             interface IVerifyPasscode {
-                passcode: IPasscode.passcode
+                text: IPasscode['text']
             }
             interface IActivatePasscode {
-                usePasscode: IPasscode.usePasscode
+                active: IPasscode['active']
             }
         }
     }

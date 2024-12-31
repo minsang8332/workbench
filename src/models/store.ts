@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import ElectronStore from 'electron-store'
 import commonUtil from '@/utils/common'
-import logger from '@/logger'
+import logger from '@/utils/logger'
 export default class Store<T extends IStoreField> {
     key: string
     instance: ElectronStore
@@ -32,7 +32,7 @@ export default class Store<T extends IStoreField> {
         if (_.isNil(table)) {
             table = []
         }
-        payload.id = commonUtil.randomHex()
+        payload.id = commonUtil.getRandomHex()
         payload.createdAt = new Date()
         if (table.find((record) => record.id == payload.id)) {
             throw new Error('스토어 id 가 이미 존재합니다.')

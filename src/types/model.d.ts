@@ -30,3 +30,7 @@ interface ITodoTask extends IStoreField {
     checked: boolean
     taskId: ITodo['id'] | null
 }
+interface IPasscode {
+    text: string
+    active: boolean
+}

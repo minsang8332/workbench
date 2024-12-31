@@ -11,7 +11,7 @@
     &__header {
         @include mixins.glass;
         button.btn-close {
-            @include mixins.hover-button;
+            @include mixins.hover-animation;
             border-radius: 0.25rem;
             padding: 0.1rem;
             i {

@@ -30,9 +30,11 @@
 .text-field__input:focus,
 .text-field__textarea:focus {
     @include mixins.pulse-animation(variables.$primary-color, 0.3);
-    background-color: transparent;
-    border: 1px solid var(--theme-color);
-    caret-color: var(--theme-color);
+    & {
+        background-color: transparent;
+        border: 1px solid var(--theme-color);
+        caret-color: var(--theme-color);
+    }
 }
 .dp__overlay_cell_active,
 .dp__active_date {

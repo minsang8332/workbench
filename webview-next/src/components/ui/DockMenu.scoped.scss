@@ -4,7 +4,7 @@
     @include mixins.glass;
     height: variables.$dock-menu-height;
     button {
-        @include mixins.hover-button;
+        @include mixins.hover-animation;
         @include mixins.tooltip;
         padding: 0 0.75rem;
         color: #fff;
@@ -14,10 +14,10 @@
             color: var(--dark-color);
         }
         &.btn-diary {
-            @include mixins.round-button(#3e2723, 2.25rem);
+            @include mixins.background-color-button(#3e2723, 2.25rem);
         }
         &.btn-todo {
-            @include mixins.round-button(var(--todo-color), 2.25rem);
+            @include mixins.background-color-button(var(--todo-color), 2.25rem);
         }
         &.btn-shutdown {
             i {

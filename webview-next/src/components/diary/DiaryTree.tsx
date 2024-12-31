@@ -239,11 +239,11 @@ export default defineComponent({
                         onDblclick={onDblClick}
                         onClick={toggleVisible}
                         onMouseup={onMenu}
-                        v-ripple={!isRenaming.value}
+                        // v-ripple={!isRenaming.value}
                     >
                         <div
                             class="diary-tree__content-item flex items-center text-truncate"
-                            style={{ marginLeft: props.depth * 1.5 + 'rem' }}
+                            style={{ marginLeft: (props.depth - 1) * 1.5 + 'rem' }}
                             draggable={!isRenaming.value}
                             onDragenter={onPrevent}
                             onDragover={onPrevent}

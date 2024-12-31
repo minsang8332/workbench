@@ -8,6 +8,7 @@ export enum IPC_UPDATER {
 export enum IPC_SETTING {
     UPDATE_PASSCODE = 'setting:update-passcode',
     VERIFY_PASSCODE = 'setting:verify-passcode',
+    ACTIVATE_PASSCODE = 'setting:activate-passcode',
 }
 export enum IPC_DIARY {
     LOAD = 'diary:load',

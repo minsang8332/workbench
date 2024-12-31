@@ -77,8 +77,7 @@ export default defineComponent({
                     {unref(props.items).map((item) => (
                         <button
                             type="button"
-                            class="flex justify-between items-center h-6 px-2 w-100"
-                            v-ripple
+                            class="flex justify-between items-center h-6 px-2 w-full"
                             onClick={(event) => onClickItem(item)}
                         >
                             <div class="flex items-center gap-1">

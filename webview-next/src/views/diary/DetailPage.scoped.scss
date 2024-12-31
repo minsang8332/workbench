@@ -8,7 +8,7 @@
         @include mixins.glass;
         height: $article-header;
         button {
-            @include mixins.hover-button;
+            @include mixins.hover-animation;
             @include mixins.tooltip;
             padding: 0 1rem;
             &.btn-tree {
@@ -37,10 +37,11 @@
         height: calc(100vh - $article-header - $article-actions - variables.$dock-menu-height);
         overflow-y: scroll;
         textarea {
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-family: 'D2Coding';
             background: #f6f6f6;
             height: 100%;
+            padding: 0.5rem;
         }
         .resizer {
             height: 100%;
@@ -57,6 +58,7 @@
             background-color: variables.$diary-color;
             border-radius: 0.1rem;
             position: relative;
+            width: 100%;
             i {
                 font-size: 2rem;
                 color: #fff;

@@ -1,7 +1,7 @@
 import { app, ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
-import logger from '@/logger'
-import windowService from '@/services/window'
+import logger from '@/utils/logger'
+import windowUtil from '@/utils/window'
 import { IPC_UPDATER } from '@/constants/ipc'
 // 앱 종료시 자동 업데이트
 autoUpdater.autoInstallOnAppQuit = false
@@ -17,7 +17,7 @@ ipcMain.handle(IPC_UPDATER.AVAILABLE, () => {
     }
 })
 ipcMain.on(IPC_UPDATER.AVAILABLE, () => {
-    let mainWindow = windowService.getMainWindow()
+    let mainWindow = windowUtil.getMainWindow()
     if (mainWindow) {
         mainWindow.webContents.send(IPC_UPDATER.AVAILABLE, update)
     }
@@ -31,7 +31,7 @@ ipcMain.on(IPC_UPDATER.INSTALL, () => {
 })
 // 업데이트 가능 여부
 autoUpdater.on('update-available', (event) => {
-    let mainWindow = windowService.getMainWindow()
+    let mainWindow = windowUtil.getMainWindow()
     if (mainWindow) {
         mainWindow.webContents.send(IPC_UPDATER.AVAILABLE)
         update = true

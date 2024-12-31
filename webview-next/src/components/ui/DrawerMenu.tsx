@@ -1,11 +1,12 @@
 import _ from 'lodash'
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, ref, unref, watch } from 'vue'
 import './DrawerMenu.scoped.scss'
 import { useAppStore } from '@/stores/app'
 export default defineComponent({
     name: 'DrawerMenu',
     setup(props, { slots }) {
         const appStore = useAppStore()
+        const drawerContentRef = ref<HTMLElement>()
         const getClassList = computed(() => {
             const classList = ['drawer-menu']
             if (appStore.getDrawer) {
@@ -16,10 +17,8 @@ export default defineComponent({
         return () => (
             <aside class={getClassList.value}>
                 <div
-                    class="drawer-menu__content"
-                    style={{
-                        display: !appStore.getDrawer ? 'none' : 'block'
-                    }}
+                    ref={drawerContentRef}
+                    class="drawer-menu__content flex flex-wrap overflow-hidden"
                 >
                     {slots.default && slots.default()}
                 </div>

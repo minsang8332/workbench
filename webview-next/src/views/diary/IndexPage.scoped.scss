@@ -7,7 +7,7 @@
         @include mixins.glass;
         height: $article-header;
         button {
-            @include mixins.hover-button;
+            @include mixins.hover-animation;
             @include mixins.tooltip;
             padding: 0 1rem;
             &.btn-tree {

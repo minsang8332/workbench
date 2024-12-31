@@ -1,28 +1,28 @@
 import { app } from 'electron'
 import _ from 'lodash'
 import '@/controllers'
-import * as protocolTool from '@/services/protocol'
-import windowTool from '@/services/window'
+import * as protocolUtil from '@/utils/protocol'
+import windowUtil from '@/utils/window'
 if (app.requestSingleInstanceLock() == false) {
     app.quit()
     process.exit(0)
 }
 app.on('will-finish-launching', () => {
-    protocolTool.registerScheme('app')
+    protocolUtil.registerScheme('app')
 })
 app.on('ready', () => {
-    protocolTool.handleProtocol('app')
-    const mainWindow = windowTool.creaateWindow({
+    protocolUtil.handleProtocol('app')
+    const mainWindow = windowUtil.creaateWindow({
         scheme: 'app',
         url: process.env.APP_URL,
     })
-    windowTool.setMainWindow(mainWindow)
+    windowUtil.setMainWindow(mainWindow)
 })
 app.on('window-all-closed', () => {
     app.quit()
 })
 app.on('second-instance', () => {
-    let mainWindow = windowTool.getMainWindow()
+    let mainWindow = windowUtil.getMainWindow()
     if (mainWindow) {
         if (mainWindow.isMinimized()) {
             mainWindow.restore()
