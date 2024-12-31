@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import ElectronStore from 'electron-store'
-import commonTool from '@/tools/common'
+import commonUtil from '@/utils/common'
 import logger from '@/logger'
 export default class Store<T extends IStoreField> {
     key: string
@@ -14,7 +14,7 @@ export default class Store<T extends IStoreField> {
         try {
             table = <T[]>this.instance.get(this.key)
             if (table && option && option.id) {
-                return table.find(t => t.id == option.id)
+                return table.find((t) => t.id == option.id)
             }
         } catch (e) {
             logger.error(e)
@@ -32,9 +32,9 @@ export default class Store<T extends IStoreField> {
         if (_.isNil(table)) {
             table = []
         }
-        payload.id = commonTool.randomHex()
+        payload.id = commonUtil.randomHex()
         payload.createdAt = new Date()
-        if (table.find(record => record.id == payload.id)) {
+        if (table.find((record) => record.id == payload.id)) {
             throw new Error('스토어 id 가 이미 존재합니다.')
         }
         table.push(payload)
@@ -60,7 +60,7 @@ export default class Store<T extends IStoreField> {
         try {
             let table = <T[]>this.instance.get(this.key)
             if (table) {
-                field = table.find(record => record.id == id)
+                field = table.find((record) => record.id == id)
                 table = table.filter((field) => field.id !== id)
                 this.set(table)
             }

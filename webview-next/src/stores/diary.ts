@@ -78,7 +78,7 @@ export const useDiaryStore = defineStore('diary', () => {
     })
     // 문서 목록 가져오기
     const loadDiaries = async () => {
-        const response = await window.$native.diary.readAll()
+        const response = await window.$native.diary.load()
         const { diaries } = response.data
         state.diaries = diaries
         return { diaries }

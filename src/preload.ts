@@ -1,4 +1,5 @@
 import { app, contextBridge, ipcRenderer } from 'electron'
+import { IPC_APP, IPC_UPDATER, IPC_SETTING, IPC_DIARY, IPC_TODO } from '@/constants/ipc'
 const invoke = async (channel: string, payload?: any) => {
     const response = await ipcRenderer.invoke(channel, payload).catch((e) => e)
     if (response && response.error) {
@@ -6,67 +7,70 @@ const invoke = async (channel: string, payload?: any) => {
     }
     return response
 }
-const diary = {
-    readAll() {
-        return invoke('diary:read-all')
-    },
-    read(payload: IpcPayload.Diary.IRead) {
-        return invoke('diary:read', payload)
-    },
-    write(payload: IpcPayload.Diary.IWrite) {
-        return invoke('diary:write', payload)
-    },
-    openDir() {
-        ipcRenderer.send('diary:open-dir')
-    },
-    writeDir(payload: IpcPayload.Diary.IWriteDir) {
-        return invoke('diary:write-dir', payload)
-    },
-    remove(payload: IpcPayload.Diary.IRemove) {
-        return invoke('diary:remove', payload)
-    },
-    rename(payload: IpcPayload.Diary.IRename) {
-        return invoke('diary:rename', payload)
-    },
-    move(payload: IpcPayload.Diary.IMove) {
-        return invoke('diary:move', payload)
-    },
-}
 contextBridge.exposeInMainWorld('$native', {
     exit() {
-        ipcRenderer.send('exit')
+        ipcRenderer.send(IPC_APP.EXIT)
     },
     getVersion() {
         return app.getVersion()
     },
     updater: {
+        install() {
+            ipcRenderer.send(IPC_UPDATER.INSTALL)
+        },
+        available() {
+            return invoke(IPC_UPDATER.AVAILABLE)
+        },
         // 업데이트 가능여부가 확인뙬 때 까지 기다림
         wait() {
             return new Promise((resolve) => {
-                ipcRenderer.on('updater:available', (event, payload) =>
-                    resolve(payload)
-                )
+                ipcRenderer.on(IPC_UPDATER.AVAILABLE, (event, payload) => resolve(payload))
             })
         },
-        available(payload = {}) {
-            return invoke('updater:available', payload)
+    },
+    setting: {
+        updatePasscode(payload: IpcController.IRequest.Setting.IUpdatePasscode) {
+            return invoke(IPC_SETTING.UPDATE_PASSCODE, payload)
         },
-        install() {
-            ipcRenderer.send('updater:install')
+        verifyPasscode(payload: IpcController.IRequest.Setting.IVerifyPasscode) {
+            return invoke(IPC_SETTING.VERIFY_PASSCODE, payload)
         },
     },
-    diary,
-    /** @memo v1.0.0 에서는 [ markdown ] 으로 사용중. */
-    markdown: diary,
+    diary: {
+        openDir() {
+            ipcRenderer.send(IPC_DIARY.OPEN_DIR)
+        },
+        load() {
+            return invoke(IPC_DIARY.LOAD)
+        },
+        read(payload: IpcController.IRequest.Diary.IRead) {
+            return invoke(IPC_DIARY.READ, payload)
+        },
+        write(payload: IpcController.IRequest.Diary.IWrite) {
+            return invoke(IPC_DIARY.WRITE, payload)
+        },
+        writeDir(payload: IpcController.IRequest.Diary.IWriteDir) {
+            return invoke(IPC_DIARY.WRITE_DIR, payload)
+        },
+        remove(payload: IpcController.IRequest.Diary.IRemove) {
+            return invoke(IPC_DIARY.REMOVE, payload)
+        },
+        rename(payload: IpcController.IRequest.Diary.IRename) {
+            return invoke(IPC_DIARY.RENAME, payload)
+        },
+        move(payload: IpcController.IRequest.Diary.IMove) {
+            return invoke(IPC_DIARY.MOVE, payload)
+        },
+    },
     todo: {
-        readAll() {
-            return invoke('todo:read-all')
+        load() {
+            return invoke(IPC_TODO.LOAD)
         },
-        save(payload: IpcPayload.Todo.ISave) {
-            return invoke('todo:save', payload)
+        save(payload: IpcController.IRequest.Todo.ISave) {
+            return invoke(IPC_TODO.SAVE, payload)
         },
-        remove(payload: IpcPayload.Todo.IRemove) {
-            return invoke('todo:remove', payload)
+        remove(payload: IpcController.IRequest.Todo.IRemove) {
+            return invoke(IPC_TODO.REMOVE, payload)
         },
     },
 })

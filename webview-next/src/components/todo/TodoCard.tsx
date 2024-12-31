@@ -72,7 +72,7 @@ export default defineComponent({
         return () => (
             <div class="todo-card flex flex-col">
                 <div class="todo-card__header flex justify-between items-start">
-                    <div class="flex justify-between items-center gap-2 w-100">
+                    <div class="flex justify-between items-center w-full">
                         <b class="text-truncate">{props.title}</b>
                         <button type="button" class="btn-close" onClick={onBeforeRemove}>
                             <i class="mdi mdi-close" />

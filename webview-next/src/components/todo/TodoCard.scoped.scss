@@ -6,7 +6,7 @@
     cursor: pointer;
     padding: 0.5rem;
     &__header {
-        flex: 0 1 50%;
+        flex: 0 0 50%;
         button.btn-close {
             @include mixins.hover-button;
             border-radius: 0.25rem;
@@ -17,7 +17,7 @@
         }
     }
     &__actions {
-        flex: 0 1 50%;
+        flex: 0 0 50%;
         .period {
             background-color: var(--gray-color);
             color: #fff;

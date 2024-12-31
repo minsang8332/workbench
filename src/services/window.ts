@@ -1,6 +1,6 @@
 import path from 'path'
 import { app, BrowserWindow, nativeImage, Event } from 'electron'
-import { checkForUpdates } from '@/handler/updater'
+import { checkForUpdates } from '@/controllers/updater'
 let mainWindow: BrowserWindow
 const creaateWindow = ({
     scheme = 'file',

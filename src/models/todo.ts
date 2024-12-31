@@ -1,55 +1,55 @@
 import _ from 'lodash'
-export const TodoStatus = {
-    PREPARE: 0,
-    PROCESS: 1,
-    DONE: 2,
-    HOLD: 3
-}
-type TodoStatus = typeof TodoStatus[keyof typeof TodoStatus]
+import { TodoStatus } from '@/constants/model'
 export class Todo implements ITodo {
-    id: string
-    title: string
-    description: string
-    status: TodoStatus
-    tasks: ITodoTask[]
-    startedAt: Date | null
-    endedAt: Date | null
-    constructor ({
-        id = '',
-        title = '',
+    static IDENTIFIER = 'todo'
+    id: ITodo['id']
+    title: ITodo['title']
+    description: ITodo['description']
+    status: ITodo['status']
+    tasks: ITodo['tasks']
+    startedAt: ITodo['startedAt']
+    endedAt: ITodo['endedAt']
+    createdAt: ITodo['createdAt']
+    updatedAt: ITodo['updatedAt']
+    constructor({
+        id,
+        title,
+        description = null,
         status = TodoStatus.PREPARE,
-        description = '',
+        tasks = [],
         startedAt = null,
-        endedAt = null
-    } = {}) {
+        endedAt = null,
+    }: Omit<ITodo, 'createdAt' | 'updatedAt'>) {
         this.id = id
         this.title = title
         this.description = description
         this.status = status
-        this.tasks = []
+        this.tasks = tasks
         this.startedAt = startedAt
         this.endedAt = endedAt
+        this.createdAt = new Date()
+        this.updatedAt = null
     }
 }
 export class TodoTask implements ITodoTask {
-    id: string
-    title: string
-    description: string
-    checked: boolean
-    constructor ({
-        id = '',
-        title = '',
-        description = '',
-        checked = false,
-    } = {}) {
+    static IDENTIFIER = 'todo-task'
+    id: ITodoTask['id']
+    title: ITodoTask['title']
+    checked: ITodoTask['checked']
+    taskId: ITodoTask['taskId']
+    createdAt: ITodoTask['createdAt']
+    updatedAt: ITodoTask['updatedAt']
+    constructor({ id, title, checked = false, taskId = null }: Omit<ITodoTask, 'createdAt' | 'updatedAt'>) {
         this.id = id
+        this.taskId = taskId
         this.title = title
-        this.description = description
         this.checked = checked
+        this.createdAt = new Date()
+        this.updatedAt = null
     }
 }
 export default {
     Todo,
     TodoStatus,
-    TodoTask
+    TodoTask,
 }

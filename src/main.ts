@@ -1,8 +1,8 @@
 import { app } from 'electron'
 import _ from 'lodash'
-import '@/handler'
-import * as protocolTool from '@/tools/protocol'
-import windowTool from '@/tools/window'
+import '@/controllers'
+import * as protocolTool from '@/services/protocol'
+import windowTool from '@/services/window'
 if (app.requestSingleInstanceLock() == false) {
     app.quit()
     process.exit(0)

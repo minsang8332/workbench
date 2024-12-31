@@ -7,27 +7,27 @@ export const useTodoStore = defineStore('todo', () => {
         status: [
             {
                 value: 0,
-                label: '해야할일',
+                label: '해야할일'
             },
             {
                 value: 1,
-                label: '진행중',
+                label: '진행중'
             },
             {
                 value: 2,
-                label: '완료',
+                label: '완료'
             },
             {
                 value: 3,
-                label: '보류',
+                label: '보류'
             }
-        ],
+        ]
     })
     const getTodos = computed(() => state.todos)
     const getStatus = computed(() => state.status)
     const loadTodos = async () => {
         state.todos = []
-        const response = await window.$native.todo.readAll()
+        const response = await window.$native.todo.load()
         const { todos } = response.data
         state.todos = todos
         return { todos }
@@ -35,13 +35,13 @@ export const useTodoStore = defineStore('todo', () => {
     const saveTodo = async (payload: ITodo) => {
         const response = await window.$native.todo.save(payload)
         const { id } = response.data
-        return { id }    
+        return { id }
     }
     const removeTodo = async (id: string) => {
         const response = await window.$native.todo.remove({ id })
         const { todos } = response.data
         state.todos = todos
-        return { todos }    
+        return { todos }
     }
     return {
         state,
