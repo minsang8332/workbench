@@ -87,7 +87,7 @@
         border-color: transparent transparent var(--dark-color) transparent !important;
     }
 }
-@mixin glass($color: variables.$gray-color, $backdrop-filter: 0.5rem, $opacity: 0.5) {
+@mixin glass($color: variables.$gray-color, $backdrop-filter: 0.1rem, $opacity: 0.5) {
     background: rgba($color, $opacity);
     border-radius: 0.25rem;
     backdrop-filter: blur($backdrop-filter);

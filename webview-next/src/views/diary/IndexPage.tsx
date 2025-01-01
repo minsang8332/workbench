@@ -56,7 +56,7 @@ export default defineComponent({
                             <i class="mdi mdi-menu" />
                             <span class="tooltip tooltip-bottom">문서 탐색</span>
                         </button>
-                        <h3 class="text-title">최근 작성한 문서</h3>
+                        <b class="text-title">최근 작성한 문서</b>
                     </div>
                     <div class="flex items-center">
                         <button

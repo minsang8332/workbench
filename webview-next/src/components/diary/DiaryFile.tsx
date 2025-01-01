@@ -171,7 +171,7 @@ export default defineComponent({
                             {renameRef.value ? (
                                 <diary-text-field path={props.path} onUpdate={updateRename} />
                             ) : (
-                                <b class="text-title">{printTitle.value}</b>
+                                <p class="text-title">{printTitle.value}</p>
                             )}
                         </div>
                     </div>

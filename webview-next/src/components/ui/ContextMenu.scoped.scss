@@ -1,7 +1,7 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
 .context-menu {
-    @include mixins.glass(variables.$window-color, 0.5rem, 0.8);
+    @include mixins.glass(variables.$window-color, null, 0.8);
     position: absolute;
     top: 0;
     left: 0;

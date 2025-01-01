@@ -1,13 +1,12 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
 .diary-card {
-    @include mixins.glass(variables.$diary-color, 0.5rem);
+    @include mixins.glass;
     @include mixins.scale-animation;
     height: 100%;
     backdrop-filter: unset;
     cursor: pointer;
     &__header {
-        border-bottom: 1px solid variables.$border-color;
         height: 10%;
         padding: 0.5rem;
     }
@@ -18,7 +17,6 @@
         padding: 0.5rem;
     }
     &__footer {
-        border-top: 1px solid variables.$border-color;
         height: 20%;
         p {
             font-size: 0.9rem;

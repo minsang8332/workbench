@@ -1,7 +1,7 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
 .diary-drawer-menu {
-    @include mixins.glass(variables.$diary-color);
+    @include mixins.glass;
     height: 100%;
     width: 100%;
     padding: 0.5rem;

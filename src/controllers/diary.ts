@@ -180,16 +180,17 @@ controller(
         if (!(await isSubdir(rootDir, filepath))) {
             throw new Error('유효하지 않은 경로 입니다.')
         }
-        const src = path.parse(filepath)
-        const dest = path.parse(request.filename)
-        if (!_.includes(allowExts, dest.ext)) {
+        const fromParsed = path.parse(filepath)
+        const destParsed = path.parse(request.filename)
+        // 파일이면 확장자 확인하여 예외처리
+        if (fs.lstatSync(filepath).isFile() && _.includes(allowExts, destParsed.ext) == false) {
             throw new Error(`작성 가능한 확장자는 다음과 같습니다. (${allowExts.join(',')})`)
         }
         // 새로운 경로를 생성
         const renameDir = path.format({
-            dir: src.dir,
-            name: dest.name,
-            ext: dest.ext,
+            dir: fromParsed.dir,
+            name: destParsed.name,
+            ext: destParsed.ext,
         })
         if (fs.existsSync(renameDir)) {
             throw new Error('이미 존재하는 파일명 입니다.')
