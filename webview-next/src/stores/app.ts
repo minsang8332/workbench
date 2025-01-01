@@ -1,18 +1,21 @@
 import { reactive, computed } from 'vue'
 import { defineStore } from 'pinia'
 import _ from 'lodash'
-const scss = (property: string): string => {
-    const style = getComputedStyle(document.body)
-    return style.getPropertyValue(property)
+interface IAppState {
+    drawer: boolean
+    modal: boolean
+    modalProps: IModalDialogProps
+    menu: boolean
+    menuProps: IContextMenuProps
 }
-const initModalProps = () => {
+const initModalProps = (): IModalDialogProps => {
     return {
         title: '',
         message: '',
         ok: null
     }
 }
-const initMenuProps = () => {
+const initMenuProps = (): IContextMenuProps => {
     return {
         pageX: 0,
         pageY: 0,
@@ -26,11 +29,15 @@ export const useAppStore = defineStore('app', () => {
         // 모달 관련
         modal: false,
         modalProps: initModalProps(),
-        // 메뉴
+        // 컨텍스트 메뉴
         menu: false,
         menuProps: initMenuProps()
     })
     const getDrawer = computed(() => state.drawer)
+    const scss = (property: string): string => {
+        const style = getComputedStyle(document.body)
+        return style.getPropertyValue(property)
+    }
     const toggleDrawer = (drawer?: boolean) => {
         if (typeof drawer == 'boolean') {
             state.drawer = drawer
@@ -38,7 +45,7 @@ export const useAppStore = defineStore('app', () => {
             state.drawer = !state.drawer
         }
     }
-    const toggleModal = (modal: boolean, modalProps?: IAppModalProps) => {
+    const toggleModal = (modal: boolean, modalProps?: IModalDialogProps) => {
         if (typeof modal == 'boolean') {
             state.modal = modal
             if (modal && modalProps) {
@@ -52,7 +59,7 @@ export const useAppStore = defineStore('app', () => {
             state.modal = !state.modal
         }
     }
-    const toggleMenu = (menu: boolean, menuProps?: IAppMenuProps) => {
+    const toggleMenu = (menu: boolean, menuProps?: IContextMenuProps) => {
         if (typeof menu == 'boolean') {
             state.menu = menu
             if (menu && menuProps) {

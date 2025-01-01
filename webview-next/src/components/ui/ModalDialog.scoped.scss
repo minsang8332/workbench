@@ -2,6 +2,7 @@
 @use '@/assets/css/abstracts/mixins';
 .modal-dialog {
     $modal-dialog-width: calc(100vw / 3);
+    $modal-dialog-header-height: 3rem;
     &__card {
         min-width: $modal-dialog-width;
         box-shadow: 0px 0.5rem 0.5rem rgba(0, 0, 0, 0.1);
@@ -12,26 +13,26 @@
         box-sizing: border-box;
         padding: 0.25rem 0;
         &-header {
-            height: variables.$dock-menu-height;
+            height: $modal-dialog-header-height;
             width: 100%;
             padding: 0 2rem;
             button {
-                @include mixins.hover-animation;
+                @include mixins.scale-animation;
                 i {
                     font-size: 1.75rem;
                 }
             }
         }
         &-content {
-            min-height: calc(variables.$dock-menu-height * 2);
+            min-height: calc($modal-dialog-header-height * 2);
             max-height: 70vh;
             overflow-y: scroll;
         }
         &-actions {
-            height: calc(variables.$dock-menu-height * 1.5);
+            height: calc($modal-dialog-header-height * 1.5);
             padding: 1rem;
             button {
-                @include mixins.hover-animation;
+                @include mixins.scale-animation;
                 border-radius: 0.25rem;
                 width: 40%;
                 height: 100%;

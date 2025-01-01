@@ -1,0 +1,8 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.setting-drawer-menu {
+    @include mixins.glass(variables.$setting-color, 0.5rem, 0.2);
+    height: 100%;
+    width: 100%;
+    padding: 0.5rem;
+}

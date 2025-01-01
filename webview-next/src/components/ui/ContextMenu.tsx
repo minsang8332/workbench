@@ -7,10 +7,6 @@ export default defineComponent({
             type: Boolean as PropType<boolean>,
             default: false
         },
-        items: {
-            type: Array as PropType<IAppMenuItem[]>,
-            default: () => []
-        },
         pageX: {
             type: Number as PropType<number>,
             default: 0
@@ -18,6 +14,10 @@ export default defineComponent({
         pageY: {
             type: Number as PropType<number>,
             default: 0
+        },
+        items: {
+            type: Array as PropType<IContextMenuItem[]>,
+            default: () => []
         }
     },
     setup(props, { emit }) {
@@ -43,7 +43,7 @@ export default defineComponent({
             }
             onClose()
         }
-        const onClickItem = (item: IAppMenuItem) => {
+        const onClickItem = (item: IContextMenuItem) => {
             if (item.cb) {
                 item.cb()
             }

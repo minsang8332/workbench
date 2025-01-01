@@ -2,25 +2,27 @@
 @use '@/assets/css/abstracts/mixins';
 .diary-page {
     $article-header: 3rem;
-    height: calc(100vh - variables.$dock-menu-height);
+    height: calc(100% - variables.$dock-menu-height);
     &__header {
-        @include mixins.glass;
+        @include mixins.glass(variables.$diary-color);
         height: $article-header;
+        padding: 0 0.5rem;
         button {
-            @include mixins.hover-animation;
+            @include mixins.scale-animation;
             @include mixins.tooltip;
-            padding: 0 1rem;
+            height: 2.25rem;
+            width: 2.25rem;
             &.btn-tree {
                 height: 2.25rem;
                 i {
                     font-size: 1.5rem;
                 }
             }
-            &.btn-files {
-                height: 2.25rem;
+            &.btn-docs {
+                border-radius: 0.25rem;
                 i {
                     font-size: 1.5rem;
-                    color: var(--folder-color);
+                    color: variables.$folder-color;
                 }
             }
         }
@@ -38,11 +40,6 @@
         &-item {
             height: $item-size;
             width: $item-size;
-        }
-    }
-    .btn-folder {
-        i {
-            color: var(--folder-color);
         }
     }
 }

@@ -1,14 +1,32 @@
-// 토스트 팝업
-.app-toast {
-    display: flex;
-    align-items: center;
-    padding: 4px 0;
-    i {
-        font-size: 24px;
-        margin-right: 8px;
+@use '@/assets/css/abstracts/mixins';
+@use '@/assets/css/abstracts/variables';
+.toasify,
+.toastify {
+    @include mixins.glass(variables.$window-color, 0.5rem, 1);
+    &__content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        i {
+            font-size: 1.5rem;
+            color: variables.$dark-color;
+        }
     }
-    p {
-        font-size: 16px;
-        color: #fff;
+    &--danger {
+        @include mixins.glass(variables.$danger-color, 0.5rem, 0.8);
+        backdrop-filter: none !important;
+        i,
+        p {
+            color: #fff;
+        }
+    }
+    &--success {
+        @include mixins.glass(variables.$success-color, 0.5rem, 0.8);
+        backdrop-filter: none !important;
+        i,
+        p {
+            color: #fff;
+        }
     }
 }

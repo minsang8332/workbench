@@ -2,16 +2,21 @@
 @use '@/assets/css/abstracts/mixins';
 .detail-page {
     $article-header: 3rem;
-    $article-actions: 3rem;
-    height: calc(100vh - variables.$dock-menu-height);
+    $article-actions: 2.5rem;
+    height: calc(100% - variables.$dock-menu-height);
+    position: relative;
+    // dock-menu 와 이격을 위함
+    padding-bottom: 0.25rem;
     &__header {
-        @include mixins.glass;
+        @include mixins.glass(variables.$diary-color);
         height: $article-header;
+        padding: 0 0.5rem;
         button {
-            @include mixins.hover-animation;
+            @include mixins.scale-animation;
             @include mixins.tooltip;
-            padding: 0 1rem;
-            &.btn-tree {
+            height: 2.25rem;
+            width: 2.25rem;
+            &.btn-drawer {
                 height: 2.25rem;
                 i {
                     font-size: 1.5rem;
@@ -34,34 +39,43 @@
         }
     }
     &__content {
+        $resizerWidth: 0.25rem;
         height: calc(100vh - $article-header - $article-actions - variables.$dock-menu-height);
         overflow-y: scroll;
         textarea {
-            font-size: 1rem;
-            font-family: 'D2Coding';
-            background: #f6f6f6;
+            @include mixins.glass;
+            backdrop-filter: unset;
             height: 100%;
+            font-family: 'D2Coding';
             padding: 0.5rem;
+            resize: none;
+            min-width: 20%;
+            overflow: hidden;
         }
         .resizer {
             height: 100%;
-            border-left: 0.1rem dotted var(--border-color);
+            width: $resizerWidth;
+            min-width: $resizerWidth;
+            max-width: $resizerWidth;
+            border-color: transparent;
             cursor: col-resize;
+        }
+        .preview {
+            min-width: 20%;
+            height: 100%;
         }
     }
     &__actions {
         height: $article-actions;
-        padding: 0.25rem 0.5rem;
-        .btn-submit {
+        width: 100%;
+        button.btn-submit {
+            @include mixins.glass(variables.$diary-color);
             @include mixins.tooltip;
-            @include mixins.pulse-animation(variables.$diary-color);
-            background-color: variables.$diary-color;
-            border-radius: 0.1rem;
-            position: relative;
-            width: 100%;
+            @include mixins.scale-animation(0.99, 0.8);
+            border-radius: 0.25rem;
             i {
                 font-size: 2rem;
-                color: #fff;
+                color: variables.$diary-color;
             }
         }
     }

@@ -2,12 +2,14 @@ import { ipcMain } from 'electron'
 export const controller = async <T>(channel: string, fn: Function) => {
     ipcMain.handle(channel, async (event: Electron.IpcMainInvokeEvent, payload: T) => {
         let response: IpcController.IResponse = {
+            result: false,
             data: {},
         }
         try {
             response = await fn(payload, response, {
                 event,
             })
+            response.data.result = true
         } catch (e) {
             response.error = error(e as Error)
         }

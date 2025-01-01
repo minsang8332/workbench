@@ -1,19 +1,22 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
 .drawer-menu {
-    @include mixins.glass;
-    height: 100vh;
+    height: 100%;
     transition-property: width;
     transition: 0.3s;
     padding: 0;
     opacity: 0;
     width: 0;
     &--active {
-        padding: 0.5rem;
         opacity: 1;
         width: variables.$drawer-menu-width;
+        min-width: variables.$drawer-menu-width;
+        max-width: variables.$drawer-menu-width;
     }
-    &__content * {
-        text-wrap: nowrap;
+    &__content {
+        height: 100%;
+        * {
+            text-wrap: nowrap;
+        }
     }
 }

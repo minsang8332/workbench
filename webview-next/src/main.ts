@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import toastPlugin from '@/plugins/toast'
+import toastPlugin from '@/plugins/toastify'
 import router from '@/router'
 import App from '@/App'
 import '@mdi/font/css/materialdesignicons.css'

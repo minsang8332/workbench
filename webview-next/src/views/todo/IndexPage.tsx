@@ -12,16 +12,21 @@ import {
 } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useTodoStore } from '@/stores/todo'
-import ContextMenu from '@/components/ui/ContextMenu'
+import { useApp } from '@/composables/useApp'
 import ModalDialog from '@/components/ui/ModalDialog'
 import TextField from '@/components/form/TextField'
 import TodoCard from '@/components/todo/TodoCard'
 import TodoForm from '@/components/todo/TodoForm'
 import '@/views/todo/IndexPage.scoped.scss'
+interface TodoPageState {
+    form: boolean
+    formProps: ITodo | null
+    keyword: string
+    cards: { value: number; label: string }[]
+}
 export default defineComponent({
     name: 'TodoPage',
     components: {
-        ContextMenu,
         ModalDialog,
         TextField,
         TodoCard,
@@ -31,22 +36,36 @@ export default defineComponent({
         const $toast = inject('toast') as IToastPlugin
         const appStore = useAppStore()
         const todoStore = useTodoStore()
-        const state = reactive<{
-            form: boolean
-            formProps: ITodo | null
-            keyword: string
-        }>({
+        const { scss } = useApp()
+        const state = reactive<TodoPageState>({
             form: false,
             formProps: null,
-            keyword: ''
+            keyword: '',
+            cards: [
+                {
+                    value: 0,
+                    label: '해야할일'
+                },
+                {
+                    value: 1,
+                    label: '진행중'
+                },
+                {
+                    value: 2,
+                    label: '완료'
+                },
+                {
+                    value: 3,
+                    label: '보류'
+                }
+            ]
         })
         const contentRef = ref<ComponentPublicInstance<HTMLElement> | null>(null)
         const filterTodosByStatus = computed(() => {
             let todoMap = []
             try {
-                const status = unref(todoStore.getStatus)
                 const todos = unref(todoStore.getTodos)
-                todoMap = status.reduce((acc: any, s: ITodoStatus) => {
+                todoMap = state.cards.reduce((acc: any, s: ITodoStatus) => {
                     let items = [] as ITodo[]
                     if (todos && todos.length > 0) {
                         items = todos.filter((todo: ITodo) => {
@@ -95,8 +114,7 @@ export default defineComponent({
         const onRefresh = () => todoStore.loadTodos().catch((e) => e)
         const onBeforeRemove = ({ title, id }: { title: string; id: string }) => {
             appStore.toggleModal(true, {
-                title,
-                message: '이 카드를 제거하시겠습니까 ?',
+                message: `${title} 카드를 제거하시겠습니까 ?`,
                 ok() {
                     todoStore
                         .removeTodo(id)
@@ -130,7 +148,7 @@ export default defineComponent({
                     desc: '새로고침',
                     shortcut: 'R',
                     icon: 'mdi:mdi-refresh',
-                    color: appStore.scss('--dark-color'),
+                    color: scss('--dark-color'),
                     cb() {
                         onRefresh()
                         appStore.toggleMenu(false)
@@ -141,7 +159,7 @@ export default defineComponent({
                     desc: '카드생성',
                     shortcut: 'N',
                     icon: 'mdi:mdi-file-edit-outline',
-                    color: appStore.scss('--dark-color'),
+                    color: scss('--dark-color'),
                     cb() {
                         toggleForm(true)
                         appStore.toggleMenu(false)
@@ -156,7 +174,7 @@ export default defineComponent({
                         desc: '카드편집',
                         shortcut: 'E',
                         icon: 'mdi:mdi-file-edit-outline',
-                        color: appStore.scss('--dark-color'),
+                        color: scss('--dark-color'),
                         cb() {}
                     },
                     {
@@ -164,7 +182,7 @@ export default defineComponent({
                         desc: '카드삭제',
                         shortcut: 'D',
                         icon: 'mdi:mdi-trash-can-outline',
-                        color: appStore.scss('--dark-color'),
+                        color: scss('--dark-color'),
                         cb() {
                             onBeforeRemove(payload)
                             appStore.toggleMenu(false)
@@ -216,17 +234,10 @@ export default defineComponent({
         })
         return () => (
             <div class="todo-page">
-                <context-menu
-                    {...appStore.state.menuProps}
-                    modelValue={appStore.state.menu}
-                    onUpdate:modelValue={appStore.toggleMenu}
-                />
                 <Teleport to="body">
                     <modal-dialog
                         title={
-                            state.formProps && state.formProps.title
-                                ? state.formProps.title
-                                : '추가하기'
+                            state.formProps && state.formProps.title ? state.formProps.title : null
                         }
                         modelValue={state.form}
                         onUpdate:modelValue={toggleForm}
@@ -237,7 +248,7 @@ export default defineComponent({
                         <todo-form {...state.formProps} onSubmit={onSubmit} onCancel={onCancel} />
                     </modal-dialog>
                 </Teleport>
-                <div class="todo-page__header flex justify-between items-center px-2">
+                <div class="todo-page__header flex justify-between items-center">
                     <div class="flex items-center">
                         <button type="button" onClick={() => toggleForm(true)}>
                             <i class="mdi mdi-flag-variant" />
@@ -265,7 +276,7 @@ export default defineComponent({
                             onDragover={onPrevent}
                             onDrop={(event: DragEvent) => onDrop(event, todos.value)}
                         >
-                            <div class="todo-page__content-item-header flex justify-between items-center p-2 px-4">
+                            <div class="todo-page__content-item-header flex justify-between items-center">
                                 <b class="text-title">{todos.label}</b>
                                 <b class="text-title">{todos.items.length}</b>
                             </div>

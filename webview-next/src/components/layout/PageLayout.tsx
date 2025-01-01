@@ -30,13 +30,11 @@ export default defineComponent({
                     model-value={appStore.state.menu}
                     onUpdate:modelValue={appStore.toggleMenu}
                 />
-                <section class="shrink">
-                    {route.matched.some((r) => r && r.components && r.components.drawer) && (
-                        <drawer-menu class={appStore.getDrawer && 'mr-1'}>
-                            <router-view name="drawer" />
-                        </drawer-menu>
-                    )}
-                </section>
+                {route.matched.some((r) => r && r.components && r.components.drawer) && (
+                    <drawer-menu class={appStore.getDrawer == true && 'mr-1'}>
+                        <router-view name="drawer" />
+                    </drawer-menu>
+                )}
                 <section class="flex flex-col grow">
                     <router-view />
                     <dock-menu />

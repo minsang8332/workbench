@@ -15,8 +15,8 @@ const isSubdir = async (parent: string, child: string) => {
     const rel = path.relative(await fs.promises.realpath(parent), await fs.promises.realpath(child))
     return rel && !rel.includes('..')
 }
-const sliceRootDir = (rootDir: string, target: string) => {
-    return target.replace(rootDir, '').replace(/\\/g, '/')
+const sliceRootDir = (rootDir: string, destDir: string) => {
+    return destDir.replace(rootDir, '').replace(/\\/g, '/')
 }
 // 앱 실행할 때 폴더 초기화
 fs.ensureDirSync(rootDir, { mode: 0o2775 })
@@ -25,56 +25,57 @@ ipcMain.on(IPC_DIARY.OPEN_DIR, () => shell.openPath(rootDir))
 // 모든 문서 목록
 controller(IPC_DIARY.LOAD, async (request: IpcController.Request.Diary.ILoad, response: IpcController.IResponse) => {
     const diaries: IDiary[] = []
-    const search = async (target = '/') => {
-        const stats = fs.lstatSync(target)
+    const search = async (destDir = '/') => {
+        const stats = fs.lstatSync(destDir)
         let isDir = false
         if (stats.isDirectory()) {
             isDir = true
-            const files = fs.readdirSync(target)
-            await Promise.all(files.map((file) => search(path.join(target, file))))
+            const files = fs.readdirSync(destDir)
+            await Promise.all(files.map((file) => search(path.join(destDir, file))))
         } else {
-            if (!allowExts.includes(path.extname(target))) {
+            if (!allowExts.includes(path.extname(destDir))) {
                 return
             }
         }
         diaries.push({
-            path: sliceRootDir(rootDir, target),
+            path: sliceRootDir(rootDir, destDir),
             isDir,
             createdAt: stats.birthtime,
             updatedAt: stats.mtime,
         })
     }
     await search(rootDir)
-    response.data = {
-        diaries,
-    }
+    response.data.diaries = diaries
     return response
 })
 // 문서 내용 가져오기
 controller(IPC_DIARY.READ, (request: IpcController.Request.Diary.IRead, response: IpcController.IResponse) => {
     let text = null
-    if (request && request.target) {
-        const target = path.join(rootDir, request.target)
-        text = fs.readFileSync(target, 'utf8')
+    if (_.isEmpty(request.filepath)) {
+        throw new Error('문서 경로를 입력해 주세요.')
     }
-    response.data = {
-        text,
-    }
+    const filepath = path.join(rootDir, request.filepath)
+    text = fs.readFileSync(filepath, 'utf8')
+    response.data.text = text
     return response
 })
 // 문서 저장
 controller(IPC_DIARY.WRITE, async (request: IpcController.Request.Diary.IWrite, response: IpcController.IResponse) => {
-    let target = path.join(rootDir, request.target)
-    if (!(await isSubdir(rootDir, target))) {
+    let filepath = request.filepath
+    if (_.isEmpty(filepath)) {
+        filepath = '/'
+    }
+    let destDir = path.join(rootDir, request.filepath)
+    if (!(await isSubdir(rootDir, destDir))) {
         throw new Error('유효하지 않은 경로 입니다.')
     }
     // 파일로 들어온 경우 부모 경로로 자동설정
-    if (!(await fs.lstat(target)).isDirectory()) {
-        target = path.dirname(target)
+    if (!(await fs.lstat(destDir)).isDirectory()) {
+        destDir = path.dirname(destDir)
     }
     let ext = request.ext
     if (!_.isString(ext)) {
-        ext = '.md'
+        ext = '.txt'
     }
     ext = /^\.(\w)+/.test(ext) ? ext : `.${ext}`
     if (!_.includes(allowExts, ext)) {
@@ -85,9 +86,9 @@ controller(IPC_DIARY.WRITE, async (request: IpcController.Request.Diary.IWrite, 
     if (_.isNil(filename)) {
         let counts = 1
         let newers = '새 문서'
-        for (const file of fs.readdirSync(target)) {
-            // 폴더는 무시
-            if (fs.lstatSync(path.join(target, file)).isDirectory()) {
+        for (const file of fs.readdirSync(destDir)) {
+            // 파일만 처리하고 폴더는 무시한다
+            if (fs.lstatSync(path.join(destDir, file)).isDirectory()) {
                 continue
             }
             const { name } = path.parse(file)
@@ -102,32 +103,34 @@ controller(IPC_DIARY.WRITE, async (request: IpcController.Request.Diary.IWrite, 
     if (!_.isString(text)) {
         text = ''
     }
-    fs.writeFileSync(path.format({ dir: target, name: filename, ext }), text)
-    response.data = {
-        writed: filename,
-    }
+    fs.writeFileSync(path.format({ dir: destDir, name: filename, ext }), text)
+    response.data.filename = filename
     return response
 })
-// 문서 경로 추가
+// 문서 폴더 생성
 controller(
     IPC_DIARY.WRITE_DIR,
     async (request: IpcController.Request.Diary.IWriteDir, response: IpcController.IResponse) => {
-        let target = path.join(rootDir, request.target)
-        if (!(await isSubdir(rootDir, target))) {
+        let dirpath = request.dirpath
+        if (_.isEmpty(dirpath)) {
+            dirpath = '/'
+        }
+        dirpath = path.join(rootDir, request.dirpath)
+        if (!(await isSubdir(rootDir, dirpath))) {
             throw new Error('유효하지 않은 경로 입니다.')
         }
         // 파일로 들어온 경우 부모 경로로 자동설정
-        if (!(await fs.lstat(target)).isDirectory()) {
-            target = path.dirname(target)
+        if (!(await fs.lstat(dirpath)).isDirectory()) {
+            dirpath = path.dirname(dirpath)
         }
         // 폴더명이 지정되지 않았다면
         let dirname = request.dirname
         if (_.isNil(dirname)) {
             let counts = 1
             let newers = '새 폴더'
-            for (const file of fs.readdirSync(target)) {
+            for (const file of fs.readdirSync(dirpath)) {
                 // 파일은 무시
-                if (!fs.lstatSync(path.join(target, file)).isDirectory()) {
+                if (!fs.lstatSync(path.join(dirpath, file)).isDirectory()) {
                     continue
                 }
                 const { name } = path.parse(file)
@@ -138,11 +141,9 @@ controller(
             }
             dirname = `${newers} ${counts}`
         }
-        target = path.join(target, dirname)
-        fs.ensureDir(target)
-        response.data = {
-            writed: dirname,
-        }
+        dirpath = path.join(dirpath, dirname)
+        fs.ensureDir(dirpath)
+        response.data.dirname = dirname
         return response
     }
 )
@@ -150,39 +151,37 @@ controller(
 controller(
     IPC_DIARY.REMOVE,
     async (request: IpcController.Request.Diary.IRemove, response: IpcController.IResponse) => {
-        let target = request.target
-        if (!_.isString(target)) {
-            target = '/'
+        let filepath = request.filepath
+        if (_.isEmpty(filepath)) {
+            filepath = '/'
         }
-        target = path.join(rootDir, target)
-        if (!(await isSubdir(rootDir, target))) {
+        filepath = path.join(rootDir, filepath)
+        if (!(await isSubdir(rootDir, filepath))) {
             throw new Error('문서를 제거 할 수 없습니다.')
         }
-        await fs.rm(target, {
+        await fs.rm(filepath, {
             recursive: true,
             force: true,
         })
-        const fileinfo = path.parse(target)
-        response.data = {
-            removed: fileinfo.base,
-        }
+        const fileinfo = path.parse(filepath)
+        response.data.filename = fileinfo.base
         return response
     }
 )
-// 문서명 변경
+// 문서 이름 변경
 controller(
     IPC_DIARY.RENAME,
     async (request: IpcController.Request.Diary.IRename, response: IpcController.IResponse) => {
-        let target = request.target
-        if (!_.isString(target)) {
-            target = '/'
+        let filepath = request.filepath
+        if (_.isEmpty(filepath)) {
+            filepath = '/'
         }
-        target = path.join(rootDir, target)
-        if (!(await isSubdir(rootDir, target))) {
+        filepath = path.join(rootDir, filepath)
+        if (!(await isSubdir(rootDir, filepath))) {
             throw new Error('유효하지 않은 경로 입니다.')
         }
-        const src = path.parse(target)
-        const dest = path.parse(request.rename)
+        const src = path.parse(filepath)
+        const dest = path.parse(request.filename)
         if (!_.includes(allowExts, dest.ext)) {
             throw new Error(`작성 가능한 확장자는 다음과 같습니다. (${allowExts.join(',')})`)
         }
@@ -195,47 +194,43 @@ controller(
         if (fs.existsSync(renameDir)) {
             throw new Error('이미 존재하는 파일명 입니다.')
         }
-        fs.renameSync(target, renameDir)
-        response.data = {
-            renamed: sliceRootDir(rootDir, renameDir),
-        }
+        fs.renameSync(filepath, renameDir)
+        response.data.filepath = sliceRootDir(rootDir, renameDir)
         return response
     }
 )
 // 문서 이동
 controller(IPC_DIARY.MOVE, async (request: IpcController.Request.Diary.IMove, response: IpcController.IResponse) => {
-    let target = request.target
-    if (!_.isString(target)) {
-        target = '/'
+    let frompath = request.frompath
+    if (_.isEmpty(frompath)) {
+        frompath = '/'
     }
-    target = path.join(rootDir, target)
-    let dest = request.dest
-    if (!_.isString(dest)) {
-        dest = '/'
+    frompath = path.join(rootDir, frompath)
+    let destpath = request.destpath
+    if (_.isEmpty(destpath)) {
+        destpath = '/'
     }
-    dest = path.join(rootDir, dest)
+    destpath = path.join(rootDir, destpath)
     // 목적지가 대상의 하위 상위 경로인 경우
-    if (await isSubdir(target, dest)) {
+    if (await isSubdir(frompath, destpath)) {
         throw new Error('하위 경로로 이동할 수 없습니다.')
     }
-    const tarParsed = path.parse(target)
-    const destParsed = path.parse(dest)
-    if (tarParsed.base == destParsed.base) {
+    const fromParsed = path.parse(frompath)
+    const destParsed = path.parse(destpath)
+    if (fromParsed.base == destParsed.base) {
         throw new Error('대상과 이동할 곳의 이름이 일치하여 덮어 쓸 수 없습니다.')
     }
     // 목적지가 파일인 경우
-    if (fs.lstatSync(dest).isFile()) {
-        dest = path.join(destParsed.dir, tarParsed.base)
+    if (fs.lstatSync(destpath).isFile()) {
+        destpath = path.join(destParsed.dir, fromParsed.base)
     } else {
-        dest = path.join(dest, tarParsed.base)
+        destpath = path.join(destpath, fromParsed.base)
     }
-    if (target == dest) {
+    if (frompath == destpath) {
         throw new Error('목적지가 현재 경로 입니다.')
     }
     // 대상을 목적 경로의 부모 디렉토리로 이동
-    fs.moveSync(target, dest)
-    response.data = {
-        moved: sliceRootDir(rootDir, dest),
-    }
+    fs.moveSync(frompath, destpath)
+    response.data.filename = sliceRootDir(rootDir, destpath)
     return response
 })

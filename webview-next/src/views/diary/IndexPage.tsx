@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { defineComponent, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
@@ -13,8 +14,8 @@ export default defineComponent({
         const router = useRouter()
         const appStore = useAppStore()
         const diaryStore = useDiaryStore()
-        const recentDiaries = ref<IDiaryWithText[]>([])
-        const onMoveDiary = (diary: IDiary) => {
+        const recentDiaries = ref<IDiaryDetail[]>([])
+        const onDiaryCard = (diary: IDiary) => {
             router
                 .replace({
                     name: 'diary-detail',
@@ -34,8 +35,7 @@ export default defineComponent({
                     newValue.map(async (diary: IDiary) => {
                         let text = ''
                         try {
-                            const response = await diaryStore.readDiary({ target: diary.path })
-                            text = response.text ?? ''
+                            text = await diaryStore.readDiary({ filepath: diary.path })
                         } catch (e) {
                             console.error(e)
                         }
@@ -46,11 +46,11 @@ export default defineComponent({
         )
         return () => (
             <article class="diary-page">
-                <div class="diary-page__header flex justify-between items-center px-2">
+                <div class="diary-page__header flex justify-between items-center">
                     <div class="flex items-center">
                         <button
                             type="button"
-                            class="btn-tree"
+                            class="btn-tree flex justify-center items-center"
                             onClick={() => appStore.toggleDrawer()}
                         >
                             <i class="mdi mdi-menu" />
@@ -59,16 +59,20 @@ export default defineComponent({
                         <h3 class="text-title">최근 작성한 문서</h3>
                     </div>
                     <div class="flex items-center">
-                        <button type="button" class="btn-files" onClick={diaryStore.dirDiary}>
+                        <button
+                            type="button"
+                            class="btn-docs flex justify-center items-center"
+                            onClick={diaryStore.dirDiary}
+                        >
                             <i class="mdi mdi-folder" />
                             <span class="tooltip tooltip-bottom">문서 열기</span>
                         </button>
                     </div>
                 </div>
                 <div class="diary-page__content">
-                    {recentDiaries.value.map((diary: IDiaryWithText) => (
+                    {recentDiaries.value.map((diary: IDiaryDetail) => (
                         <div class="diary-page__content-item">
-                            <diary-card {...diary} onclick={() => onMoveDiary(diary)} />
+                            <diary-card {...diary} onclick={() => onDiaryCard(diary)} />
                         </div>
                     ))}
                 </div>

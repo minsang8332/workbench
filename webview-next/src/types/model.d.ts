@@ -1,34 +1,3 @@
-interface IAppState {
-    drawer: boolean
-    modal: boolean
-    modalProps: IAppModalProps
-    menu: boolean
-    menuProps: IAppMenuProps
-}
-interface IAppModalProps {
-    title?: string
-    message: string | string[] | null
-    persistent?: false
-    hideActions?: false
-    ok: (() => void) | null
-}
-interface IDiaryState {
-    diaries: IDiary[]
-    edited: boolean
-}
-interface IAppMenuProps {
-    pageX: number
-    pageY: number
-    items?: IAppMenuItem[]
-}
-interface IAppMenuItem {
-    name: string
-    icon: string
-    color: string
-    desc: string
-    shortcut: string
-    cb?: () => void
-}
 interface IDiary {
     path: string
     filename?: string
@@ -36,12 +5,8 @@ interface IDiary {
     createdAt: number
     updatedAt: number
 }
-interface IDiaryWithText extends IDiary {
+interface IDiaryDetail extends IDiary {
     text: string
-}
-interface ITodoState {
-    todos: ITodo[]
-    status: ITodoStatus[]
 }
 interface ITodo {
     id?: string

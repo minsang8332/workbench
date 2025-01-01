@@ -6,6 +6,7 @@ export enum IPC_UPDATER {
     INSTALL = 'updater:install',
 }
 export enum IPC_SETTING {
+    LOAD_PASSCODE = 'setting:load-passcode',
     UPDATE_PASSCODE = 'setting:update-passcode',
     VERIFY_PASSCODE = 'setting:verify-passcode',
     ACTIVATE_PASSCODE = 'setting:activate-passcode',

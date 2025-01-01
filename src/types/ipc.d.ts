@@ -4,36 +4,40 @@ namespace IpcController {
         message: string | null
     }
     interface IResponse {
-        data: object
+        result: boolean
+        data: Record<string, any>
         error?: IError
     }
     namespace Request {
         interface Empty {}
         namespace Diary {
             interface ILoad {}
+            // 문서 내용 가져오기
             interface IRead {
-                target: string
+                filepath: string /* 가져올 파일 경로 */
             }
+            // 문서 저장
             interface IWrite {
-                target: string
+                filepath: string /* 저장할 파일 경로 */
                 filename?: string
-                text?: string
-                ext?: string
+                text?: string /* 파일 내용 */
+                ext?: string /* 확장자명 */
             }
+            // 문서 폴더 생성
             interface IWriteDir {
-                target: string
+                dirpath: string
                 dirname: string
             }
             interface IRemove {
-                target: string
+                filepath: string
             }
             interface IRename {
-                target: string
-                rename: string
+                filepath: string
+                filename: string
             }
             interface IMove {
-                target: string
-                dest: string
+                frompath: string /* 무엇을 옮길지 경로*/
+                destpath: string /* 어디로 옮길지 경로 */
             }
         }
         // 해야 할 일
@@ -55,6 +59,7 @@ namespace IpcController {
         }
         // 설정하기
         namespace Setting {
+            interface ILoadPasscode {}
             // 패스코드 변경하기
             interface IUpdatePasscode {
                 text: IPasscode['text']
@@ -63,6 +68,7 @@ namespace IpcController {
             interface IVerifyPasscode {
                 text: IPasscode['text']
             }
+            // 패스코드 활성화
             interface IActivatePasscode {
                 active: IPasscode['active']
             }

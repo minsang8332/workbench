@@ -17,6 +17,7 @@ import { useAppStore } from '@/stores/app'
 import { useDiaryStore } from '@/stores/diary'
 import MarkdownPreview from '@/components/ui/MarkdownPreview'
 import '@/views/diary/DetailPage.scoped.scss'
+import { useApp } from '@/composables/useApp'
 export default defineComponent({
     name: 'DiaryDetailPage',
     components: {
@@ -43,6 +44,7 @@ export default defineComponent({
         const router = useRouter()
         const appStore = useAppStore()
         const diaryStore = useDiaryStore()
+        const { getDrawerWidth, getLayoutWidth } = useApp()
         const pageRef = ref<ComponentPublicInstance<HTMLElement> | null>(null)
         const printFilePath = computed(() => {
             let path: string | string[] = props.path
@@ -52,8 +54,13 @@ export default defineComponent({
             }
             return path
         })
-        const edited = computed(() => {
+        const disabledRef = computed(() => {
             return state.text !== state.updatedText
+        })
+        const isMarkdown = computed(() => {
+            const base = _.last(props.path.split('/'))
+            const ext = _.last(base?.split('.'))
+            return _.includes(['md'], ext)
         })
         const onKeyDown = (event: KeyboardEvent) => {
             // ctrl + s 는 저장
@@ -95,28 +102,26 @@ export default defineComponent({
         const onMouseDown = () => {
             state.resizable = true
         }
-        const onResize = (event: Event | null, reset = false) => {
-            // reset 은 무조건 통과
-            if (reset) {
-                const unrefed = unref(pageRef.value) as HTMLElement
-                if (_.isUndefined(unrefed)) {
-                    return
-                }
-                const domRect = unrefed.getBoundingClientRect()
-                state.widths.editor = domRect.width / 2
-                state.widths.preview = domRect.width / 2
+        const onResize = (event: Event | null, init = false) => {
+            const el = unref(pageRef.value) as HTMLElement
+            if (!el) {
                 return
             }
-            if (state.resizable && event) {
-                const unrefed = unref(pageRef.value) as HTMLElement
-                if (_.isUndefined(unrefed)) {
-                    return
-                }
-                const domRect = unrefed.getBoundingClientRect()
-                const { x } = event as MouseEvent
-                const width = x - domRect.left
-                state.widths.editor = x - domRect.left
-                state.widths.preview = domRect.width - width - 4
+            const layoutWidth = getLayoutWidth()
+            const drawerWidth = getDrawerWidth()
+            const resizerWidth = 4
+            const paddingWidth = 4
+            if (init) {
+                const width = (layoutWidth - drawerWidth - resizerWidth - paddingWidth) / 2
+                state.widths.editor = width
+                state.widths.preview = width
+            } else if (state.resizable && event) {
+                const x = (event as MouseEvent).x
+                const editorWidth = x - drawerWidth - resizerWidth - paddingWidth
+                const previewWidth =
+                    layoutWidth - drawerWidth - editorWidth - resizerWidth - paddingWidth
+                state.widths.editor = editorWidth
+                state.widths.preview = previewWidth
             }
         }
         const onReset = () => {
@@ -124,12 +129,11 @@ export default defineComponent({
         }
         const onLoad = () => {
             onReset()
+            diaryStore.loadDiaries()
             diaryStore
-                .readDiary({ target: props.path })
-                .then((response) => {
-                    if (response) {
-                        state.text = response.text
-                    }
+                .readDiary({ filepath: props.path })
+                .then((text) => {
+                    state.text = text
                 })
                 .catch((e) => {
                     $toast.error(e)
@@ -141,7 +145,7 @@ export default defineComponent({
             const filename = _.first(base?.split('.'))
             const ext = _.last(base?.split('.'))
             diaryStore
-                .saveDiary({ target: props.path, filename, ext, text: state.updatedText })
+                .saveDiary({ filepath: props.path, filename, ext, text: state.updatedText })
                 .then(() => {
                     $toast.success(`${base} 파일에 작성되었습니다.`)
                     onLoad()
@@ -149,7 +153,7 @@ export default defineComponent({
                 .catch((e) => $toast.error(e))
         }
         const preventRoute = (next: NavigationGuardNext) => {
-            if (unref(edited)) {
+            if (unref(disabledRef)) {
                 $toast.error(
                     new Error('문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.')
                 )
@@ -157,17 +161,13 @@ export default defineComponent({
             }
             next()
         }
-        const isMarkdown = computed(() => {
-            const base = _.last(props.path.split('/'))
-            const ext = _.last(base?.split('.'))
-            return _.includes(['md'], ext)
-        })
         watch(
             () => props.path,
             (newValue) => {
                 if (newValue) {
                     onLoad()
                 }
+                onResize(null, true)
             }
         )
         watch(
@@ -176,7 +176,13 @@ export default defineComponent({
                 state.updatedText = newValue
             }
         )
-        watch(edited, (newValue) => diaryStore.updateEdited(newValue))
+        watch(disabledRef, (newValue) => diaryStore.updateEdited(newValue))
+        watch(
+            () => appStore.getDrawer,
+            (value) => {
+                nextTick(() => onResize(null, true))
+            }
+        )
         onMounted(() => {
             diaryStore.updateEdited(false)
             onLoad()
@@ -188,30 +194,40 @@ export default defineComponent({
         onBeforeRouteLeave((to, from, next) => preventRoute(next))
         onBeforeRouteUpdate((to, from, next) => preventRoute(next))
         return () => (
-            <article ref={pageRef} class="detail-page" onMousemove={onResize} onMouseup={onMouseUp}>
-                <div class="detail-page__header flex justify-between items-center px-2">
+            <article
+                ref={pageRef}
+                class="detail-page flex flex-col gap-1 w-full"
+                onMousemove={onResize}
+                onMouseup={onMouseUp}
+            >
+                <div class="detail-page__header flex justify-between items-center w-full">
                     <div class="flex items-center gap-2">
                         <div class="flex items-center">
                             <button
                                 type="button"
-                                class="btn-tree"
+                                class="btn-drawer flex justify-center items-center"
                                 onClick={() => appStore.toggleDrawer()}
                             >
                                 <i class="mdi mdi-menu" />
                                 <span class="tooltip tooltip-bottom">문서 탐색</span>
                             </button>
-                            <h3 class="text-title">{unref(printFilePath)}</h3>
+                            <h3 class="text-title">{printFilePath.value}</h3>
                         </div>
-                        <div class="editing" style={{ opacity: unref(edited) ? 1 : 0 }} />
+                        <div class="editing" style={{ opacity: unref(disabledRef) ? 1 : 0 }} />
                     </div>
                     <div class="flex items-center">
-                        <button type="button" class="btn-back" onClick={onMoveBack}>
+                        <button
+                            type="button"
+                            class="btn-back flex justify-center items-center"
+                            onClick={onMoveBack}
+                        >
                             <i class="mdi mdi-arrow-left" />
                             <span class="tooltip tooltip-bottom">뒤로 가기</span>
                         </button>
                     </div>
                 </div>
-                <div class="detail-page__content flex items-center w-100">
+
+                <div class="detail-page__content flex">
                     <textarea
                         v-model={state.updatedText}
                         class="d2coding pa-2"
@@ -220,20 +236,20 @@ export default defineComponent({
                         }}
                         onKeydown={onKeyDown}
                     />
+                    <div class="resizer" onMousedown={onMouseDown} />
                     {unref(isMarkdown) && (
-                        <>
-                            <div class="resizer" onMousedown={onMouseDown} />
-                            <markdown-preview
-                                value={state.updatedText}
-                                style={{
-                                    width: state.widths.preview + 'px'
-                                }}
-                            />
-                        </>
+                        <div
+                            class="preview"
+                            style={{
+                                width: state.widths.preview + 'px'
+                            }}
+                        >
+                            <markdown-preview value={state.updatedText} />
+                        </div>
                     )}
                 </div>
-                <div class="detail-page__actions flex items-center">
-                    <button type="button" class="btn-submit block h-100 w-100" onClick={onSave}>
+                <div class="detail-page__actions flex items-center w-full">
+                    <button type="button" class="btn-submit block h-full w-full" onClick={onSave}>
                         <i class="mdi mdi-send" />
                         <span class="tooltip">문서를 저장합니다</span>
                     </button>

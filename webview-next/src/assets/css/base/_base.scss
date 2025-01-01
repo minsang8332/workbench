@@ -9,8 +9,10 @@
     --success-color: #{variables.$success-color};
     --window-color: #{variables.$window-color};
     --todo-color: #{variables.$todo-color};
-    /** TODO 걷어내기 */
-    --theme-color: var(--primary-color);
+    --diary-color: #{variables.$diary-color};
+    --theme-color: #{variables.$theme-color};
+    --drawer-menu-width: #{variables.$drawer-menu-width};
+    --page-layout-padding: #{variables.$page-layout-padding};
 }
 *::-webkit-scrollbar {
     display: none;
@@ -18,6 +20,8 @@
 * {
     scroll-behavior: smooth;
     outline: none;
+    background-color: transparent;
+    user-select: none;
 }
 html {
     font-size: 16px;

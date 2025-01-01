@@ -14,7 +14,7 @@ import { useDiaryStore } from '@/stores/diary'
 import './DiaryTextField.scoped.scss'
 export default defineComponent({
     name: 'DiaryTextField',
-    emits: ['toggle'],
+    emits: ['update'],
     props: {
         path: {
             type: String as PropType<string>,
@@ -62,32 +62,33 @@ export default defineComponent({
         const onUpdate = async (event: Event) => {
             try {
                 if ((event as KeyboardEvent).key && (event as KeyboardEvent).key != 'Enter') {
-                    return
+                    return false
                 }
                 event.preventDefault()
-                const rename = unref(inputRef)?.value as string
-                if (_.isEmpty(rename)) {
-                    return
+                const filename = unref(inputRef)?.value as string
+                if (_.isEmpty(filename)) {
+                    return false
                 }
-                const tmp = props.path.split('/')
-                const filename = _.last(tmp)
-                if (filename == rename) {
-                    return
+                // 기존 파일명이 변경할 파일과 일치한다면
+                const originalFilepath = props.path.split('/')
+                if (filename == _.last(originalFilepath)) {
+                    return false
                 }
-                const { renamed } = await diaryStore.renameDiary({
-                    target: props.path,
-                    rename
+                const filepath = await diaryStore.renameDiary({
+                    filepath: props.path,
+                    filename
                 })
-                $toast.success(`${rename} (으/로) 변경되었습니다.`)
+                $toast.success(`${filename} (으/로) 변경되었습니다.`)
                 // 현재 작성중인 문서인 경우
                 if (route.params.path == props.path) {
                     router
                         .replace({
                             name: 'diary-detail',
-                            params: { path: renamed }
+                            params: { path: filepath }
                         })
                         .catch((e) => e)
                 }
+                await diaryStore.loadDiaries()
             } catch (e) {
                 $toast.error(e as Error)
             }
@@ -97,7 +98,7 @@ export default defineComponent({
             if (inputRef.value) {
                 unref(inputRef.value).value = ''
             }
-            emit('toggle', false)
+            emit('update', false)
         }
         onMounted(() => {
             onFocus()

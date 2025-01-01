@@ -1,6 +1,10 @@
 import { computed, reactive } from 'vue'
 import { defineStore } from 'pinia'
 import _ from 'lodash'
+interface IDiaryState {
+    diaries: IDiary[]
+    edited: boolean
+}
 export const useDiaryStore = defineStore('diary', () => {
     const state = reactive<IDiaryState>({
         diaries: [],
@@ -76,72 +80,66 @@ export const useDiaryStore = defineStore('diary', () => {
         }
         return tree
     })
-    // 문서 목록 가져오기
-    const loadDiaries = async () => {
-        const response = await window.$native.diary.load()
-        const { diaries } = response.data
-        state.diaries = diaries
-        return { diaries }
-    }
-    // 문서 열기
-    const readDiary = async ({ target }: { target: string }) => {
-        const response = await window.$native.diary.read({ target })
-        const { text } = response.data
-        return { text }
-    }
-    // 문서 저장
-    const saveDiary = async ({
-        target,
-        filename,
-        ext,
-        text
-    }: {
-        target: string
-        filename?: string
-        ext?: string
-        text?: string
-    }) => {
-        const response = await window.$native.diary.write({ target, filename, ext, text })
-        loadDiaries().catch((e) => e)
-        const { writed } = response.data
-        return { writed }
-    }
-    // 문서 이름 변경
-    const renameDiary = async ({ target, rename }: { target: string; rename: string }) => {
-        const response = await window.$native.diary.rename({
-            target,
-            rename
-        })
-        loadDiaries().catch((e) => e)
-        const { renamed } = response.data
-        return { renamed }
-    }
-    // 문서 폴더 생성
-    const mkdirDiary = async ({ target }: { target: string }) => {
-        const response = await window.$native.diary.writeDir({ target })
-        loadDiaries().catch((e) => e)
-        const { writed } = response.data
-        return { writed }
-    }
-    // 문서 폴더 열기
-    const dirDiary = () => window.$native.diary.openDir()
-    // 문서 삭제
-    const rmDiary = async ({ target }: { target: string }) => {
-        const response = await window.$native.diary.remove({ target })
-        loadDiaries().catch((e) => e)
-        const { removed } = response.data
-        return { removed }
-    }
-    // 문서 이동
-    const mvDiary = async ({ target, dest }: { target: string; dest: string }) => {
-        const response = await window.$native.diary.move({ target, dest })
-        loadDiaries().catch((e) => e)
-        const { moved } = response.data
-        return { moved }
+
+    // Mutations
+    const updateDiaries = (payload: IDiary[] = []) => {
+        state.diaries = payload
     }
     const updateEdited = (edited = false) => {
         state.edited = edited
     }
+    // 문서 목록 가져오기
+    const loadDiaries = async () => {
+        updateDiaries([])
+        const response = await window.$native.diary.load()
+        updateDiaries(response.data.diaries)
+        return getDiaries.value
+    }
+    // 문서 열기
+    const readDiary = async ({ filepath }: { filepath: string }) => {
+        const response = await window.$native.diary.read({ filepath })
+        return response.data.text
+    }
+    // 문서 저장
+    const saveDiary = async ({
+        filepath,
+        filename,
+        ext,
+        text
+    }: {
+        filepath: string
+        filename?: string
+        ext?: string
+        text?: string
+    }) => {
+        const response = await window.$native.diary.write({ filepath, filename, ext, text })
+        return response.data.filename
+    }
+    // 문서 이름 변경
+    const renameDiary = async ({ filepath, filename }: { filepath: string; filename: string }) => {
+        const response = await window.$native.diary.rename({
+            filepath,
+            filename
+        })
+        return response.data.filepath
+    }
+    // 문서 폴더 생성
+    const mkdirDiary = async ({ dirpath }: { dirpath: string }) => {
+        const response = await window.$native.diary.writeDir({ dirpath })
+        return response.data.dirname
+    }
+    // 문서 삭제
+    const rmDiary = async ({ filepath }: { filepath: string }) => {
+        const response = await window.$native.diary.remove({ filepath })
+        return response.data.filename
+    }
+    // 문서 이동
+    const mvDiary = async ({ frompath, destpath }: { frompath: string; destpath: string }) => {
+        const response = await window.$native.diary.move({ frompath, destpath })
+        return response.data.filename
+    }
+    // 문서 폴더 열기
+    const dirDiary = () => window.$native.diary.openDir()
     return {
         state,
         getEdited,

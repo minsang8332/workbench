@@ -1,18 +1,14 @@
 import type { App } from 'vue'
 import Toastify from 'toastify-js'
-import { useAppStore } from '@/stores/app'
 import 'toastify-js/src/toastify.css'
 export default {
     install(app: App) {
-        const appStore = useAppStore()
         const show = ({
             text = '',
             duration = 3000,
             newWindow = false,
             escapeMarkup = false,
-            style = {
-                background: String(appStore.scss('--theme-color'))
-            },
+            className,
             offset = {
                 y: '10vh',
                 x: ''
@@ -26,69 +22,53 @@ export default {
                 gravity: 'bottom',
                 position: 'right',
                 stopOnFocus: true,
+                className,
                 newWindow,
                 escapeMarkup,
-                style,
-                offset
+                offset,
+                onClick() {
+                    toastify.hideToast()
+                }
             })
             toastify.showToast()
             return toastify
         }
-        const alert = (
-            message = '',
-            {
-                icon = '',
-                style = {
-                    background: String(appStore.scss('--theme-color'))
-                }
-            }
-        ) => {
+        const alert = (message = '', { icon = '' }) => {
             return show({
                 text: `
-                    <div class="app-toast">
+                    <div class="toasify__content">
                         <i class="${icon}"></i>
                         <p>${message}</p>
                     </div>
-                `,
-                style
+                `
             })
         }
         const success = (
             message = '정상적으로 처리되었습니다.',
-            {
-                icon = 'mdi:mdi-emoticon-excited-outline',
-                style = {
-                    background: String(appStore.scss('--success-color'))
-                }
-            } = {}
+            { icon = 'mdi mdi-emoticon-excited-outline', className = 'toastify--success' } = {}
         ) => {
             return show({
                 text: `
-                    <div class="app-toast">
+                    <div class="toasify__content">
                         <i class="${icon}"></i>
                         <p>${message}</p>
                     </div>
                 `,
-                style
+                className
             })
         }
         const error = (
             { message = '작업을 처리할 수 없습니다.' }: Error,
-            {
-                icon = 'mdi:mdi-emoticon-neutral-outline',
-                style = {
-                    background: String(appStore.scss('--danger-color'))
-                }
-            } = {}
+            { icon = 'mdi mdi-emoticon-neutral-outline', className = 'toastify--danger' } = {}
         ) => {
             return show({
                 text: `
-                    <div class="app-toast">
+                    <div class="toasify__content">
                         <i class="${icon}"></i>
                         <p>${message}</p>
                     </div>
                 `,
-                style
+                className
             })
         }
         app.provide('toast', {

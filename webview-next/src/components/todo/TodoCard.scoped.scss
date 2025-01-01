@@ -1,14 +1,18 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
 .todo-card {
+    @include mixins.scale-animation;
+    height: 100%;
+    backdrop-filter: unset;
     background-color: #fff;
-    box-shadow: 0px 0.5rem 0.5rem rgba(0, 0, 0, 0.1);
-    cursor: pointer;
+    border: 2px solid variables.$border-color;
+    border-radius: 0.25rem;
     padding: 0.5rem;
+    cursor: pointer;
     &__header {
         flex: 0 0 50%;
         button.btn-close {
-            @include mixins.hover-animation;
+            @include mixins.scale-animation;
             border-radius: 0.25rem;
             padding: 0.1rem;
             i {
@@ -34,5 +38,8 @@
                 background-color: var(--gray-color);
             }
         }
+    }
+    &:hover {
+        transform: scale(0.95);
     }
 }

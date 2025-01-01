@@ -15,7 +15,7 @@
         flex: 0 0 15%;
         width: 100%;
         button {
-            @include mixins.hover-animation;
+            @include mixins.scale-animation;
             border-radius: 0.25rem;
             height: 2.5rem;
             width: 50%;

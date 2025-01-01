@@ -5,10 +5,35 @@ import commonUtil from '@/utils/common'
 import { controller } from '@/utils/ipc'
 import { IPC_SETTING } from '@/constants/ipc'
 import { Passcode } from '@/models/passcode'
+// 패스코드 정보 가져오기
+controller(
+    IPC_SETTING.LOAD_PASSCODE,
+    async (request: IpcController.Request.Setting.ILoadPasscode, response: IpcController.IResponse) => {
+        response.data.result = false
+        const programDir = await commonUtil.getProgramDir()
+        if (_.isNull(programDir)) {
+            throw new Error('프로그램의 내부 접근 권한이 없습니다.')
+        }
+        const passcodePath = path.resolve(programDir, '.passcode')
+        // 파일이 없다면
+        if (fs.existsSync(passcodePath) == false) {
+            fs.writeFileSync(passcodePath, JSON.stringify(new Passcode({ text: '', active: false })))
+        }
+        try {
+            const json = fs.readFileSync(passcodePath, 'utf-8')
+            const passcode = new Passcode(JSON.parse(json))
+            response.data.active = passcode.active
+        } catch (e) {
+            throw new Error('패스코드를 검증 시 오류가 발생했습니다.')
+        }
+        return response
+    }
+)
 // 패스코드 검증하기
 controller(
     IPC_SETTING.VERIFY_PASSCODE,
     async (request: IpcController.Request.Setting.IVerifyPasscode, response: IpcController.IResponse) => {
+        response.data.result = false
         if (_.isEmpty(request.text)) {
             throw new Error('패스코드가 입력되지 않았습니다.')
         }

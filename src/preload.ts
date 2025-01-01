@@ -1,7 +1,15 @@
 import { app, contextBridge, ipcRenderer } from 'electron'
 import { IPC_APP, IPC_UPDATER, IPC_SETTING, IPC_DIARY, IPC_TODO } from '@/constants/ipc'
+const send = (channel: string) => ipcRenderer.send(channel)
+const sendSync = (channel: string) => {
+    return new Promise((resolve) => {
+        ipcRenderer.on(channel, (event, response) => resolve(response))
+    })
+}
 const invoke = async (channel: string, payload?: any) => {
+    // electron 내부 에러는 불필요 메시지를 포함하여 보내기에 예외처리 하고 ...
     const response = await ipcRenderer.invoke(channel, payload).catch((e) => e)
+    // 내가 보낸 response.error 만 강제로 예외 발생시킴
     if (response && response.error) {
         throw response.error
     }
@@ -9,26 +17,27 @@ const invoke = async (channel: string, payload?: any) => {
 }
 contextBridge.exposeInMainWorld('$native', {
     exit() {
-        ipcRenderer.send(IPC_APP.EXIT)
+        send(IPC_APP.EXIT)
     },
     getVersion() {
         return app.getVersion()
     },
     updater: {
         install() {
-            ipcRenderer.send(IPC_UPDATER.INSTALL)
+            send(IPC_UPDATER.INSTALL)
         },
         available() {
             return invoke(IPC_UPDATER.AVAILABLE)
         },
-        // 업데이트 가능여부가 확인뙬 때 까지 기다림
+        // 업데이트 가능여부가 확인될 때 까지 기다림
         wait() {
-            return new Promise((resolve) => {
-                ipcRenderer.on(IPC_UPDATER.AVAILABLE, (event, payload) => resolve(payload))
-            })
+            return sendSync(IPC_UPDATER.AVAILABLE)
         },
     },
     setting: {
+        loadPasscode(payload: IpcController.Request.Setting.ILoadPasscode) {
+            return invoke(IPC_SETTING.LOAD_PASSCODE, payload)
+        },
         updatePasscode(payload: IpcController.Request.Setting.IUpdatePasscode) {
             return invoke(IPC_SETTING.UPDATE_PASSCODE, payload)
         },
@@ -41,7 +50,7 @@ contextBridge.exposeInMainWorld('$native', {
     },
     diary: {
         openDir() {
-            ipcRenderer.send(IPC_DIARY.OPEN_DIR)
+            send(IPC_DIARY.OPEN_DIR)
         },
         load() {
             return invoke(IPC_DIARY.LOAD)

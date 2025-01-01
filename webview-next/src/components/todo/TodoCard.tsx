@@ -70,7 +70,7 @@ export default defineComponent({
             emit('remove', props)
         }
         return () => (
-            <div class="todo-card flex flex-col">
+            <div class="todo-card flex flex-col box-shadow">
                 <div class="todo-card__header flex justify-between items-start">
                     <div class="flex justify-between items-center w-full">
                         <b class="text-truncate">{props.title}</b>
@@ -79,7 +79,7 @@ export default defineComponent({
                         </button>
                     </div>
                 </div>
-                <div class="todo-card__actions flex justify-end items-end">
+                <div class="todo-card__actions flex justify-start items-end">
                     {printPeriod.value && (
                         <div class={classListPeriod.value}>{printPeriod.value}</div>
                     )}

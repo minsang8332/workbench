@@ -4,6 +4,7 @@
     font-size: 0.9rem;
     font-weight: 700;
     &:focus {
-        color: var(--theme-color);
+        color: var(--danger-color);
+        caret-color: var(--danger-color);
     }
 }
