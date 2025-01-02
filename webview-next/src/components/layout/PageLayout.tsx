@@ -5,6 +5,7 @@ import DrawerMenu from '@/components/ui/DrawerMenu'
 import DockMenu from '@/components/ui/DockMenu'
 import ContextMenu from '@/components/ui/ContextMenu'
 import ModalDialog from '@/components//ui/ModalDialog'
+import OverlayVideo from '@/components/ui/OverlayVideo'
 import './PageLayout.socped.scss'
 export default defineComponent({
     name: 'PageLayout',
@@ -12,7 +13,8 @@ export default defineComponent({
         DockMenu,
         DrawerMenu,
         ContextMenu,
-        ModalDialog
+        ModalDialog,
+        OverlayVideo
     },
     setup() {
         const route = useRoute()
@@ -39,6 +41,7 @@ export default defineComponent({
                     <router-view />
                     <dock-menu />
                 </section>
+                <overlay-video />
             </main>
         )
     }

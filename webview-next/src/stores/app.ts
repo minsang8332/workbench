@@ -75,19 +75,24 @@ export const useAppStore = defineStore('app', () => {
     }
     // 앱 종료
     const powerOff = () => {
-        window.$native.exit()
+        window.$native.app.exit()
     }
     // 업데이트 대기
     const waitUpdate = () => {
-        return window.$native.updater.wait()
+        return window.$native.app.waitAvailableUpdate()
     }
     // 업데이트 가능 여부
     const availableUpdate = () => {
-        return window.$native.updater.available()
+        return window.$native.app.availableUpdate()
     }
     // 업데이트 설치
     const installUpdate = () => {
-        window.$native.updater.install()
+        window.$native.app.install()
+    }
+    // 오버레이 영상 목록
+    const loadOverlayVideos = async (): Promise<string[]> => {
+        const response = await window.$native.app.loadOverlayVideos()
+        return response.data.videos
     }
     return {
         state,
@@ -99,6 +104,7 @@ export const useAppStore = defineStore('app', () => {
         powerOff,
         waitUpdate,
         availableUpdate,
-        installUpdate
+        installUpdate,
+        loadOverlayVideos
     }
 })

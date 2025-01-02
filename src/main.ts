@@ -3,15 +3,18 @@ import _ from 'lodash'
 import '@/controllers'
 import * as protocolUtil from '@/utils/protocol'
 import windowUtil from '@/utils/window'
+import { PROTOCOL } from './constants/app'
 if (app.requestSingleInstanceLock() == false) {
     app.quit()
     process.exit(0)
 }
 app.on('will-finish-launching', () => {
-    protocolUtil.registerScheme('app')
+    protocolUtil.registerMainWindow()
+    protocolUtil.registerScheme(PROTOCOL.LOCAL, { stream: true })
 })
 app.on('ready', () => {
-    protocolUtil.handleProtocol('app')
+    protocolUtil.handleMainWindow()
+    protocolUtil.handle(PROTOCOL.LOCAL)
     const mainWindow = windowUtil.creaateWindow({
         scheme: 'app',
         url: process.env.APP_URL,

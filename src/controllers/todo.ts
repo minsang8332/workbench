@@ -4,7 +4,7 @@ import { controller } from '@/utils/ipc'
 import { Todo } from '@/models/todo'
 import { IPC_TODO } from '@/constants/ipc'
 // 작업 관리 목록
-controller(IPC_TODO.LOAD, (request: IpcController.Request.Empty, response: IpcController.IResponse) => {
+controller(IPC_TODO.LOAD, (request: IpcController.Request.Todo.ILoad, response: IpcController.IResponse) => {
     const store = new Store<ITodo>(Todo.IDENTIFIER)
     const todos = store.get()
     response.data.todos = todos

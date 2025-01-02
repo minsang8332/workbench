@@ -1,5 +1,5 @@
 import { app, contextBridge, ipcRenderer } from 'electron'
-import { IPC_APP, IPC_UPDATER, IPC_SETTING, IPC_DIARY, IPC_TODO } from '@/constants/ipc'
+import { IPC_APP, IPC_SETTING, IPC_DIARY, IPC_TODO } from '@/constants/ipc'
 const send = (channel: string) => ipcRenderer.send(channel)
 const sendSync = (channel: string) => {
     return new Promise((resolve) => {
@@ -16,22 +16,26 @@ const invoke = async (channel: string, payload?: any) => {
     return response
 }
 contextBridge.exposeInMainWorld('$native', {
-    exit() {
-        send(IPC_APP.EXIT)
-    },
     getVersion() {
         return app.getVersion()
     },
-    updater: {
-        install() {
-            send(IPC_UPDATER.INSTALL)
+    updater: {},
+    app: {
+        exit() {
+            send(IPC_APP.EXIT)
         },
-        available() {
-            return invoke(IPC_UPDATER.AVAILABLE)
+        install() {
+            send(IPC_APP.INSTALL_UPDATE)
         },
         // 업데이트 가능여부가 확인될 때 까지 기다림
-        wait() {
-            return sendSync(IPC_UPDATER.AVAILABLE)
+        waitAvailableUpdate() {
+            return sendSync(IPC_APP.AVAILABLE_UPDATE)
+        },
+        availableUpdate() {
+            return invoke(IPC_APP.AVAILABLE_UPDATE)
+        },
+        loadOverlayVideos() {
+            return invoke(IPC_APP.LOAD_OVERLAY_VIDEOS)
         },
     },
     setting: {

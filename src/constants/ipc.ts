@@ -1,9 +1,8 @@
 export enum IPC_APP {
-    EXIT = 'exit',
-}
-export enum IPC_UPDATER {
-    AVAILABLE = 'updater:available',
-    INSTALL = 'updater:install',
+    EXIT = 'app:exit',
+    LOAD_OVERLAY_VIDEOS = 'app:load-overlay-videos',
+    INSTALL_UPDATE = 'app:install-update',
+    AVAILABLE_UPDATE = 'app:available-update',
 }
 export enum IPC_SETTING {
     LOAD_PASSCODE = 'setting:load-passcode',

@@ -4,13 +4,17 @@
     &__content {
         &-item {
             // @include mixins.color-animation(variables.$diary-color);
-            gap: 0.1rem;
+            gap: 0.125rem;
             i {
-                font-size: 1.25rem;
+                font-size: 1.2rem;
                 line-height: 1;
                 &.mdi-folder {
                     color: variables.$folder-color;
                 }
+            }
+            p.text-title {
+                font-size: 0.9rem;
+                line-height: 1;
             }
             &:hover {
                 @include mixins.pulse-animation(variables.$diary-color);

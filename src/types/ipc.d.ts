@@ -9,7 +9,9 @@ namespace IpcController {
         error?: IError
     }
     namespace Request {
-        interface Empty {}
+        namespace App {
+            interface ILoadOverlayVideos {}
+        }
         namespace Diary {
             interface ILoad {}
             // 문서 내용 가져오기
@@ -42,6 +44,7 @@ namespace IpcController {
         }
         // 해야 할 일
         namespace Todo {
+            interface ILoad {}
             // 저장하기
             interface ISave {
                 id: ITodo['id']

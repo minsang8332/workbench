@@ -1,6 +1,6 @@
 import path from 'path'
 import { app, BrowserWindow, nativeImage, Event } from 'electron'
-import { checkForUpdates } from '@/controllers/updater'
+import { checkForUpdates } from '@/controllers/app'
 let mainWindow: BrowserWindow
 const creaateWindow = ({
     scheme = 'file',
@@ -23,8 +23,8 @@ const creaateWindow = ({
         height,
         minHeight: 360,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js'),
         },
         title: `${app.getName()} v${app.getVersion()}`,
         icon,

@@ -4,7 +4,7 @@ import fs from 'fs-extra'
 import { app, ipcMain, shell } from 'electron'
 import { controller } from '@/utils/ipc'
 import { IPC_DIARY } from '@/constants/ipc'
-const allowExts = ['.md', '.txt']
+const allowedExts = ['.md', '.txt']
 const rootDir = path.resolve(path.resolve(app.getPath('documents'), app.getName()), 'diary')
 const isSubdir = async (parent: string, child: string) => {
     parent = path.resolve(parent)
@@ -33,7 +33,7 @@ controller(IPC_DIARY.LOAD, async (request: IpcController.Request.Diary.ILoad, re
             const files = fs.readdirSync(destDir)
             await Promise.all(files.map((file) => search(path.join(destDir, file))))
         } else {
-            if (!allowExts.includes(path.extname(destDir))) {
+            if (!allowedExts.includes(path.extname(destDir))) {
                 return
             }
         }
@@ -78,8 +78,8 @@ controller(IPC_DIARY.WRITE, async (request: IpcController.Request.Diary.IWrite, 
         ext = '.txt'
     }
     ext = /^\.(\w)+/.test(ext) ? ext : `.${ext}`
-    if (!_.includes(allowExts, ext)) {
-        throw new Error(`작성 가능한 확장자는 다음과 같습니다. (${allowExts.join(',')})`)
+    if (!_.includes(allowedExts, ext)) {
+        throw new Error(`작성 가능한 확장자는 다음과 같습니다. (${allowedExts.join(',')})`)
     }
     // 파일명이 없으면 신규 파일로 간주
     let filename = request.filename
@@ -183,8 +183,8 @@ controller(
         const fromParsed = path.parse(filepath)
         const destParsed = path.parse(request.filename)
         // 파일이면 확장자 확인하여 예외처리
-        if (fs.lstatSync(filepath).isFile() && _.includes(allowExts, destParsed.ext) == false) {
-            throw new Error(`작성 가능한 확장자는 다음과 같습니다. (${allowExts.join(',')})`)
+        if (fs.lstatSync(filepath).isFile() && _.includes(allowedExts, destParsed.ext) == false) {
+            throw new Error(`작성 가능한 확장자는 다음과 같습니다. (${allowedExts.join(',')})`)
         }
         // 새로운 경로를 생성
         const renameDir = path.format({
