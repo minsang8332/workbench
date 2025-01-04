@@ -1,0 +1,27 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.setting-page {
+    $article-header: 3rem;
+    height: calc(100% - variables.$dock-menu-height);
+    &__header {
+        @include mixins.glass(variables.$setting-color, 0.5rem, 0.2);
+        height: $article-header;
+        padding: 0 0.5rem;
+        button {
+            @include mixins.scale-animation;
+            @include mixins.tooltip;
+            height: 2.25rem;
+            width: 2.25rem;
+            &.btn-setting,
+            &.btn-back {
+                height: 2.25rem;
+                i {
+                    font-size: 1.5rem;
+                }
+            }
+            &.btn-setting {
+                color: variables.$setting-color;
+            }
+        }
+    }
+}

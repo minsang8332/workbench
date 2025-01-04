@@ -1,0 +1,14 @@
+// 토스트 팝업
+.app-toast {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+    i {
+        font-size: 24px;
+        margin-right: 8px;
+    }
+    p {
+        font-size: 16px;
+        color: #fff;
+    }
+}

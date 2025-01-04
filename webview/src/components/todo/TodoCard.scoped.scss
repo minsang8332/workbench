@@ -1,0 +1,45 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.todo-card {
+    @include mixins.scale-animation;
+    height: 100%;
+    backdrop-filter: unset;
+    background-color: #fff;
+    border: 2px solid variables.$border-color;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    &__header {
+        flex: 0 0 50%;
+        button.btn-close {
+            @include mixins.scale-animation;
+            border-radius: 0.25rem;
+            padding: 0.1rem;
+            i {
+                font-size: 1.2rem;
+            }
+        }
+    }
+    &__actions {
+        flex: 0 0 50%;
+        .period {
+            background-color: var(--gray-color);
+            color: #fff;
+            height: fit-content;
+            width: fit-content;
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.9rem;
+            text-wrap: nowrap;
+            &--alive {
+                background-color: var(--success-color);
+            }
+            &--expired {
+                background-color: var(--gray-color);
+            }
+        }
+    }
+    &:hover {
+        transform: scale(0.95);
+    }
+}

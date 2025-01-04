@@ -1,0 +1,36 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.context-menu {
+    @include mixins.glass(variables.$window-color, null, 0.8);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+    width: calc(1rem * 15);
+    border-radius: 0.25rem;
+    border: 2px solid variables.$border-color;
+    &__header {
+        button.btn-close {
+            @include mixins.scale-animation;
+            border-radius: 0.25rem;
+            padding: 0.1rem;
+            i {
+                font-size: 1.2rem;
+                color: variables.$dark-color;
+            }
+        }
+        box-shadow: 0 0.1rem 0.5rem rgba(variables.$theme-color, 0.3);
+    }
+    &__content {
+        padding: 0.5rem 0;
+        .text-label {
+            font-size: 0.9rem;
+            color: variables.$dark-color;
+        }
+        .text-shortcut {
+            font-size: 0.9rem;
+            letter-spacing: 0;
+            color: variables.$dark-color;
+        }
+    }
+}

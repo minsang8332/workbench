@@ -66,7 +66,7 @@ controller(
         if (fs.existsSync(videopath) == false) {
             throw new Error('경로를 찾을 수 없습니다.')
         }
-        const allowedExts = ['.mp4', '.avi', '.mov', '.mkv']
+        const allowedExts = ['.mp4']
         const videos = fs
             .readdirSync(videopath)
             .filter((file) => allowedExts.includes(path.extname(file).toLowerCase()))

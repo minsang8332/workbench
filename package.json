@@ -5,21 +5,13 @@
     "main": "build/bundle.js",
     "scripts": {
         "setup": "npm install && cd webview && npm install",
-        "setup:next": "npm install && cd webview-next && npm install",
         "serve": "concurrently \"npm run webview\" \"npm run webpack:watch\"",
-        "serve:next": "concurrently \"npm run webview-next\" \"npm run webpack-next:watch\"",
         "build": "npm run webview:build && npm run webpack:build && electron-builder",
-        "build:next": "npm run webview-next:build && npm run webpack-next:build && electron-builder",
         "deploy": "npm run webview:build && npm run webpack:build && electron-builder -p always",
-        "deploy:next": "npm run webview-next:build && npm run webpack-next:build && electron-builder -p always",
         "webpack:watch": "webpack --env html=webview --watch",
-        "webpack-next:watch": "webpack --env html=webview-next --watch",
         "webpack:build": "webpack --env html=webview production",
-        "webpack-next:build": "webpack --env html=webview-next production",
         "webview": "cd webview && npm run serve",
-        "webview-next": "cd webview-next && npm run serve",
         "webview:build": "cd webview && npm run build",
-        "webview-next:build": "cd webview-next && npm run build",
         "icon": "electron-icon-builder --input=./src/assets/favicon.png --output=./src/assets -f"
     },
     "build": {

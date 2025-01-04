@@ -1,0 +1,73 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.todo-page {
+    $article-header: 3rem;
+    height: calc(100% - variables.$dock-menu-height);
+    &__header {
+        @include mixins.glass(variables.$todo-color);
+        height: $article-header;
+        padding: 0 0.5rem;
+        button {
+            @include mixins.scale-animation;
+            @include mixins.tooltip;
+            height: 2.25rem;
+            width: 2.25rem;
+            i {
+                font-size: 1.5rem;
+            }
+            i.mdi-flag-variant {
+                color: variables.$todo-color;
+            }
+        }
+        .text-field__input {
+            border: 2px solid variables.$todo-color;
+            background-color: #fff;
+            &::placeholder {
+                color: variables.$dark-color;
+            }
+        }
+    }
+    &__content {
+        height: calc(100vh - variables.$dock-menu-height - $article-header);
+        width: calc(100vw - variables.$page-layout-padding * 2);
+        position: relative;
+        overflow-x: scroll;
+        padding: 1rem 0;
+        &-item {
+            $item-size: 16rem;
+            height: 100%;
+            width: calc($item-size + 1rem);
+            min-width: calc($item-size + 1rem);
+            background-color: #f6f6f6;
+            border-radius: 0.25rem;
+            border: 1px solid variables.$border-color;
+            overflow-y: scroll;
+            &-header {
+                background-color: var(--todo-color);
+                padding: 0.5rem;
+                b {
+                    color: #fff;
+                }
+            }
+            .todo-card {
+                width: 100%;
+                height: calc($item-size / 1.5);
+            }
+        }
+        // 우측 공간 뿌옇게 함
+        &:after {
+            position: fixed;
+            right: 0;
+            width: 1rem;
+            height: calc(100vh - variables.$dock-menu-height - $article-header - 1rem);
+            content: '';
+            z-index: 1;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0,
+                rgba(255, 255, 255, 0.7) 40%,
+                #fff 70%
+            );
+        }
+    }
+}

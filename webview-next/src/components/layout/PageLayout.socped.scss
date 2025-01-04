@@ -1,9 +1,0 @@
-@use '@/assets/css/abstracts/variables';
-.page-layout {
-    height: 100vh;
-    max-height: 100vh;
-    width: 100vw;
-    max-width: 100vw;
-    padding: variables.$page-layout-padding;
-    box-sizing: border-box;
-}

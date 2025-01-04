@@ -1,0 +1,25 @@
+@charset "utf-8";
+/* 
+💡 어플리케이션 레이아웃 핵심 값
+    page-layout-padding: page-layout 컴포넌트에서 좌우 양옆으로 padding 보정치를 주고 있다.
+    drawer-menu-width: 좌측에서 출현하는 수납 영역에 대한 넓이 입니다.
+*/
+$page-layout-padding: 0.25rem;
+$dock-menu-height: calc(3.5rem - $page-layout-padding);
+$drawer-menu-width: 15rem;
+
+// 색상
+$dark-color: #000;
+$gray-color: #c3c3c3;
+$sky-blue-color: #5dc8e9ff;
+$primary-color: #008cff;
+$folder-color: #ffe9a2;
+$border-color: #e5e7eb;
+$danger-color: #b00020;
+$success-color: #4caf50;
+$window-color: #f6f6f6;
+$diary-color: $success-color;
+$todo-color: $primary-color;
+$setting-color: #5f5f5f;
+// 테마 색상
+$theme-color: $gray-color;
