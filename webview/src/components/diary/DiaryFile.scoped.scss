@@ -3,7 +3,8 @@
 .diary-file {
     &__content {
         &-item {
-            @include mixins.fade-animation;
+            @include mixins.glass-animation;
+            @include mixins.scale-animation;
             gap: 0.125rem;
             padding: 0.125rem;
             i {

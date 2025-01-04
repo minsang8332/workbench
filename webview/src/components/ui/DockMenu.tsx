@@ -24,7 +24,7 @@ export default defineComponent({
                         onClick={() => router.push({ name: 'setting' })}
                     >
                         <i class="mdi mdi-cog"></i>
-                        <span class="tooltip">환경 설정</span>
+                        <span class="tooltip">환경설정</span>
                     </button>
                     <button
                         type="button"

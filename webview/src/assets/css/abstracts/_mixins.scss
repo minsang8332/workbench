@@ -14,38 +14,33 @@
         }
     }
 }
-@mixin neon-animation($background-color: #fff) {
-    transition: 0.5s box-shadow ease;
-    background: $background-color;
-    box-shadow: 0 0 1.5rem $background-color;
+@mixin neon-animation($color: #fff) {
+    background: $color;
+    box-shadow: 0 0 1.5rem $color;
+    transition: 0.5s box-shadow;
+    will-change: box-shadow;
     &:hover {
         box-shadow:
-            0 0 0.5rem $background-color,
-            0 0 1rem $background-color,
-            0 0 3rem $background-color,
-            0 0 6rem $background-color;
+            0 0 0.5rem $color,
+            0 0 1rem $color,
+            0 0 3rem $color,
+            0 0 6rem $color;
     }
 }
-@mixin scale-animation($scaleX: 0.9, $scaleY: 0.9) {
-    transition-property: opacity, transform;
-    transition: 0.2s;
+@mixin scale-animation($scaleX: 0.9, $scaleY: 0.9, $state: active) {
+    transition-property: transform;
+    transition-duration: 0.2s;
     will-change: transform;
-    &:hover {
+    &:#{$state} {
         transform: scaleX($scaleX) scaleY($scaleY);
     }
 }
-@mixin color-animation($color: transparent, $scaleX: 0.9, $scaleY: 0.9) {
-    transition-property: opacity, color;
-    transition: 0.3s;
-    &:hover * {
-        color: $color;
-    }
-    &:active {
-        transform: scaleX($scaleX) scaleY($scaleY);
-    }
-}
-@mixin fade-animation($color: #fff, $opacity: 0.1) {
-    transition: background-color 0.2s;
+@mixin glass-animation($color: #fff, $opacity: 0.1) {
+    /*
+        transition-property: background-color;
+        transition-duration: 0.2s;
+        will-change: background-color;
+    */
     &:hover {
         background-color: rgba($color, $opacity);
         border-radius: 0.25rem;
@@ -53,7 +48,6 @@
 }
 @mixin tooltip() {
     position: relative;
-    will-change: transform;
     .tooltip {
         @include glass(variables.$dark-color);
         position: absolute;
@@ -65,7 +59,6 @@
         border-radius: 0.5rem;
         visibility: hidden;
         opacity: 0;
-        transition: opacity 0.1s;
         transform: translateX(-50%);
         font-size: 0.9rem;
         text-align: center;
@@ -97,12 +90,15 @@
         border-color: transparent transparent variables.$dark-color transparent !important;
     }
 }
-@mixin glass($color: variables.$window-color, $backdrop-filter: 0.1rem, $opacity: 0.6) {
+@mixin glass($color: variables.$window-color, $opacity: 0.6, $use-backdrop-filter: false) {
     background: rgba($color, $opacity);
     border-radius: 0.25rem;
-    backdrop-filter: blur($backdrop-filter);
     box-shadow: 0 0.25rem 2rem rgba(0, 0, 0, 0.3);
     box-sizing: border-box;
+    // 성능 이슈로 필요한 경우에만 사용
+    @if $use-backdrop-filter {
+        backdrop-filter: blur(2px);
+    }
 }
 @mixin cubic($color, $height: 100%, $border-radius: 0.25rem) {
     width: $height;

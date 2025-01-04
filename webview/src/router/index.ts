@@ -48,7 +48,11 @@ const router = createRouter({
                         {
                             name: 'setting-passcode',
                             path: 'passcode',
-                            component: () => import('@/views/setting/PasscodePage')
+                            component: () => import('@/views/setting/PasscodePage'),
+                            meta: {
+                                title: '패스코드 설정',
+                                desc: '패스코드를 입력하여 앱의 보안을 강화하고 간편하게 활성화할 수 있는 기능을 제공합니다.'
+                            }
                         }
                     ],
                     beforeEnter: [routerGuard.onBeforeEnterSetting]

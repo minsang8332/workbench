@@ -5,6 +5,7 @@
     height: variables.$dock-menu-height;
     padding: 0 0.5rem;
     button {
+        @include mixins.scale-animation;
         @include mixins.tooltip;
         @extend .box-shadow !optional;
         color: #fff;
@@ -25,9 +26,6 @@
         &.btn-exit {
             @include mixins.cubic(variables.$dark-color, 2.25rem);
             font-size: 2.25rem;
-        }
-        &:active {
-            transform: scale(0.9);
         }
     }
 }

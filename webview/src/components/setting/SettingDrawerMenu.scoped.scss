@@ -24,14 +24,17 @@
         overflow-y: scroll;
         .setting-menu {
             &__item {
-                @include mixins.fade-animation;
+                @include mixins.glass-animation;
+                @include mixins.scale-animation;
+                transition-property: transform, background-color;
                 cursor: pointer;
+                border-radius: 0.25rem;
                 padding: 0.25rem 0.5rem;
                 i {
                     font-size: 1.25rem;
                 }
                 b {
-                    font-size: 1.25rem;
+                    font-size: 1.1rem;
                     letter-spacing: -1px;
                 }
             }

@@ -11,7 +11,7 @@
         height: $article-header;
         padding: 0 0.5rem;
         button {
-            @include mixins.fade-animation;
+            @include mixins.glass-animation;
             @include mixins.tooltip;
             height: 2.25rem;
             width: 2.25rem;
@@ -70,8 +70,8 @@
         width: 100%;
         button.btn-submit {
             @include mixins.glass;
+            @include mixins.scale-animation(1, 0.8);
             @include mixins.tooltip;
-            @include mixins.scale-animation(0.99, 0.8);
             border-radius: 0.25rem;
             i {
                 font-size: 2rem;

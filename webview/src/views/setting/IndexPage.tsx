@@ -1,9 +1,11 @@
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import './IndexPage.scoped.scss'
 export default defineComponent({
     name: 'SettingPage',
     setup() {
+        const route = useRoute()
         const appStore = useAppStore()
         return () => (
             <article class="setting-page flex flex-col gap-1">
@@ -16,12 +18,27 @@ export default defineComponent({
                         >
                             <i class="mdi mdi-cog"></i>
                         </button>
-                        <b class="text-title">환경 설정</b>
+                        <button type="button" class="btn-nav">
+                            <b>환경설정</b>
+                        </button>
+                        {route.meta.title && (
+                            <>
+                                <i class="mdi mdi-chevron-right"></i>
+                                <button type="button" class="btn-nav">
+                                    <b>{route.meta.title}</b>
+                                </button>
+                            </>
+                        )}
                     </div>
-                    <div class="flex items-center"></div>
                 </div>
-                <div class="setting-page__content">
-                    <router-view />
+                <div class="setting-page__content flex flex-col gap-2">
+                    <div class="introduce flex flex-col gap-4">
+                        <b class="text-title">{route.meta.title}</b>
+                        <p class="text-desc">{route.meta.desc}</p>
+                    </div>
+                    <div class="container">
+                        <router-view />
+                    </div>
                 </div>
             </article>
         )

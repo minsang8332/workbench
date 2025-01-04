@@ -8,13 +8,18 @@
         @include mixins.glass;
         height: $article-header;
         padding: 0 0.5rem;
+        i.mdi-chevron-right {
+            font-size: 1.5rem;
+        }
         button {
-            @include mixins.fade-animation;
+            @include mixins.glass-animation;
             @include mixins.tooltip;
             height: 2.25rem;
-            width: 2.25rem;
+            &:has(b) {
+                padding: 0 0.25rem;
+            }
             &.btn-setting {
-                height: 2.25rem;
+                width: 2.25rem;
                 i {
                     font-size: 1.5rem;
                 }
@@ -22,6 +27,20 @@
         }
     }
     &__content {
+        @include mixins.glass;
         flex: 1 0;
+        padding: 1rem;
+        .introduce {
+            flex: 0 0 20%;
+            b.text-title {
+                font-size: 1.25rem;
+            }
+            p.text-desc {
+                font-size: 0.9rem;
+            }
+        }
+        .container {
+            flex: 1 0 80%;
+        }
     }
 }
