@@ -7,6 +7,10 @@ export default defineComponent({
         modelValue: {
             type: Boolean as PropType<boolean>,
             default: false
+        },
+        disabled: {
+            type: Boolean as PropType<boolean>,
+            default: false
         }
     },
     setup(props, { emit }) {
@@ -18,8 +22,9 @@ export default defineComponent({
                 <input
                     type="checkbox"
                     class="switch-field__input"
-                    value={props.modelValue}
+                    checked={props.modelValue}
                     onClick={onToggle}
+                    disabled={props.disabled}
                 />
             </div>
         )

@@ -4,29 +4,29 @@
     $height: 2rem;
     $width: $height * 2;
     &__input {
+        appearance: none;
         position: relative;
         height: $height;
         width: $width;
         background-color: rgba(variables.$window-color, 0.3);
         border-radius: $height / 2;
-        box-shadow: 0 3px 10px rgba(100, 116, 139, 0.327);
-        appearance: none;
-        cursor: pointer;
+        box-shadow: 0 0.125rem 0.75rem rgba(variables.$dark-color, 0.3);
         transition: transform 0.3s;
+        cursor: pointer;
         &:checked {
-            background-color: rgba(variables.$theme-color, 0.75);
+            background-color: rgba(variables.$primary-color, 0.8);
         }
         &:before {
             position: absolute;
             top: 0;
             left: 0;
-            content: '';
             height: $height;
             width: $height;
-            cursor: pointer;
             border-radius: 50%;
             background-color: #fff;
             transition: transform 0.3s;
+            content: '';
+            cursor: pointer;
         }
         &:hover::before {
             box-shadow: 0 0 0 0.5rem rgba(#000, 0.15);
@@ -36,6 +36,10 @@
         }
         &:checked:before {
             transform: translateX(100%);
+        }
+        &:disabled {
+            opacity: 0.3;
+            pointer-events: none;
         }
     }
 }

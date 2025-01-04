@@ -36,7 +36,7 @@ export default defineComponent({
                         <b class="text-title">{route.meta.title}</b>
                         <p class="text-desc">{route.meta.desc}</p>
                     </div>
-                    <div class="container">
+                    <div class="inner-page">
                         <router-view />
                     </div>
                 </div>

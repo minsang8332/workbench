@@ -2,17 +2,17 @@ import { computed, unref, reactive } from 'vue'
 import { defineStore } from 'pinia'
 import _ from 'lodash'
 interface ISettingState {
-    usePasscode: boolean
+    activePasscode: boolean
 }
-export const useTodoStore = defineStore('setting', () => {
+export const useSettingStore = defineStore('setting', () => {
     const state = reactive<ISettingState>({
-        usePasscode: false
+        activePasscode: false
     })
     // Getters
-    const getActivePasscode = computed(() => state.usePasscode)
+    const getActivePasscode = computed(() => state.activePasscode)
     // Mutations
-    const updateActivePasscode = (payload: ISettingState['usePasscode'] = false) => {
-        state.usePasscode = payload
+    const updateActivePasscode = (payload: ISettingState['activePasscode'] = false) => {
+        state.activePasscode = payload
     }
     const loadPasscode = async () => {
         const response = await window.$native.setting.loadPasscode()
@@ -31,7 +31,6 @@ export const useTodoStore = defineStore('setting', () => {
     // 패스코드 활성화
     const activatePasscode = async (active: boolean) => {
         const response = await window.$native.setting.activatePasscode({ active })
-        updateActivePasscode(response.data.active)
         return response.data.active
     }
     return {

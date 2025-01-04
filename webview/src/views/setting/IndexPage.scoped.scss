@@ -31,7 +31,7 @@
         flex: 1 0;
         padding: 1rem;
         .introduce {
-            flex: 0 0 20%;
+            flex: 0 0 15%;
             b.text-title {
                 font-size: 1.25rem;
             }
@@ -39,8 +39,8 @@
                 font-size: 0.9rem;
             }
         }
-        .container {
-            flex: 1 0 80%;
+        .inner-page {
+            flex: 1 0 85%;
         }
     }
 }

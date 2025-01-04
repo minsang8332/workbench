@@ -9,7 +9,7 @@ export const controller = async <T>(channel: string, fn: Function) => {
             response = await fn(payload, response, {
                 event,
             })
-            response.data.result = true
+            response.result = true
         } catch (e) {
             response.error = error(e as Error)
         }

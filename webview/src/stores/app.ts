@@ -7,6 +7,7 @@ interface IAppState {
     modalProps: IModalDialogProps
     menu: boolean
     menuProps: IContextMenuProps
+    disabled: boolean
 }
 const initModalProps = (): IModalDialogProps => {
     return {
@@ -31,9 +32,14 @@ export const useAppStore = defineStore('app', () => {
         modalProps: initModalProps(),
         // 컨텍스트 메뉴
         menu: false,
-        menuProps: initMenuProps()
+        menuProps: initMenuProps(),
+        disabled: false
     })
     const getDrawer = computed(() => state.drawer)
+    const getDisabled = computed(() => state.disabled)
+    const updateDisabled = (payload: boolean = false) => {
+        state.disabled = payload
+    }
     const scss = (property: string): string => {
         const style = getComputedStyle(document.body)
         return style.getPropertyValue(property)
@@ -94,9 +100,20 @@ export const useAppStore = defineStore('app', () => {
         const response = await window.$native.app.loadOverlayVideos()
         return response.data.videos
     }
+    // 전역적인 앱 동작을 비활성화 시키기 위함
+    const blocking = async (run: () => Promise<void> | void) => {
+        updateDisabled(true)
+        try {
+            await run()
+        } catch (e) {
+            console.error(e)
+        }
+        updateDisabled(false)
+    }
     return {
         state,
         scss,
+        getDisabled,
         getDrawer,
         toggleDrawer,
         toggleModal,
@@ -105,6 +122,7 @@ export const useAppStore = defineStore('app', () => {
         waitUpdate,
         availableUpdate,
         installUpdate,
-        loadOverlayVideos
+        loadOverlayVideos,
+        blocking
     }
 })

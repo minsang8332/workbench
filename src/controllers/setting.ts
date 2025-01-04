@@ -9,7 +9,6 @@ import { Passcode } from '@/models/passcode'
 controller(
     IPC_SETTING.LOAD_PASSCODE,
     async (request: IpcController.Request.Setting.ILoadPasscode, response: IpcController.IResponse) => {
-        response.data.result = false
         const programDir = await commonUtil.getProgramDir()
         if (_.isNull(programDir)) {
             throw new Error('프로그램의 내부 접근 권한이 없습니다.')
@@ -33,7 +32,6 @@ controller(
 controller(
     IPC_SETTING.VERIFY_PASSCODE,
     async (request: IpcController.Request.Setting.IVerifyPasscode, response: IpcController.IResponse) => {
-        response.data.result = false
         if (_.isEmpty(request.text)) {
             throw new Error('패스코드가 입력되지 않았습니다.')
         }
