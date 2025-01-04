@@ -48,10 +48,9 @@
             @include mixins.glass;
             $item-size: 16rem;
             height: 100%;
-            width: calc($item-size + 1rem);
-            min-width: calc($item-size + 1rem);
             border-radius: 0.25rem;
             border: unset;
+            flex: 1;
             overflow-y: scroll;
             &-header {
                 background-color: rgba(variables.$todo-color, 0.9);

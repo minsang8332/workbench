@@ -272,7 +272,7 @@ export default defineComponent({
                 </div>
                 <div
                     ref={contentRef}
-                    class="todo-page__content flex justify-start items-center gap-4"
+                    class="todo-page__content flex justify-start items-center gap-2"
                     onWheel={onScrollX}
                 >
                     {filterTodosByStatus.value.map((todos: any) => (
