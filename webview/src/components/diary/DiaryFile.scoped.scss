@@ -3,8 +3,9 @@
 .diary-file {
     &__content {
         &-item {
-            // @include mixins.color-animation(variables.$diary-color);
+            @include mixins.fade-animation;
             gap: 0.125rem;
+            padding: 0.125rem;
             i {
                 font-size: 1.2rem;
                 line-height: 1;
@@ -14,10 +15,8 @@
             }
             p.text-title {
                 font-size: 0.9rem;
+                font-family: 'Pretendard SemiBold';
                 line-height: 1;
-            }
-            &:hover {
-                @include mixins.pulse-animation(variables.$diary-color);
             }
             &:active {
                 transform: scale(0.8);

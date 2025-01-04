@@ -5,14 +5,13 @@
     $article-actions: 2.5rem;
     height: calc(100% - variables.$dock-menu-height);
     position: relative;
-    // dock-menu 와 이격을 위함
-    padding-bottom: 0.25rem;
+    padding-bottom: variables.$page-layout-padding;
     &__header {
         @include mixins.glass;
         height: $article-header;
         padding: 0 0.5rem;
         button {
-            @include mixins.scale-animation;
+            @include mixins.fade-animation;
             @include mixins.tooltip;
             height: 2.25rem;
             width: 2.25rem;
@@ -43,7 +42,6 @@
         height: calc(100vh - $article-header - $article-actions - variables.$dock-menu-height);
         overflow-y: scroll;
         textarea {
-            @include mixins.glass;
             backdrop-filter: unset;
             height: 100%;
             font-family: 'D2Coding';
@@ -51,6 +49,8 @@
             resize: none;
             min-width: 20%;
             overflow: hidden;
+            background-color: rgba(#fff, 0.9);
+            border-radius: 0.25rem;
         }
         .resizer {
             height: 100%;
@@ -69,13 +69,16 @@
         height: $article-actions;
         width: 100%;
         button.btn-submit {
-            @include mixins.glass(variables.$diary-color, null, 0.3);
+            @include mixins.glass;
             @include mixins.tooltip;
             @include mixins.scale-animation(0.99, 0.8);
             border-radius: 0.25rem;
             i {
                 font-size: 2rem;
-                color: variables.$diary-color;
+                color: rgba(#fff, 0.8);
+            }
+            &:hover {
+                transform: scale(0.98);
             }
         }
     }

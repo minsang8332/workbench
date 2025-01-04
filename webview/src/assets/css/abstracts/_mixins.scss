@@ -29,6 +29,7 @@
 @mixin scale-animation($scaleX: 0.9, $scaleY: 0.9) {
     transition-property: opacity, transform;
     transition: 0.2s;
+    will-change: transform;
     &:hover {
         transform: scaleX($scaleX) scaleY($scaleY);
     }
@@ -43,9 +44,18 @@
         transform: scaleX($scaleX) scaleY($scaleY);
     }
 }
+@mixin fade-animation($color: #fff, $opacity: 0.1) {
+    transition: background-color 0.2s;
+    &:hover {
+        background-color: rgba($color, $opacity);
+        border-radius: 0.25rem;
+    }
+}
 @mixin tooltip() {
     position: relative;
+    will-change: transform;
     .tooltip {
+        @include glass(variables.$dark-color);
         position: absolute;
         z-index: 10002;
         bottom: 125%;
@@ -55,13 +65,12 @@
         border-radius: 0.5rem;
         visibility: hidden;
         opacity: 0;
-        transition: opacity 0.3s;
+        transition: opacity 0.1s;
         transform: translateX(-50%);
         font-size: 0.9rem;
         text-align: center;
         white-space: nowrap;
         color: #fff;
-        background-color: var(--dark-color);
     }
     .tooltip::after {
         position: absolute;
@@ -69,8 +78,9 @@
         left: 50%;
         border-width: 0.25rem;
         border-style: solid;
-        border-color: var(--dark-color) transparent transparent transparent;
+        border-color: variables.$dark-color transparent transparent transparent;
         transform: translateX(-50%);
+        opacity: 0.5;
         content: '';
     }
     &:hover .tooltip {
@@ -78,24 +88,23 @@
         opacity: 1;
     }
     & .tooltip-bottom {
-        top: 102%;
+        top: 100%;
         left: 50%;
         bottom: unset !important;
     }
     & .tooltip-bottom::after {
         top: -0.5rem;
-        border-color: transparent transparent var(--dark-color) transparent !important;
+        border-color: transparent transparent variables.$dark-color transparent !important;
     }
 }
-@mixin glass($color: variables.$gray-color, $backdrop-filter: 0.1rem, $opacity: 0.5) {
+@mixin glass($color: variables.$window-color, $backdrop-filter: 0.1rem, $opacity: 0.6) {
     background: rgba($color, $opacity);
     border-radius: 0.25rem;
     backdrop-filter: blur($backdrop-filter);
-    border: 0.1rem solid rgba($color, 0.3);
-    box-shadow: 0 0.25rem 2rem rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0.25rem 2rem rgba(0, 0, 0, 0.3);
     box-sizing: border-box;
 }
-@mixin cubic-button($color, $height: 100%, $border-radius: 0.25rem) {
+@mixin cubic($color, $height: 100%, $border-radius: 0.25rem) {
     width: $height;
     height: $height;
     border-radius: $border-radius;
@@ -106,7 +115,7 @@
         color: #fff;
     }
     &:hover {
-        background-color: #fff;
+        background-color: rgba(#fff, 0.75);
         i {
             color: $color;
         }

@@ -4,7 +4,7 @@
     @include mixins.scale-animation;
     height: 100%;
     backdrop-filter: unset;
-    background-color: #fff;
+    background-color: rgba(#fff, 0.8);
     border: 2px solid variables.$border-color;
     border-radius: 0.25rem;
     padding: 0.5rem;
@@ -23,7 +23,7 @@
     &__actions {
         flex: 0 0 50%;
         .period {
-            background-color: var(--gray-color);
+            background-color: rgba(variables.$gray-color, 0.9);
             color: #fff;
             height: fit-content;
             width: fit-content;
@@ -32,10 +32,9 @@
             font-size: 0.9rem;
             text-wrap: nowrap;
             &--alive {
-                background-color: var(--success-color);
+                background-color: rgba(variables.$success-color, 0.9);
             }
             &--expired {
-                background-color: var(--gray-color);
             }
         }
     }

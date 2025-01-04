@@ -13,16 +13,22 @@
         min-height: 2.5rem;
         width: 100%;
         padding: 0 0.5rem;
-        border: 1px solid var(--border-color);
+        border: 1px solid variables.$border-color;
         border-radius: 0.25rem;
+        &:focus {
+            border: 1px solid variables.$theme-color !important;
+        }
     }
     &__textarea {
         min-height: 5rem;
         width: 100%;
         padding: 0.5rem;
-        border: 1px solid var(--border-color);
-        border-radius: 0.25rem;
         resize: vertical;
+        border: 1px solid variables.$border-color;
+        border-radius: 0.25rem;
+        &:focus {
+            border: 1px solid variables.$theme-color !important;
+        }
     }
 }
 // vue-date-picker 내부 라이브러리 색상 커스터마이징
@@ -30,11 +36,14 @@
 .text-field__input:focus,
 .text-field__textarea:focus {
     & {
-        background-color: transparent;
-        border: 1px solid var(--theme-color);
+        border: 1px solid variables.$border-color;
     }
+}
+.dp__input {
+    font-family: 'Pretendard';
+    background-color: transparent;
 }
 .dp__overlay_cell_active,
 .dp__active_date {
-    background-color: var(--theme-color) !important;
+    background-color: variables.$theme-color !important;
 }

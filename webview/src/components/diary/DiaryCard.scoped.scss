@@ -9,6 +9,9 @@
     &__header {
         height: 10%;
         padding: 0.5rem;
+        .text-title {
+            font-family: 'Pretendard SemiBold';
+        }
     }
     &__content {
         height: 70%;

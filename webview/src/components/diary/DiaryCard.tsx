@@ -69,7 +69,7 @@ export default defineComponent({
                             onClick={(event: MouseEvent) => event.stopPropagation()}
                         />
                     ) : (
-                        <p>{props.filename}</p>
+                        <b class="text-title">{props.filename}</b>
                     )}
                 </div>
                 <div class="diary-card__content">

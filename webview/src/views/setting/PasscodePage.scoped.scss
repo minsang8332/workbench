@@ -1,4 +1,6 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
 .passcode-page {
+    @include mixins.glass;
+    height: 100%;
 }

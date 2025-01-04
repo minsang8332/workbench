@@ -2,6 +2,7 @@ import path from 'path'
 import fs from 'fs-extra'
 import _ from 'lodash'
 import crypto from 'crypto'
+import mime from 'mime-types'
 import { app } from 'electron'
 const getRandomHex = (bytes: number = 20): string => crypto.randomBytes(bytes).toString('hex')
 const getProgramDir = async () => {
@@ -34,9 +35,18 @@ const decryptAES = (text: string, secret: string, iv: string) => {
     decrypted += decipher.final('utf8')
     return decrypted
 }
+const isVideoFile = (filepath: string) => {
+    const mimeType = mime.lookup(filepath)
+    if (_.isString(mimeType)) {
+        return ['video/mp4', 'video/webm', 'video/ogg', 'video/avi', 'video/mkv', 'video/mov'].includes(mimeType)
+    }
+    return false
+}
+
 export default {
     encryptAES,
     decryptAES,
     getRandomHex,
     getProgramDir,
+    isVideoFile,
 }

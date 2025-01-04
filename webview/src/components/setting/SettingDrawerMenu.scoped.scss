@@ -1,8 +1,40 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
 .setting-drawer-menu {
-    @include mixins.glass(variables.$setting-color, 0.5rem, 0.2);
+    @include mixins.glass;
     height: 100%;
     width: 100%;
     padding: 0.5rem;
+    &__header {
+        .text-field__input {
+            padding: unset;
+            border: unset;
+            height: calc(variables.$dock-menu-height / 2);
+            font-size: 0.9rem;
+            min-height: unset;
+            background-color: rgba(#fff, 0.3);
+            padding: 0 0.5rem;
+            &::placeholder {
+                color: variables.$dark-color;
+            }
+        }
+    }
+    &__content {
+        flex: 1 0;
+        overflow-y: scroll;
+        .setting-menu {
+            &__item {
+                @include mixins.fade-animation;
+                cursor: pointer;
+                padding: 0.25rem 0.5rem;
+                i {
+                    font-size: 1.25rem;
+                }
+                b {
+                    font-size: 1.25rem;
+                    letter-spacing: -1px;
+                }
+            }
+        }
+    }
 }

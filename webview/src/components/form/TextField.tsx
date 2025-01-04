@@ -84,7 +84,7 @@ export default defineComponent({
                     />
                 ) : props.type === TextField.TEXTAREA ? (
                     <textarea
-                        class="text-field__textarea d2coding"
+                        class="text-field__textarea"
                         value={props.modelValue}
                         onInput={onInput}
                         placeholder={props.placeholder}

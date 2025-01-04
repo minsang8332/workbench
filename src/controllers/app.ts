@@ -6,6 +6,7 @@ import { app, ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { controller } from '@/utils/ipc'
 import logger from '@/utils/logger'
+import commonUtil from '@/utils/common'
 import windowUtil from '@/utils/window'
 import { IPC_APP } from '@/constants/ipc'
 import { PROTOCOL } from '@/constants/app'
@@ -60,16 +61,15 @@ controller(
         /**
          * @TODO 환경 설정에서 오버레이 경로 설정하기
          */
-        const videopath = path.resolve('C:/Users/minsa/OneDrive/사진')
+        const videopath = path.resolve('C:/Users/minsa/OneDrive/동영상')
         /** */
         // 파일이 없다면
         if (fs.existsSync(videopath) == false) {
-            throw new Error('경로를 찾을 수 없습니다.')
+            throw new Error('오버레이 경로를 찾을 수 없습니다.')
         }
-        const allowedExts = ['.mp4']
         const videos = fs
             .readdirSync(videopath)
-            .filter((file) => allowedExts.includes(path.extname(file).toLowerCase()))
+            .filter((file) => commonUtil.isVideoFile(file))
             .map((file) => {
                 const videoURL = url.pathToFileURL(path.resolve(videopath, file))
                 return videoURL.toString().replace('file://', `${PROTOCOL.LOCAL}://`)

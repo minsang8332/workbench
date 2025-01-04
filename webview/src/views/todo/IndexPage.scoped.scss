@@ -4,7 +4,7 @@
     $article-header: 3rem;
     height: calc(100% - variables.$dock-menu-height);
     &__header {
-        @include mixins.glass(variables.$todo-color);
+        @include mixins.glass;
         height: $article-header;
         padding: 0 0.5rem;
         button {
@@ -14,14 +14,25 @@
             width: 2.25rem;
             i {
                 font-size: 1.5rem;
+                &.mdi-flag-variant {
+                    color: variables.$todo-color;
+                    opacity: 0.5;
+                }
             }
-            i.mdi-flag-variant {
-                color: variables.$todo-color;
+            &.btn-refresh {
+                height: calc(variables.$dock-menu-height / 2);
+                background-color: rgba(#fff, 0.3);
+                border-radius: 0.25rem;
             }
         }
         .text-field__input {
-            border: 2px solid variables.$todo-color;
-            background-color: #fff;
+            padding: unset;
+            border: unset;
+            height: calc(variables.$dock-menu-height / 2);
+            font-size: 0.9rem;
+            min-height: unset;
+            background-color: rgba(#fff, 0.3);
+            padding: 0 0.5rem;
             &::placeholder {
                 color: variables.$dark-color;
             }
@@ -34,17 +45,17 @@
         overflow-x: scroll;
         padding: 1rem 0;
         &-item {
+            @include mixins.glass;
             $item-size: 16rem;
             height: 100%;
             width: calc($item-size + 1rem);
             min-width: calc($item-size + 1rem);
-            background-color: #f6f6f6;
             border-radius: 0.25rem;
-            border: 1px solid variables.$border-color;
+            border: unset;
             overflow-y: scroll;
             &-header {
-                background-color: var(--todo-color);
-                padding: 0.5rem;
+                background-color: rgba(variables.$todo-color, 0.9);
+                padding: 0.5rem 1rem;
                 b {
                     color: #fff;
                 }
@@ -52,9 +63,11 @@
             .todo-card {
                 width: 100%;
                 height: calc($item-size / 1.5);
+                border: unset;
             }
         }
         // 우측 공간 뿌옇게 함
+        /*
         &:after {
             position: fixed;
             right: 0;
@@ -69,5 +82,6 @@
                 #fff 70%
             );
         }
+        */
     }
 }

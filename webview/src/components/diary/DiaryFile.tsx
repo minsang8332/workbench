@@ -154,7 +154,11 @@ export default defineComponent({
                         >
                             {_.times(props.depth + 1, (i) => (
                                 <i
-                                    class="mdi mdi-chevron-right"
+                                    class={
+                                        slideRef.value == true
+                                            ? 'mdi mdi-chevron-down'
+                                            : 'mdi mdi-chevron-right'
+                                    }
                                     style={{
                                         visibility:
                                             isDir.value == true && props.depth == i

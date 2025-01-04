@@ -3,25 +3,25 @@
 .setting-page {
     $article-header: 3rem;
     height: calc(100% - variables.$dock-menu-height);
+    padding-bottom: variables.$page-layout-padding;
     &__header {
-        @include mixins.glass(variables.$setting-color, 0.5rem, 0.2);
+        @include mixins.glass;
         height: $article-header;
         padding: 0 0.5rem;
         button {
-            @include mixins.scale-animation;
+            @include mixins.fade-animation;
             @include mixins.tooltip;
             height: 2.25rem;
             width: 2.25rem;
-            &.btn-setting,
-            &.btn-back {
+            &.btn-setting {
                 height: 2.25rem;
                 i {
                     font-size: 1.5rem;
                 }
             }
-            &.btn-setting {
-                color: variables.$setting-color;
-            }
         }
+    }
+    &__content {
+        flex: 1 0;
     }
 }

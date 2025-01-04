@@ -13,6 +13,7 @@ import {
 import { useAppStore } from '@/stores/app'
 import { useTodoStore } from '@/stores/todo'
 import { useApp } from '@/composables/useApp'
+import commonUtil from '@/utils/common'
 import ModalDialog from '@/components/ui/ModalDialog'
 import TextField from '@/components/form/TextField'
 import TodoCard from '@/components/todo/TodoCard'
@@ -77,7 +78,9 @@ export default defineComponent({
                                 return _.find(
                                     todo,
                                     (v: keyof ITodo, k: string) =>
-                                        k !== 'id' && _.isString(v) && v.includes(state.keyword)
+                                        k !== 'id' &&
+                                        _.isString(v) &&
+                                        commonUtil.searchByInitial(v, state.keyword)
                                 )
                                     ? true
                                     : false
@@ -249,15 +252,19 @@ export default defineComponent({
                     </modal-dialog>
                 </Teleport>
                 <div class="todo-page__header flex justify-between items-center">
-                    <div class="flex items-center">
+                    <div class="flex items-center gap-1">
                         <button type="button" onClick={() => toggleForm(true)}>
                             <i class="mdi mdi-flag-variant" />
                         </button>
-                        <h3 class="text-title">해야 할 일</h3>
+                        <b class="text-title">해야 할 일</b>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1">
                         <text-field v-model={state.keyword} placeholder="검색하기" />
-                        <button type="button" onClick={onRefresh}>
+                        <button
+                            type="button"
+                            class="btn-refresh flex justify-center items-center"
+                            onClick={onRefresh}
+                        >
                             <i class="mdi mdi-refresh" />
                             <span class="tooltip tooltip-bottom">새로고침</span>
                         </button>

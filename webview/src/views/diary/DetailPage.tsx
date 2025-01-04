@@ -202,7 +202,7 @@ export default defineComponent({
             >
                 <div class="detail-page__header flex justify-between items-center w-full">
                     <div class="flex items-center gap-2">
-                        <div class="flex items-center">
+                        <div class="flex items-center gap-1">
                             <button
                                 type="button"
                                 class="btn-drawer flex justify-center items-center"
@@ -211,7 +211,7 @@ export default defineComponent({
                                 <i class="mdi mdi-menu" />
                                 <span class="tooltip tooltip-bottom">문서 탐색</span>
                             </button>
-                            <h3 class="text-title">{printFilePath.value}</h3>
+                            <b class="text-title">{printFilePath.value}</b>
                         </div>
                         <div class="editing" style={{ opacity: unref(disabledRef) ? 1 : 0 }} />
                     </div>
@@ -230,7 +230,7 @@ export default defineComponent({
                 <div class="detail-page__content flex">
                     <textarea
                         v-model={state.updatedText}
-                        class="d2coding pa-2"
+                        class="pa-2"
                         style={{
                             width: unref(isMarkdown) ? state.widths.editor + 'px' : '100%'
                         }}
