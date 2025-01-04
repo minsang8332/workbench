@@ -101,15 +101,18 @@ export const useAppStore = defineStore('app', () => {
         return response.data.videos
     }
     // 전역적인 앱 동작을 비활성화 시키기 위함
-    const blocking = async (run: () => Promise<void> | void) => {
+    const blocking = async (run: () => Promise<any> | void) => {
         let response = null
         updateDisabled(true)
         try {
             response = await run()
         } catch (e) {
-            console.error(e)
+            // 에러를 그대로 전달함
+            throw e
+        } finally {
+            // finally 는 에러가나도 무조건 실행된다
+            updateDisabled(false)
         }
-        updateDisabled(false)
         return response
     }
     return {

@@ -75,6 +75,7 @@ controller(
                 return videoURL.toString().replace('file://', `${PROTOCOL.LOCAL}://`)
             })
         response.data.videos = videos
+        response.result = true
         return response
     }
 )

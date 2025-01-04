@@ -20,18 +20,15 @@ export const useSettingStore = defineStore('setting', () => {
     }
     // 패스워드 검증하기
     const verifyPasscode = async (text: string) => {
-        const response = await window.$native.setting.verifyPasscode({ text })
-        return response.result
+        return await window.$native.setting.verifyPasscode({ text })
     }
     // 패스코드 변경
     const changePasscode = async (text: string) => {
-        const response = await window.$native.setting.updatePasscode({ text })
-        return response.result
+        return await window.$native.setting.updatePasscode({ text })
     }
     // 패스코드 활성화
     const activatePasscode = async (active: boolean) => {
-        const response = await window.$native.setting.activatePasscode({ active })
-        return response.data.active
+        return await window.$native.setting.activatePasscode({ active })
     }
     return {
         loadPasscode,

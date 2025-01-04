@@ -22,6 +22,7 @@ controller(
             const json = fs.readFileSync(passcodePath, 'utf-8')
             const passcode = new Passcode(JSON.parse(json))
             response.data.active = passcode.active
+            response.result = true
         } catch (e) {
             throw new Error('패스코드를 검증 시 오류가 발생했습니다.')
         }
@@ -51,11 +52,9 @@ controller(
         try {
             const json = fs.readFileSync(passcodePath, 'utf-8')
             const passcode = new Passcode(JSON.parse(json))
-            if (!(passcode.text == request.text)) {
-                throw new Error('입력한 패스코드는 일치하지 않습니다.')
-            }
+            response.result = passcode.text == request.text
         } catch (e) {
-            throw new Error('패스코드를 검증 시 오류가 발생했습니다.')
+            throw e
         }
         return response
     }
@@ -86,8 +85,13 @@ controller(
              * 배포 환경변수 (dot-env) 설정 작업 이후
              * 환경변수를 이용하여 대칭키 암호화 할 것
              */
+            if (passcode.text == request.text) {
+                response.message = '기존 패스코드와 일치합니다. 다시 입력해 주세요'
+                return response
+            }
             passcode.text = request.text
             fs.writeFileSync(passcodePath, JSON.stringify(passcode))
+            response.result = true
         } catch (e) {
             fs.removeSync(passcodePath)
             throw new Error('패스코드를 다시 입력해 주세요')
@@ -117,6 +121,8 @@ controller(
             const passcode = new Passcode(JSON.parse(json))
             passcode.active = request.active
             fs.writeFileSync(passcodePath, JSON.stringify(passcode))
+            response.data.active = passcode.active
+            response.result = true
         } catch (e) {
             fs.removeSync(passcodePath)
             throw new Error('패스코드를 활성화 시 오류가 발생했습니다.')

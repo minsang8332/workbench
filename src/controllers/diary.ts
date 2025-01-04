@@ -46,6 +46,7 @@ controller(IPC_DIARY.LOAD, async (request: IpcController.Request.Diary.ILoad, re
     }
     await search(rootDir)
     response.data.diaries = diaries
+    response.result = true
     return response
 })
 // 문서 내용 가져오기
@@ -105,6 +106,7 @@ controller(IPC_DIARY.WRITE, async (request: IpcController.Request.Diary.IWrite, 
     }
     fs.writeFileSync(path.format({ dir: destDir, name: filename, ext }), text)
     response.data.filename = filename
+    response.result = true
     return response
 })
 // 문서 폴더 생성
@@ -144,6 +146,7 @@ controller(
         dirpath = path.join(dirpath, dirname)
         fs.ensureDir(dirpath)
         response.data.dirname = dirname
+        response.result = true
         return response
     }
 )
@@ -165,6 +168,7 @@ controller(
         })
         const fileinfo = path.parse(filepath)
         response.data.filename = fileinfo.base
+        response.result = true
         return response
     }
 )
@@ -197,6 +201,7 @@ controller(
         }
         fs.renameSync(filepath, renameDir)
         response.data.filepath = sliceRootDir(rootDir, renameDir)
+        response.result = true
         return response
     }
 )
@@ -233,5 +238,6 @@ controller(IPC_DIARY.MOVE, async (request: IpcController.Request.Diary.IMove, re
     // 대상을 목적 경로의 부모 디렉토리로 이동
     fs.moveSync(frompath, destpath)
     response.data.filename = sliceRootDir(rootDir, destpath)
+    response.result = true
     return response
 })

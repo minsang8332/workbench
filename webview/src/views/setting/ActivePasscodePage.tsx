@@ -24,6 +24,11 @@ export default defineComponent({
         const onUpdateActivePasscode = (payload: boolean) => {
             appStore
                 .blocking(() => settingStore.activatePasscode(payload))
+                .then((response) => {
+                    $toast.success(
+                        `잠금 상태 [ ${response.data.active ? '활성화' : '비활성화'} ] 되었습니다.`
+                    )
+                })
                 .catch((e) => $toast.error(e))
                 .finally(onLoad)
         }

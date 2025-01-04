@@ -24,10 +24,13 @@ export default defineComponent({
             inputRefs.value[idxRef.value]?.focus()
         }
         const onBackspace = (event: KeyboardEvent) => {
-            if (event.key == 'Backspace' && idxRef.value > 0) {
-                inputRefs.value[idxRef.value].value = ''
+            if (event.key !== 'Backspace') {
+                return false
+            }
+            if (idxRef.value > 0) {
                 idxRef.value--
             }
+            inputRefs.value[idxRef.value].value = ''
         }
         const onInput = (event: Event, i: number) => {
             event.preventDefault()
@@ -42,15 +45,25 @@ export default defineComponent({
             }
             onSubmit()
         }
+        const onReset = () => {
+            idxRef.value = 0
+            for (const input of inputRefs.value) {
+                input.value = ''
+            }
+        }
         const onSubmit = (event?: Event) => {
             if (event) {
                 event.preventDefault()
             }
             const passcode = inputRefs.value.map((input) => input.value).join('')
+            if (passcode.length < inputRefs.value.length) {
+                return false
+            }
             if (!/^\d+$/.test(passcode)) {
                 return false
             }
             emit('submit', passcode)
+            onReset()
         }
         watch(idxRef, () => {
             onFocusInput()

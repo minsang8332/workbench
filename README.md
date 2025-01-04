@@ -1,6 +1,6 @@
 # 업무작업대 (Workbench)
 
-_내 업무 능률 향상을 위한 Mac 및 Windows 데스크톱 앱_
+_업무 능률 향상을 위한 다목적 기능을 담은 Mac 및 Window 어플리케이션_
 
 ![](./screenshot.png)
 

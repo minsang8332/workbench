@@ -1,11 +1,14 @@
-import { defineComponent, onBeforeMount, inject } from 'vue'
+import { reactive, defineComponent, onBeforeMount, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useSettingStore } from '@/stores/setting'
 import PasscodeForm from '@/components/setting/PasscodeForm'
 import SwitchField from '@/components/form/SwitchField'
+interface IChangePasscodePageState {
+    verified: boolean
+}
 export default defineComponent({
-    name: 'UpdatePasscodePage',
+    name: 'ChangePasscodePage',
     components: {
         SwitchField,
         PasscodeForm
@@ -15,6 +18,9 @@ export default defineComponent({
         const router = useRouter()
         const appStore = useAppStore()
         const settingStore = useSettingStore()
+        const state = reactive<IChangePasscodePageState>({
+            verified: false
+        })
         const onLoad = () =>
             appStore
                 .blocking(() => settingStore.loadPasscode())
@@ -23,17 +29,31 @@ export default defineComponent({
                     $toast.error(e)
                     router.replace({ name: 'change-passcode' })
                 })
-        const onChangePasscode = (passcode: string) => {
+        const onVerifyPasscode = (passcode: string) => {
             appStore
-                .blocking(() => settingStore.changePasscode(passcode))
-                .then((result) => {
-                    result && $toast.success('정상적으로 패스코드를 변경했습니다.')
-                    router.push({ name: 'active-passcode' })
+                .blocking(() => settingStore.verifyPasscode(passcode))
+                .then((response) => {
+                    if (!response.result) {
+                        throw new Error('패스워드가 일치하지 않습니다')
+                    }
+                    state.verified = true
                 })
-                .catch((e) => {
-                    e.message = '패스코드를 변경 할 수 없습니다.'
-                    $toast.error(e)
-                })
+                .catch((e) => $toast.error(e))
+        }
+        const onChangePasscode = async (passcode: string) => {
+            try {
+                const response = await appStore.blocking(() =>
+                    settingStore.changePasscode(passcode)
+                )
+                if (!(response && response.result)) {
+                    $toast.error(new Error(response.message))
+                    return
+                }
+                $toast.success('정상적으로 패스코드를 변경했습니다.')
+                router.push({ name: 'active-passcode' })
+            } catch (e) {
+                $toast.error(new Error('패스코드를 변경할 수 없습니다.'))
+            }
         }
         onBeforeMount(() => {
             onLoad()
@@ -42,11 +62,21 @@ export default defineComponent({
             <article class="change-passcode-page">
                 <div class="change-passcode-page__content flex flex-col justify-center items-center">
                     <div class="w-1/2">
-                        <passcode-form
-                            title="새로운 패스코드"
-                            description="4자리 숫자를 입력해 주세요"
-                            onSubmit={onChangePasscode}
-                        />
+                        {state.verified ? (
+                            <passcode-form
+                                title="새로운 패스코드"
+                                description="새로운 패스코드 4자리 숫자를 입력해 주세요"
+                                onSubmit={onChangePasscode}
+                                key="new-passcoded"
+                            />
+                        ) : (
+                            <passcode-form
+                                title="기존 패스코드"
+                                description="기존 패스코드 4자리 숫자를 입력해 주세요"
+                                onSubmit={onVerifyPasscode}
+                                key="old-passcoded"
+                            />
+                        )}
                     </div>
                 </div>
             </article>
