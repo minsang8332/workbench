@@ -89,8 +89,8 @@ export default defineComponent({
                 })
             }
         }
-        const onMoveBack = () => {
-            if (window.history && window.history.length > 2) {
+        const onBack = () => {
+            if (window.history && window.history.length > 1) {
                 router.back()
                 return
             }
@@ -219,7 +219,7 @@ export default defineComponent({
                         <button
                             type="button"
                             class="btn-back flex justify-center items-center"
-                            onClick={onMoveBack}
+                            onClick={onBack}
                         >
                             <i class="mdi mdi-arrow-left" />
                             <span class="tooltip tooltip-bottom">뒤로 가기</span>

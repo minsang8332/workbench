@@ -38,7 +38,7 @@ const router = createRouter({
                 {
                     name: 'setting',
                     path: 'setting',
-                    redirect: { name: 'setting-passcode' },
+                    redirect: { name: 'active-passcode' },
                     components: {
                         default: () => import('@/views/setting/IndexPage'),
                         drawer: () => import('@/components/setting/SettingDrawerMenu')
@@ -46,12 +46,21 @@ const router = createRouter({
                     children: [
                         // 패스코드 설정하기
                         {
-                            name: 'setting-passcode',
+                            name: 'active-passcode',
                             path: 'passcode',
-                            component: () => import('@/views/setting/PasscodePage'),
+                            component: () => import('@/views/setting/ActivePasscodePage'),
                             meta: {
                                 title: '패스코드 설정',
-                                desc: '패스코드를 입력하여 앱의 보안을 강화하고 간편하게 활성화할 수 있는 기능을 제공합니다.'
+                                desc: '앱의 보안을 강화하기 위한 패스코드를 활성화 합니다.'
+                            }
+                        },
+                        {
+                            name: 'change-passcode',
+                            path: 'passcode',
+                            component: () => import('@/views/setting/ChangePasscodePage'),
+                            meta: {
+                                title: '패스코드 설정',
+                                desc: '앱의 보안을 강화하기 위한 숫자로 구성된 4자리 패스코드를 설정 합니다.'
                             }
                         }
                     ],

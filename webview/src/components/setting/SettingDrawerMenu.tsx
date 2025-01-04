@@ -25,7 +25,7 @@ export default defineComponent({
             keyword: '',
             items: [
                 {
-                    name: 'setting-passcode',
+                    name: 'active-passcode',
                     label: '패스코드 설정',
                     icon: 'mdi mdi-lock'
                 }

@@ -1,0 +1,36 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.passcode-form {
+    height: 100%;
+    width: 100%;
+    border-radius: 0.25rem;
+    background-color: rgba(#fff, 0.8);
+    padding: 2rem;
+    button.btn-submit {
+        @include mixins.scale-animation;
+        i {
+            font-size: 5rem;
+            color: variables.$setting-color;
+        }
+        &--active i {
+            color: variables.$theme-color;
+            opacity: 0.6;
+        }
+    }
+    input.passcode {
+        @include mixins.scale-animation(1.1, 1.1);
+        $height: 1.75rem;
+        height: $height;
+        width: $height;
+        font-size: 3rem;
+        border-bottom: 1px solid variables.$gray-color;
+        caret-color: transparent;
+        transition-property: border;
+        transition-duration: 0.2s;
+        &--active {
+            border-bottom: 2px solid variables.$theme-color;
+            color: variables.$theme-color;
+            opacity: 0.6;
+        }
+    }
+}

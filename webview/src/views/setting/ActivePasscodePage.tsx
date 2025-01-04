@@ -1,16 +1,17 @@
-import { reactive, defineComponent, onBeforeMount, inject } from 'vue'
-import { useRouter } from 'vue-router'
+import { defineComponent, onBeforeMount, inject } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useSettingStore } from '@/stores/setting'
 import SwitchField from '@/components/form/SwitchField'
-import './PasscodePage.scoped.scss'
+import './ActivePasscodePage.scoped.scss'
+import { useRouter } from 'vue-router'
 export default defineComponent({
-    name: 'PasscodePage',
+    name: 'ActivePasscodePage',
     components: {
         SwitchField
     },
     setup() {
         const $toast = inject('toast') as IToastPlugin
+        const router = useRouter()
         const appStore = useAppStore()
         const settingStore = useSettingStore()
         const onLoad = () =>
@@ -30,9 +31,9 @@ export default defineComponent({
             onLoad()
         })
         return () => (
-            <article class="passcode-page">
-                <div class="passcode-page__content flex flex-col gap-4">
-                    <div class="passcode-page__content-item">
+            <article class="active-passcode-page">
+                <div class="active-passcode-page__content flex flex-col gap-4">
+                    <div class="active-passcode-page__content-item">
                         <div class="flex justify-between items-center">
                             <b class="text-label">
                                 {settingStore.getActivePasscode
@@ -46,7 +47,10 @@ export default defineComponent({
                             />
                         </div>
                     </div>
-                    <div class="passcode-page__content-item update-passcode flex justify-between items-center">
+                    <div
+                        class="active-passcode-page__content-item before-update-passcode flex justify-between items-center"
+                        onClick={() => router.push({ name: 'change-passcode' })}
+                    >
                         <b class="text-label">패스코드 변경하기</b>
                         <i class="mdi mdi-chevron-right"></i>
                     </div>

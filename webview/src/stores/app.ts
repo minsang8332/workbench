@@ -102,13 +102,15 @@ export const useAppStore = defineStore('app', () => {
     }
     // 전역적인 앱 동작을 비활성화 시키기 위함
     const blocking = async (run: () => Promise<void> | void) => {
+        let response = null
         updateDisabled(true)
         try {
-            await run()
+            response = await run()
         } catch (e) {
             console.error(e)
         }
         updateDisabled(false)
+        return response
     }
     return {
         state,
