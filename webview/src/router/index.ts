@@ -38,29 +38,37 @@ const router = createRouter({
                 {
                     name: 'setting',
                     path: 'setting',
-                    redirect: { name: 'active-passcode' },
+                    redirect: { name: 'setting-passcode' },
                     components: {
                         default: () => import('@/views/setting/IndexPage'),
                         drawer: () => import('@/components/setting/SettingDrawerMenu')
                     },
                     children: [
-                        // 패스코드 설정하기
                         {
-                            name: 'active-passcode',
+                            name: 'setting-passcode',
                             path: 'passcode',
-                            component: () => import('@/views/setting/ActivePasscodePage'),
+                            component: () => import('@/views/setting/PasscodePage'),
                             meta: {
-                                title: '패스코드 설정',
+                                title: '패스코드 활성화',
                                 desc: '앱의 보안을 강화하기 위한 패스코드를 활성화 합니다.'
                             }
                         },
                         {
-                            name: 'change-passcode',
-                            path: 'passcode',
+                            name: 'setting-change-passcode',
+                            path: 'change-passcode',
                             component: () => import('@/views/setting/ChangePasscodePage'),
                             meta: {
-                                title: '패스코드 설정',
+                                title: '패스코드 변경',
                                 desc: '앱의 보안을 강화하기 위한 숫자로 구성된 4자리 패스코드를 설정 합니다.'
+                            }
+                        },
+                        {
+                            name: 'setting-layout',
+                            path: 'layout',
+                            component: () => import('@/views/setting/LayoutPage'),
+                            meta: {
+                                title: '레이아웃 설정',
+                                desc: '앱의 레이아웃과 관련된 요소들을 설정합니다.'
                             }
                         }
                     ],

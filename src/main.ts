@@ -16,7 +16,7 @@ app.on('ready', () => {
     protocolUtil.handleMainWindow()
     protocolUtil.handle(PROTOCOL.LOCAL)
     const mainWindow = windowUtil.creaateWindow({
-        scheme: 'app',
+        scheme: PROTOCOL.MAIN_WINDOW,
         url: process.env.APP_URL,
     })
     windowUtil.setMainWindow(mainWindow)

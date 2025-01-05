@@ -34,9 +34,6 @@ contextBridge.exposeInMainWorld('$native', {
         availableUpdate() {
             return invoke(IPC_APP.AVAILABLE_UPDATE)
         },
-        loadOverlayVideos() {
-            return invoke(IPC_APP.LOAD_OVERLAY_VIDEOS)
-        },
     },
     setting: {
         loadPasscode(payload: IpcController.Request.Setting.ILoadPasscode) {
@@ -50,6 +47,12 @@ contextBridge.exposeInMainWorld('$native', {
         },
         activatePasscode(payload: IpcController.Request.Setting.IActivatePasscode) {
             return invoke(IPC_SETTING.ACTIVATE_PASSCODE, payload)
+        },
+        loadOverlayVideos() {
+            return invoke(IPC_SETTING.LOAD_OVERLAY_VIDEOS)
+        },
+        updateOverlayVideo() {
+            return invoke(IPC_SETTING.UPDATE_OVERLOAY_VIDEO)
         },
     },
     diary: {

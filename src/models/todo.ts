@@ -1,7 +1,6 @@
 import _ from 'lodash'
 import { TodoStatus } from '@/constants/model'
 export class Todo implements ITodo {
-    static IDENTIFIER = 'todo'
     id: ITodo['id']
     title: ITodo['title']
     description: ITodo['description']
@@ -19,7 +18,7 @@ export class Todo implements ITodo {
         tasks = [],
         startedAt = null,
         endedAt = null,
-    }: Omit<ITodo, 'createdAt' | 'updatedAt'>) {
+    }: Omit<Todo, 'createdAt' | 'updatedAt'>) {
         this.id = id
         this.title = title
         this.description = description
@@ -32,14 +31,13 @@ export class Todo implements ITodo {
     }
 }
 export class TodoTask implements ITodoTask {
-    static IDENTIFIER = 'todo-task'
     id: ITodoTask['id']
     title: ITodoTask['title']
     checked: ITodoTask['checked']
     taskId: ITodoTask['taskId']
     createdAt: ITodoTask['createdAt']
     updatedAt: ITodoTask['updatedAt']
-    constructor({ id, title, checked = false, taskId = null }: Omit<ITodoTask, 'createdAt' | 'updatedAt'>) {
+    constructor({ id, title, checked = false, taskId = null }: Omit<TodoTask, 'createdAt' | 'updatedAt'>) {
         this.id = id
         this.taskId = taskId
         this.title = title

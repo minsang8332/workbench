@@ -9,8 +9,8 @@
         height: $height;
         width: $width;
         background-color: rgba(variables.$window-color, 0.3);
-        border-radius: $height / 2;
-        box-shadow: 0 0.125rem 0.75rem rgba(variables.$dark-color, 0.3);
+        border-radius: calc($height / 2);
+        box-shadow: 0 0 0.25rem rgba(variables.$dark-color, 0.3);
         transition: transform 0.3s;
         cursor: pointer;
         &:checked {

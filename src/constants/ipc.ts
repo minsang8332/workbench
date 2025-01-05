@@ -1,6 +1,6 @@
 export enum IPC_APP {
     EXIT = 'app:exit',
-    LOAD_OVERLAY_VIDEOS = 'app:load-overlay-videos',
+    UPDATE_OVERLAY_VIDEOS = 'app:update-overlay-videos',
     INSTALL_UPDATE = 'app:install-update',
     AVAILABLE_UPDATE = 'app:available-update',
 }
@@ -9,6 +9,8 @@ export enum IPC_SETTING {
     UPDATE_PASSCODE = 'setting:update-passcode',
     VERIFY_PASSCODE = 'setting:verify-passcode',
     ACTIVATE_PASSCODE = 'setting:activate-passcode',
+    LOAD_OVERLAY_VIDEOS = 'setting:load-overlay-videos',
+    UPDATE_OVERLOAY_VIDEO = 'setting:update-overlay-video',
 }
 export enum IPC_DIARY {
     LOAD = 'diary:load',

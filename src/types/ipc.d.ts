@@ -12,6 +12,7 @@ namespace IpcController {
     namespace Request {
         namespace App {
             interface ILoadOverlayVideos {}
+            interface IUpdateOverlayVideo {}
         }
         namespace Diary {
             interface ILoad {}

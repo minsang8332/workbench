@@ -25,9 +25,14 @@ export default defineComponent({
             keyword: '',
             items: [
                 {
-                    name: 'active-passcode',
+                    name: 'setting-passcode',
                     label: '패스코드 설정',
-                    icon: 'mdi mdi-lock'
+                    icon: 'mdi mdi-chevron-right'
+                },
+                {
+                    name: 'setting-layout',
+                    label: '레이아웃 설정',
+                    icon: 'mdi mdi-chevron-right'
                 }
             ]
         })

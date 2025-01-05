@@ -95,11 +95,6 @@ export const useAppStore = defineStore('app', () => {
     const installUpdate = () => {
         window.$native.app.install()
     }
-    // 오버레이 영상 목록
-    const loadOverlayVideos = async (): Promise<string[]> => {
-        const response = await window.$native.app.loadOverlayVideos()
-        return response.data.videos
-    }
     // 전역적인 앱 동작을 비활성화 시키기 위함
     const blocking = async (run: () => Promise<any> | void) => {
         let response = null
@@ -127,7 +122,6 @@ export const useAppStore = defineStore('app', () => {
         waitUpdate,
         availableUpdate,
         installUpdate,
-        loadOverlayVideos,
         blocking
     }
 })

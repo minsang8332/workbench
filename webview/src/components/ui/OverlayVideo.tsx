@@ -1,16 +1,16 @@
 import _ from 'lodash'
-import { ref, computed, defineComponent, type PropType, onMounted, onBeforeMount } from 'vue'
-import { useAppStore } from '@/stores/app'
+import { ref, computed, defineComponent, type PropType, onMounted } from 'vue'
+import { useSettingStore } from '@/stores/setting'
 export default defineComponent({
     name: 'OverlayVideo',
     props: {
         items: {
             type: Array as PropType<string[]>,
-            default: () => ['\/overlay.mp4']
+            default: () => []
         }
     },
     setup(props) {
-        const appStore = useAppStore()
+        const settingStore = useSettingStore()
         const idxRef = ref<number>(0)
         const videoRef = ref<HTMLVideoElement>()
         const itemsRef = ref<string[]>(props.items)
@@ -23,9 +23,12 @@ export default defineComponent({
             videoRef.value?.play()
         }
         onMounted(() => {
-            appStore
+            settingStore
                 .loadOverlayVideos()
-                .then((videos) => (itemsRef.value = videos))
+                .then(
+                    (response: IResponse) =>
+                        response.data.videos && (itemsRef.value = response.data.videos)
+                )
                 .catch((e) => e)
                 .finally(onPlay)
         })

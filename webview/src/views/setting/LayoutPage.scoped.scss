@@ -1,0 +1,14 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.layout-page {
+    height: 100%;
+    &__content {
+        &-item {
+            @include mixins.scale-animation(0.98, 0.98);
+            background-color: rgba(#fff, 0.3);
+            padding: 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+    }
+}

@@ -35,7 +35,7 @@ export const registerMainWindow = () => {
 export const handleMainWindow = () => {
     protocol.handle(PROTOCOL.MAIN_WINDOW, async (request) => {
         let filepath = new URL(request.url).pathname
-        filepath = path.resolve(path.resolve(__dirname, 'dist', filepath))
+        filepath = path.resolve(path.join(__dirname, 'dist', filepath))
         filepath = url.pathToFileURL(filepath).toString()
         return net.fetch(filepath)
     })

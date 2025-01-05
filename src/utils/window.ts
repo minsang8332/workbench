@@ -1,7 +1,7 @@
 import path from 'path'
 import { app, BrowserWindow, nativeImage, Event } from 'electron'
 import { checkForUpdates } from '@/controllers/app'
-let mainWindow: BrowserWindow
+export let mainWindow: BrowserWindow
 const creaateWindow = ({
     scheme = 'file',
     url = '',
@@ -28,7 +28,7 @@ const creaateWindow = ({
         },
         title: `${app.getName()} v${app.getVersion()}`,
         icon,
-        frame: !app.isPackaged,
+        frame: true,
         show: false,
     })
     window.setMenu(null)

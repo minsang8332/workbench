@@ -1,15 +1,10 @@
 import _ from 'lodash'
-import fs from 'fs-extra'
-import path from 'path'
-import url from 'url'
 import { app, ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { controller } from '@/utils/ipc'
 import logger from '@/utils/logger'
-import commonUtil from '@/utils/common'
 import windowUtil from '@/utils/window'
 import { IPC_APP } from '@/constants/ipc'
-import { PROTOCOL } from '@/constants/app'
 // 앱 종료시 자동 업데이트
 autoUpdater.autoInstallOnAppQuit = false
 let update: boolean = false
@@ -55,27 +50,3 @@ ipcMain.on(IPC_APP.AVAILABLE_UPDATE, () => {
 controller(IPC_APP.AVAILABLE_UPDATE, (request: unknown, response: IpcController.IResponse) => {
     return response
 })
-controller(
-    IPC_APP.LOAD_OVERLAY_VIDEOS,
-    async (request: IpcController.Request.App.ILoadOverlayVideos, response: IpcController.IResponse) => {
-        /**
-         * @TODO 환경 설정에서 오버레이 경로 설정하기
-         */
-        const videopath = path.resolve('C:/Users/minsa/OneDrive/동영상')
-        /** */
-        // 파일이 없다면
-        if (fs.existsSync(videopath) == false) {
-            throw new Error('오버레이 경로를 찾을 수 없습니다.')
-        }
-        const videos = fs
-            .readdirSync(videopath)
-            .filter((file) => commonUtil.isVideoFile(file))
-            .map((file) => {
-                const videoURL = url.pathToFileURL(path.resolve(videopath, file))
-                return videoURL.toString().replace('file://', `${PROTOCOL.LOCAL}://`)
-            })
-        response.data.videos = videos
-        response.result = true
-        return response
-    }
-)
