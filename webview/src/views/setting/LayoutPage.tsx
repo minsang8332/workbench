@@ -9,15 +9,11 @@ export default defineComponent({
         const appStore = useAppStore()
         const settingStore = useSettingStore()
         const onLoad = () =>
-            appStore
-                .blocking(() => settingStore.loadOverlayVideos())
-                .catch((e) => {
-                    e.message = '패스코드 설정 정보를 불러올 수 없습니다.'
-                    $toast.error(e)
-                })
+            appStore.blocking(() => settingStore.loadOverlayVideos()).catch((e) => e)
         const onUpdateOverlayVideo = () => {
             settingStore
                 .updateOverlayVideo()
+                .then(() => $toast.success('배경화면 (오버레이) 경로가 변경되었습니다.'))
                 .catch((e) => $toast.error(e))
                 .finally(onLoad)
         }

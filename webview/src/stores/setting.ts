@@ -4,21 +4,27 @@ import _ from 'lodash'
 interface ISettingState {
     activePasscode: boolean
     emptyPasscode: boolean
+    overlayVideoDirname: string
 }
 export const useSettingStore = defineStore('setting', () => {
     const state = reactive<ISettingState>({
         activePasscode: false,
-        emptyPasscode: false
+        emptyPasscode: false,
+        overlayVideoDirname: ''
     })
     // Getters
     const getActivePasscode = computed(() => state.activePasscode)
     const getEmptyPasscode = computed(() => state.emptyPasscode)
+    const getOverlayVideoDirname = computed(() => state.overlayVideoDirname)
     // Mutations
     const updateActivePasscode = (payload: ISettingState['activePasscode'] = false) => {
         state.activePasscode = payload
     }
     const updateEmptyPasscode = (payload: ISettingState['emptyPasscode'] = false) => {
         state.emptyPasscode = payload
+    }
+    const updateOverlayVideoDirname = (payload: string) => {
+        state.overlayVideoDirname = payload
     }
     const loadPasscode = async () => {
         const response = await window.$native.setting.loadPasscode()
@@ -40,7 +46,9 @@ export const useSettingStore = defineStore('setting', () => {
     }
     // 오버레이 영상 목록
     const loadOverlayVideos = async (): Promise<IResponse> => {
-        return await window.$native.setting.loadOverlayVideos()
+        const response = await window.$native.setting.loadOverlayVideos()
+        updateOverlayVideoDirname(response.data.dirname)
+        return response
     }
     // 오버레이 영상 설정
     const updateOverlayVideo = async (): Promise<IResponse> => {
@@ -50,6 +58,7 @@ export const useSettingStore = defineStore('setting', () => {
         loadPasscode,
         getActivePasscode,
         getEmptyPasscode,
+        getOverlayVideoDirname,
         verifyPasscode,
         changePasscode,
         activatePasscode,

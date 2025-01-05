@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { ref, computed, defineComponent, type PropType, onMounted } from 'vue'
+import { ref, computed, defineComponent, onMounted, watch, type PropType } from 'vue'
 import { useSettingStore } from '@/stores/setting'
 export default defineComponent({
     name: 'OverlayVideo',
@@ -22,7 +22,7 @@ export default defineComponent({
             videoRef.value?.load()
             videoRef.value?.play()
         }
-        onMounted(() => {
+        const onLoad = () => {
             settingStore
                 .loadOverlayVideos()
                 .then(
@@ -31,6 +31,15 @@ export default defineComponent({
                 )
                 .catch((e) => e)
                 .finally(onPlay)
+        }
+        watch(
+            () => settingStore.getOverlayVideoDirname,
+            (newValue) => {
+                onLoad()
+            }
+        )
+        onMounted(() => {
+            onLoad()
         })
         return () => (
             <video

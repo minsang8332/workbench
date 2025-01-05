@@ -171,11 +171,8 @@ controller(
         }
         const overlayVideoPath = path.join(app.getPath('userData'), '.overlay-video')
         try {
-            if (!fs.existsSync(overlayVideoPath)) {
-                const overlayVideo: IOverlayVideo = { dirname }
-                fs.writeFileSync(overlayVideoPath, JSON.stringify(overlayVideo))
-                return response
-            }
+            const overlayVideo: IOverlayVideo = { dirname }
+            fs.writeFileSync(overlayVideoPath, JSON.stringify(overlayVideo))
             response.result = true
         } catch (e) {
             throw new Error('배경화면 (오버레이) 경로 변경 중 오류가 발생했습니다.')
