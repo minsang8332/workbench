@@ -11,7 +11,12 @@ import {
     onMounted
 } from 'vue'
 import type { ComponentPublicInstance, PropType } from 'vue'
-import { onBeforeRouteUpdate, onBeforeRouteLeave, type NavigationGuardNext } from 'vue-router'
+import {
+    onBeforeRouteUpdate,
+    onBeforeRouteLeave,
+    type NavigationGuardNext,
+    type RouteLocationNormalizedGeneric
+} from 'vue-router'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useDiaryStore } from '@/stores/diary'
@@ -38,14 +43,15 @@ export default defineComponent({
                 editor: 0,
                 preview: 0
             },
-            tabSize: 4
+            tabSize: 4,
+            preventRoute: false
         })
         const $toast = inject('toast') as IToastPlugin
         const router = useRouter()
         const appStore = useAppStore()
         const diaryStore = useDiaryStore()
         const { getDrawerWidth, getLayoutWidth } = useApp()
-        const pageRef = ref<ComponentPublicInstance<HTMLElement> | null>(null)
+        const pageRef = ref<HTMLElement>()
         const printFilePath = computed(() => {
             let path: string | string[] = props.path
             if (path) {
@@ -53,9 +59,6 @@ export default defineComponent({
                 return _.last(path)
             }
             return path
-        })
-        const disabledRef = computed(() => {
-            return state.text !== state.updatedText
         })
         const isMarkdown = computed(() => {
             const base = _.last(props.path.split('/'))
@@ -152,12 +155,23 @@ export default defineComponent({
                 })
                 .catch((e) => $toast.error(e))
         }
-        const preventRoute = (next: NavigationGuardNext) => {
-            if (unref(disabledRef)) {
-                $toast.error(
-                    new Error('문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.')
+        const onPreventRoute = async (
+            to: RouteLocationNormalizedGeneric,
+            next: NavigationGuardNext
+        ) => {
+            if (state.preventRoute == true) {
+                const confirmed: boolean = await new Promise((resolve) =>
+                    appStore.toggleModal(true, {
+                        title: '변경사항 안내',
+                        message: [
+                            '문서에 변경사항이 있습니다.',
+                            '그래도 편집 화면을 이탈 하시겠습니까 ?'
+                        ],
+                        ok: () => resolve(true),
+                        cancel: () => resolve(false)
+                    })
                 )
-                return next(false)
+                return next(confirmed)
             }
             next()
         }
@@ -176,7 +190,15 @@ export default defineComponent({
                 state.updatedText = newValue
             }
         )
-        watch(disabledRef, (newValue) => diaryStore.updateEdited(newValue))
+        // 편집사항이 있을 경우 라우트 이동을 막는다.
+        watch(
+            () => state.updatedText,
+            (newValue) => {
+                if (state.text != newValue) {
+                    state.preventRoute = true
+                }
+            }
+        )
         watch(
             () => appStore.getDrawer,
             (value) => {
@@ -184,15 +206,14 @@ export default defineComponent({
             }
         )
         onMounted(() => {
-            diaryStore.updateEdited(false)
             onLoad()
             // 현재 문서가 마크다운 이라면 프리뷰 화면 사이즈를 배분한다.
             if (unref(isMarkdown)) {
                 onResize(null, true)
             }
         })
-        onBeforeRouteLeave((to, from, next) => preventRoute(next))
-        onBeforeRouteUpdate((to, from, next) => preventRoute(next))
+        onBeforeRouteLeave((to, from, next) => onPreventRoute(to, next))
+        onBeforeRouteUpdate((to, from, next) => onPreventRoute(to, next))
         return () => (
             <article
                 ref={pageRef}
@@ -213,7 +234,7 @@ export default defineComponent({
                             </button>
                             <b class="text-title">{printFilePath.value}</b>
                         </div>
-                        <div class="editing" style={{ opacity: unref(disabledRef) ? 1 : 0 }} />
+                        <div class="editing" style={{ opacity: state.preventRoute ? 1 : 0 }} />
                     </div>
                     <div class="flex items-center">
                         <button

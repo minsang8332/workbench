@@ -19,7 +19,7 @@ import TextField from '@/components/form/TextField'
 import TodoCard from '@/components/todo/TodoCard'
 import TodoForm from '@/components/todo/TodoForm'
 import '@/views/todo/IndexPage.scoped.scss'
-interface TodoPageState {
+interface ITodoPageState {
     form: boolean
     formProps: ITodo | null
     keyword: string
@@ -38,7 +38,7 @@ export default defineComponent({
         const appStore = useAppStore()
         const todoStore = useTodoStore()
         const { scss } = useApp()
-        const state = reactive<TodoPageState>({
+        const state = reactive<ITodoPageState>({
             form: false,
             formProps: null,
             keyword: '',

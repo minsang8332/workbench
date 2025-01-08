@@ -25,11 +25,14 @@ export default defineComponent({
             type: Boolean,
             default: false
         },
+        maxWidth: {
+            type: String as PropType<string>
+        },
         ok: {
             type: Function as PropType<() => {}>
         },
-        maxWidth: {
-            type: String as PropType<string>
+        cancel: {
+            type: Function as PropType<() => {}>
         }
     },
     setup(props, { emit, slots }) {
@@ -47,6 +50,18 @@ export default defineComponent({
             }
             return messages
         })
+        const onConfirm = (event: Event) => {
+            if (props.ok) {
+                props.ok()
+            }
+            onClose(event)
+        }
+        const onCancel = (event: Event) => {
+            if (props.cancel) {
+                props.cancel()
+            }
+            onClose(event)
+        }
         const onClose = (event: Event) => {
             event.stopPropagation()
             emit('update:modelValue', false)
@@ -69,14 +84,16 @@ export default defineComponent({
                             <div class="modal-dialog__card-content flex flex-col justify-center items-center">
                                 {slots.default
                                     ? slots.default()
-                                    : getMessage.value.map((message) => <p>{message}</p>)}
+                                    : getMessage.value.map((message) => (
+                                          <p class="text-default-message">{message}</p>
+                                      ))}
                             </div>
                             {props.hideActions == false && (
                                 <div class="modal-dialog__card-actions flex justify-evenly items-center">
-                                    <button type="button" class="btn-cancel" onClick={onClose}>
+                                    <button type="button" class="btn-cancel" onClick={onCancel}>
                                         취소
                                     </button>
-                                    <button type="button" class="btn-confirm" onClick={props.ok}>
+                                    <button type="button" class="btn-confirm" onClick={onConfirm}>
                                         확인
                                     </button>
                                 </div>

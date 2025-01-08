@@ -16,5 +16,6 @@ interface IModalDialogProps {
     message: string | string[] | null
     persistent?: false
     hideActions?: false
-    ok: (() => void) | null
+    ok?: () => void
+    cancel?: () => void
 }

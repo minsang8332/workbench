@@ -162,7 +162,7 @@ controller(
         const result = await dialog.showOpenDialog(mainWindow, {
             properties: ['openDirectory'],
         })
-        if (!(result.canceled == false && result && result.filePaths)) {
+        if (result.canceled) {
             return response
         }
         const dirname = _.first(result.filePaths)

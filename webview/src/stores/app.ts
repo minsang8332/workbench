@@ -13,7 +13,7 @@ const initModalProps = (): IModalDialogProps => {
     return {
         title: '',
         message: '',
-        ok: null
+        ok: () => {}
     }
 }
 const initMenuProps = (): IContextMenuProps => {

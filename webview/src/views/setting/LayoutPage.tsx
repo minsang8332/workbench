@@ -13,7 +13,11 @@ export default defineComponent({
         const onUpdateOverlayVideo = () => {
             settingStore
                 .updateOverlayVideo()
-                .then(() => $toast.success('배경화면 (오버레이) 경로가 변경되었습니다.'))
+                .then(
+                    (response) =>
+                        response.result &&
+                        $toast.success('배경화면 (오버레이) 경로가 변경되었습니다.')
+                )
                 .catch((e) => $toast.error(e))
                 .finally(onLoad)
         }
