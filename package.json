@@ -5,11 +5,11 @@
     "main": "build/bundle.js",
     "scripts": {
         "setup": "npm install && cd webview && npm install",
-        "serve": "concurrently \"npm run webview\" \"npm run webpack:watch\"",
+        "serve": "concurrently \"npm run webview\" \"npm run electron\"",
         "build": "npm run webview:build && npm run webpack:build && electron-builder",
         "deploy": "npm run webview:build && npm run webpack:build && electron-builder -p always",
-        "webpack:watch": "webpack --env html=webview --watch",
-        "webpack:build": "webpack --env html=webview production",
+        "electron": "webpack --watch",
+        "webpack:build": "webpack --env production",
         "webview": "cd webview && npm run serve",
         "webview:build": "cd webview && npm run build",
         "icon": "electron-icon-builder --input=./src/assets/favicon.png --output=./src/assets -f"

@@ -25,6 +25,9 @@ export default defineComponent({
             type: Boolean,
             default: false
         },
+        width: {
+            type: String as PropType<string>
+        },
         maxWidth: {
             type: String as PropType<string>
         },
@@ -72,7 +75,7 @@ export default defineComponent({
                     <div class="fixed inset-0 z-[10001] h-screen w-screen bg-black/30 flex justify-center items-center">
                         <div
                             class="modal-dialog__card"
-                            style={{ maxWidth: props.maxWidth }}
+                            style={{ width: props.width, maxWidth: props.maxWidth }}
                             onClick={(event) => event.stopPropagation()}
                         >
                             <div class="modal-dialog__card-header flex justify-between items-center">

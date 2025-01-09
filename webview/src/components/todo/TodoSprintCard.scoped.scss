@@ -1,0 +1,28 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.todo-sprint-card {
+    height: 100%;
+    background-color: variables.$gray-light-color;
+    border-radius: 0.25rem;
+    padding: 0 0.5rem;
+    cursor: pointer;
+    button {
+        @include mixins.scale-animation(0.8, 0.8);
+        @include mixins.tooltip;
+        i {
+            font-size: 1.5rem;
+
+            opacity: 0.3;
+        }
+    }
+    &--checked {
+        $checked-color: variables.$todo-color;
+        background-color: rgba($checked-color, 0.2);
+        border: 0.1rem solid $checked-color;
+        i,
+        i.mdi-check {
+            color: $checked-color;
+            opacity: 0.6 !important;
+        }
+    }
+}

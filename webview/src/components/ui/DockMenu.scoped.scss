@@ -5,14 +5,16 @@
     height: variables.$dock-menu-height;
     padding: 0 0.5rem;
     button {
-        @include mixins.scale-animation;
+        @include mixins.glass-animation;
         @include mixins.tooltip;
         @extend .box-shadow !optional;
         color: #fff;
-        height: 2rem;
         i {
             font-size: 1.5rem;
             color: var(--dark-color);
+        }
+        &.btn-lock {
+            @include mixins.cubic(variables.$dark-color, 2.25rem);
         }
         &.btn-diary {
             @include mixins.cubic(variables.$diary-color, 2.25rem);
@@ -21,7 +23,7 @@
             @include mixins.cubic(variables.$todo-color, 2.25rem);
         }
         &.btn-setting {
-            @include mixins.cubic(linear-gradient(135deg, #5f5f5f, #777777, #9d9d9d), 2.25rem);
+            @include mixins.cubic(variables.$setting-color, 2.25rem);
         }
         &.btn-exit {
             @include mixins.cubic(variables.$dark-color, 2.25rem);

@@ -1,4 +1,4 @@
-import { Todo } from '@/models/todo'
+import Todo from '@/models/todo'
 import BaseRepository from './repository'
 class TodoRepository extends BaseRepository<Todo> {
     constructor() {

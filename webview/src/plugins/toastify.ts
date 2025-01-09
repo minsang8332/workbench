@@ -1,5 +1,6 @@
-import type { App } from 'vue'
+import _ from 'lodash'
 import Toastify from 'toastify-js'
+import type { App } from 'vue'
 import 'toastify-js/src/toastify.css'
 export default {
     install(app: App) {
@@ -34,7 +35,7 @@ export default {
             return toastify
         }
         const alert = (message = '', { icon = '' }) => {
-            return show({
+            show({
                 text: `
                     <div class="toasify__content">
                         <i class="${icon}"></i>
@@ -47,7 +48,7 @@ export default {
             message = '정상적으로 처리되었습니다.',
             { icon = 'mdi mdi-emoticon-excited-outline', className = 'toastify--success' } = {}
         ) => {
-            return show({
+            show({
                 text: `
                     <div class="toasify__content">
                         <i class="${icon}"></i>
@@ -61,15 +62,17 @@ export default {
             { message = '작업을 처리할 수 없습니다.' }: Error,
             { icon = 'mdi mdi-emoticon-neutral-outline', className = 'toastify--danger' } = {}
         ) => {
-            return show({
-                text: `
-                    <div class="toasify__content">
-                        <i class="${icon}"></i>
-                        <p>${message}</p>
-                    </div>
-                `,
-                className
-            })
+            if (_.isString(message) && message !== 'null') {
+                show({
+                    text: `
+                        <div class="toasify__content">
+                            <i class="${icon}"></i>
+                            <p>${message}</p>
+                        </div>
+                    `,
+                    className
+                })
+            }
         }
         app.provide('toast', {
             show,

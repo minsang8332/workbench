@@ -25,5 +25,8 @@ export enum IPC_DIARY {
 export enum IPC_TODO {
     LOAD = 'todo:load',
     SAVE = 'todo:save',
-    REMOVE = 'todo:remove',
+    DELETE = 'todo:delete',
+    LOAD_SPRINT = 'todo:load-sprint',
+    SAVE_SPRINT = 'todo:save-sprint',
+    DELETE_SPRINT = 'todo:delete-sprint',
 }

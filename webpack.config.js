@@ -6,9 +6,6 @@ const ElectronReloadPlugin = require('webpack-electron-reload')({
     path: path.join(__dirname, './build/bundle.js'),
 })
 module.exports = (env) => {
-    if (env.html == undefined) {
-        throw new Error('[WEBPACK_ERROR] HTML 폴더명이 필요합니다.')
-    }
     const config = dotenv.config({
         path: env.production ? '.env.production' : '.env.development',
     })
@@ -57,7 +54,7 @@ module.exports = (env) => {
                         destination: path.resolve(__dirname, 'build', 'assets'),
                     },
                     {
-                        source: path.resolve(__dirname, env.html, 'dist'),
+                        source: path.resolve(__dirname, 'webview', 'dist'),
                         destination: path.resolve(__dirname, 'build', 'dist'),
                     },
                 ],

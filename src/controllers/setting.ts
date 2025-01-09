@@ -112,6 +112,10 @@ controller(
             }
             const json = fs.readFileSync(passcodePath, 'utf-8')
             const passcode = JSON.parse(json)
+            if (_.isEmpty(passcode.text)) {
+                response.message = '패스코드를 생성해 주세요.'
+                return response
+            }
             passcode.active = request.active
             fs.writeFileSync(passcodePath, JSON.stringify(passcode))
             response.data.active = passcode.active

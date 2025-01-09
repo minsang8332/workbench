@@ -13,7 +13,7 @@
         box-sizing: border-box;
         padding: 0.25rem 0;
         &-header {
-            height: $modal-dialog-header-height;
+            min-height: $modal-dialog-header-height;
             width: 100%;
             padding: 0 2rem;
             button {
@@ -25,7 +25,6 @@
         }
         &-content {
             min-height: calc($modal-dialog-header-height * 2);
-            max-height: 70vh;
             overflow-y: scroll;
             p.text-default-message {
                 padding: 0 1rem;

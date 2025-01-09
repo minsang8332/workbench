@@ -4,6 +4,7 @@
     $article-header: 3rem;
     height: calc(100% - variables.$dock-menu-height);
     padding-bottom: variables.$page-layout-padding;
+    gap: variables.$page-layout-padding;
     &__header {
         @include mixins.glass;
         height: $article-header;

@@ -5,7 +5,7 @@ import { app, ipcMain, shell } from 'electron'
 import { controller } from '@/utils/ipc'
 import { IPC_DIARY } from '@/constants/ipc'
 const allowedExts = ['.md', '.txt']
-const rootDir = path.resolve(path.resolve(app.getPath('documents'), app.getName()), 'diary')
+const rootDir = path.resolve(path.resolve(app.getPath('appData'), app.getName()), 'diary')
 const isSubdir = async (parent: string, child: string) => {
     parent = path.resolve(parent)
     child = path.resolve(child)

@@ -30,14 +30,14 @@ export const useTodoStore = defineStore('todo', () => {
         }
         return response.data.id
     }
-    const removeTodo = async (id: string) => {
-        return await window.$native.todo.remove({ id })
+    const deleteTodo = async (id: string) => {
+        return await window.$native.todo.delete({ id })
     }
     return {
         state,
         getTodos,
         loadTodos,
         saveTodo,
-        removeTodo
+        deleteTodo
     }
 })

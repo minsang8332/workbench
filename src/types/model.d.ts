@@ -20,13 +20,14 @@ interface ITodo extends IStore {
     title: string // 제목
     description: string | null // 내용
     status: TodoStatus // 상태
-    tasks: ITodoTask[] // 소작업
     startedAt: Date | null // 시작일
     endedAt: Date | null // 목표일
 }
-// 해야 할 일의 작은 목표
-interface ITodoTask extends IStore {
+// 해야 할 일 스프린트
+interface ITodoSprint extends IStore {
     title: string
     checked: boolean
-    taskId: ITodo['id'] | null
+    todoId: ITodo['id']
+    startedAt: Date | null // 시작일
+    endedAt: Date | null // 목표일
 }

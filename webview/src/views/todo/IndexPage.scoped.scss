@@ -3,6 +3,8 @@
 .todo-page {
     $article-header: 3rem;
     height: calc(100% - variables.$dock-menu-height);
+    padding-bottom: variables.$page-layout-padding;
+    gap: variables.$page-layout-padding;
     &__header {
         @include mixins.glass;
         height: $article-header;
@@ -39,11 +41,11 @@
         }
     }
     &__content {
-        height: calc(100vh - variables.$dock-menu-height - $article-header);
+        flex: 1 0;
         width: calc(100vw - variables.$page-layout-padding * 2);
         position: relative;
         overflow-x: scroll;
-        padding: 1rem 0;
+        gap: variables.$page-layout-padding;
         &-item {
             @include mixins.glass;
             $item-size: 16rem;
@@ -53,11 +55,8 @@
             flex: 1;
             overflow-y: scroll;
             &-header {
-                background-color: rgba(#000, 0.3);
                 padding: 0.5rem 1rem;
-                b {
-                    color: #fff;
-                }
+                border-bottom: 0.25rem solid variables.$dark-color;
             }
             .todo-card {
                 width: 100%;

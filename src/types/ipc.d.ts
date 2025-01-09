@@ -49,17 +49,30 @@ namespace IpcController {
             interface ILoad {}
             // 저장하기
             interface ISave {
-                id: ITodo['id']
-                title: ITodo['title']
-                description: ITodo['description']
-                status: ITodo['status']
-                tasks: ITodo['tasks']
-                startedAt: ITodo['startedAt']
-                endedAt: ITodo['endedAt']
+                id?: string
+                title: string
+                description?: string | null
+                status: TodoStatus
+                startedAt?: Date | null
+                endedAt?: Date | null
             }
             // 제거하기
-            interface IRemove {
-                id: ITodo.id
+            interface IDelete {
+                id: string
+            }
+            interface ILoadSprint {
+                todoId: string
+            }
+            interface ISaveSprint {
+                id?: string
+                title: string
+                checked: boolean
+                todoId: string
+                startedAt?: Date | null
+                endedAt?: Date | null
+            }
+            interface IDeleteSprint {
+                id: string
             }
         }
         // 설정하기

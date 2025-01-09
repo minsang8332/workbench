@@ -29,6 +29,10 @@ export default defineComponent({
             type: String as PropType<string>,
             default: ''
         },
+        required: {
+            type: Boolean as PropType<boolean>,
+            default: false
+        },
         placeholder: {
             type: String as PropType<string>,
             default: ''
@@ -71,6 +75,7 @@ export default defineComponent({
         return () => (
             <div class="text-field">
                 {props.label && <label for={props.name}>{props.label}</label>}
+                {props.required && <span class="text-red-500">*</span>}
                 {props.type === TextField.DATEPICKER ? (
                     <VueDatePicker
                         model-value={props.modelValue}
@@ -98,7 +103,7 @@ export default defineComponent({
                     />
                 )}
                 {printErrors.value.map((error) => (
-                    <p class="text-error py-2">{error}</p>
+                    <p class="text-sm text-red-500 py-2">{error}</p>
                 ))}
             </div>
         )

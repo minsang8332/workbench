@@ -83,11 +83,10 @@ export const useDiary = () => {
                 icon: 'mdi:mdi-pencil-box-outline',
                 color: app.scss('--dark-color'),
                 cb() {
-                    if (unref(diaryStore.getEdited)) {
-                        $toast.error(
+                    if (diaryStore.isPreventRoute) {
+                        return $toast.error(
                             new Error('문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.')
                         )
-                        return
                     }
                     renameRef.value = true
                     appStore.toggleMenu(false)

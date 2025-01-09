@@ -6,7 +6,7 @@ export default defineComponent({
     props: {
         title: {
             type: String as PropType<string>,
-            default: '패스코드'
+            default: ''
         },
         description: {
             type: String as PropType<string>,

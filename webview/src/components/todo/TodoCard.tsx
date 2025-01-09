@@ -10,7 +10,7 @@ enum TodoPeriod {
 }
 export default defineComponent({
     name: 'TodoCard',
-    emits: ['remove'],
+    emits: ['delete'],
     props: {
         id: {
             type: [String],
@@ -65,16 +65,16 @@ export default defineComponent({
             }
             return _.join(classList, ' ')
         })
-        const onBeforeRemove = (event: Event) => {
+        const onBeforeDelete = (event: Event) => {
             event.stopPropagation()
-            emit('remove', props)
+            emit('delete', props)
         }
         return () => (
             <div class="todo-card flex flex-col box-shadow">
                 <div class="todo-card__header flex justify-between items-start">
                     <div class="flex justify-between items-center w-full">
                         <b class="text-truncate">{props.title}</b>
-                        <button type="button" class="btn-close" onClick={onBeforeRemove}>
+                        <button type="button" class="btn-close" onClick={onBeforeDelete}>
                             <i class="mdi mdi-close" />
                         </button>
                     </div>

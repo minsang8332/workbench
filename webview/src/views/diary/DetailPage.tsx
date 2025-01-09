@@ -8,9 +8,10 @@ import {
     watch,
     nextTick,
     inject,
-    onMounted
+    onMounted,
+    onBeforeUnmount
 } from 'vue'
-import type { ComponentPublicInstance, PropType } from 'vue'
+import type { PropType } from 'vue'
 import {
     onBeforeRouteUpdate,
     onBeforeRouteLeave,
@@ -38,7 +39,7 @@ export default defineComponent({
         const state = reactive({
             resizable: false,
             text: '',
-            updatedText: '',
+            editorText: '',
             widths: {
                 editor: 0,
                 preview: 0
@@ -84,8 +85,8 @@ export default defineComponent({
                 const el = event.target as HTMLTextAreaElement
                 const start = el.selectionStart
                 const end = el.selectionEnd
-                state.updatedText =
-                    state.updatedText.slice(0, start) + '\t' + state.updatedText.slice(end)
+                state.editorText =
+                    state.editorText.slice(0, start) + '\t' + state.editorText.slice(end)
                 nextTick(() => {
                     el.selectionStart = start + 1
                     el.selectionEnd = start + 1
@@ -148,18 +149,16 @@ export default defineComponent({
             const filename = _.first(base?.split('.'))
             const ext = _.last(base?.split('.'))
             diaryStore
-                .saveDiary({ filepath: props.path, filename, ext, text: state.updatedText })
-                .then(() => {
-                    $toast.success(`${base} 파일에 작성되었습니다.`)
-                    onLoad()
-                })
+                .saveDiary({ filepath: props.path, filename, ext, text: state.editorText })
+                .then(() => $toast.success(`${base} 파일에 작성되었습니다.`))
                 .catch((e) => $toast.error(e))
+                .finally(onLoad)
         }
         const onPreventRoute = async (
             to: RouteLocationNormalizedGeneric,
             next: NavigationGuardNext
         ) => {
-            if (state.preventRoute == true) {
+            if (diaryStore.isPreventRoute == true) {
                 const confirmed: boolean = await new Promise((resolve) =>
                     appStore.toggleModal(true, {
                         title: '변경사항 안내',
@@ -184,21 +183,22 @@ export default defineComponent({
                 onResize(null, true)
             }
         )
+        // 원본이 변경되면 현재 편집 중인 내용을 갱신
         watch(
             () => state.text,
             (newValue) => {
-                state.updatedText = newValue
+                state.editorText = newValue
+                diaryStore.updatePreventRoute(false)
             }
         )
-        // 편집사항이 있을 경우 라우트 이동을 막는다.
+        // 편집본이 변경되면 라우트 이동을 막는다.
         watch(
-            () => state.updatedText,
+            () => state.editorText,
             (newValue) => {
-                if (state.text != newValue) {
-                    state.preventRoute = true
-                }
+                diaryStore.updatePreventRoute(state.text != state.editorText)
             }
         )
+        // 드로어가 열리고 닫힐 때 넓이를 계산
         watch(
             () => appStore.getDrawer,
             (value) => {
@@ -212,12 +212,13 @@ export default defineComponent({
                 onResize(null, true)
             }
         })
+        onBeforeUnmount(() => diaryStore.updatePreventRoute(false))
         onBeforeRouteLeave((to, from, next) => onPreventRoute(to, next))
         onBeforeRouteUpdate((to, from, next) => onPreventRoute(to, next))
         return () => (
             <article
                 ref={pageRef}
-                class="detail-page flex flex-col gap-1 w-full"
+                class="detail-page flex flex-col"
                 onMousemove={onResize}
                 onMouseup={onMouseUp}
             >
@@ -234,7 +235,10 @@ export default defineComponent({
                             </button>
                             <b class="text-title">{printFilePath.value}</b>
                         </div>
-                        <div class="editing" style={{ opacity: state.preventRoute ? 1 : 0 }} />
+                        <div
+                            class="prevent-route"
+                            style={{ opacity: diaryStore.isPreventRoute ? 1 : 0 }}
+                        />
                     </div>
                     <div class="flex items-center">
                         <button
@@ -250,23 +254,25 @@ export default defineComponent({
 
                 <div class="detail-page__content flex">
                     <textarea
-                        v-model={state.updatedText}
+                        v-model={state.editorText}
                         class="pa-2"
                         style={{
                             width: unref(isMarkdown) ? state.widths.editor + 'px' : '100%'
                         }}
                         onKeydown={onKeyDown}
                     />
-                    <div class="resizer" onMousedown={onMouseDown} />
                     {unref(isMarkdown) && (
-                        <div
-                            class="preview"
-                            style={{
-                                width: state.widths.preview + 'px'
-                            }}
-                        >
-                            <markdown-preview value={state.updatedText} />
-                        </div>
+                        <>
+                            <div class="resizer" onMousedown={onMouseDown} />
+                            <div
+                                class="preview"
+                                style={{
+                                    width: state.widths.preview + 'px'
+                                }}
+                            >
+                                <markdown-preview value={state.editorText} />
+                            </div>
+                        </>
                     )}
                 </div>
                 <div class="detail-page__actions flex items-center w-full">

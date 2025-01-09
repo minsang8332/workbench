@@ -20,7 +20,7 @@ export default defineComponent({
         const route = useRoute()
         const appStore = useAppStore()
         return () => (
-            <main class={'page-layout flex justify-between'}>
+            <main class="page-layout flex justify-between">
                 <modal-dialog
                     {...appStore.state.modalProps}
                     model-value={appStore.state.modal}
@@ -41,7 +41,7 @@ export default defineComponent({
                     <router-view />
                     <dock-menu />
                 </section>
-                <overlay-video />
+                <overlay-video video />
             </main>
         )
     }

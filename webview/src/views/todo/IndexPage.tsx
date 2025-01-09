@@ -45,7 +45,7 @@ export default defineComponent({
             cards: [
                 {
                     value: 0,
-                    label: '해야할일'
+                    label: '준비중'
                 },
                 {
                     value: 1,
@@ -77,7 +77,7 @@ export default defineComponent({
                             if (state.keyword) {
                                 return _.find(
                                     todo,
-                                    (v: keyof ITodo, k: string) =>
+                                    (v: ITodo[keyof ITodo], k: string) =>
                                         k !== 'id' &&
                                         _.isString(v) &&
                                         commonUtil.searchByInitial(v, state.keyword)
@@ -115,12 +115,12 @@ export default defineComponent({
             content.scrollLeft += event.deltaY * 2
         }
         const onRefresh = () => todoStore.loadTodos().catch((e) => e)
-        const onBeforeRemove = ({ title, id }: { title: string; id: string }) => {
+        const onBeforeDelete = ({ title, id }: { title: string; id: string }) => {
             appStore.toggleModal(true, {
                 message: `${title} 카드를 제거하시겠습니까 ?`,
                 ok() {
                     todoStore
-                        .removeTodo(id)
+                        .deleteTodo(id)
                         .then(() => {
                             $toast.success('정상적으로 제거되었습니다.')
                             appStore.toggleModal(false)
@@ -187,7 +187,7 @@ export default defineComponent({
                         icon: 'mdi:mdi-trash-can-outline',
                         color: scss('--dark-color'),
                         cb() {
-                            onBeforeRemove(payload)
+                            onBeforeDelete(payload)
                             appStore.toggleMenu(false)
                         }
                     }
@@ -236,7 +236,7 @@ export default defineComponent({
             onRefresh()
         })
         return () => (
-            <div class="todo-page">
+            <div class="todo-page flex flex-col">
                 <Teleport to="body">
                     <modal-dialog
                         title={
@@ -246,7 +246,7 @@ export default defineComponent({
                         onUpdate:modelValue={toggleForm}
                         persistent
                         hide-actions
-                        max-width="50vw"
+                        width="70vw"
                     >
                         <todo-form {...state.formProps} onSubmit={onSubmit} onCancel={onCancel} />
                     </modal-dialog>
@@ -272,7 +272,7 @@ export default defineComponent({
                 </div>
                 <div
                     ref={contentRef}
-                    class="todo-page__content flex justify-start items-center gap-2"
+                    class="todo-page__content flex justify-start items-center "
                     onWheel={onScrollX}
                 >
                     {filterTodosByStatus.value.map((todos: any) => (
@@ -299,7 +299,7 @@ export default defineComponent({
                                                 payload: todo
                                             })
                                         }
-                                        onRemove={onBeforeRemove}
+                                        onDelete={onBeforeDelete}
                                         draggable
                                         onDragenter={onPrevent}
                                         onDragover={onPrevent}

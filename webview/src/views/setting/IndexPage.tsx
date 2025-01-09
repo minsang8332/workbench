@@ -16,7 +16,7 @@ export default defineComponent({
             router.replace({ name: 'setting' }).catch((e) => e)
         }
         return () => (
-            <article class="setting-page flex flex-col gap-1">
+            <article class="setting-page flex flex-col">
                 <div class="setting-page__header flex justify-between items-center">
                     <div class="flex items-center gap-1">
                         <button

@@ -7,6 +7,7 @@ const router = createRouter({
     routes: [
         {
             path: '/',
+            name: 'authorized',
             component: () => import('@/components/layout/PageLayout'),
             redirect: { name: 'diary' },
             children: [
@@ -73,6 +74,19 @@ const router = createRouter({
                         }
                     ],
                     beforeEnter: [routerGuard.onBeforeEnterSetting]
+                }
+            ]
+        },
+        {
+            path: '/',
+            name: 'anonymous',
+            component: () => import('@/components/layout/EmptyLayout'),
+            children: [
+                // 잠금 화면
+                {
+                    name: 'lock',
+                    path: 'lock',
+                    component: () => import('@/views/LockPage')
                 }
             ]
         },

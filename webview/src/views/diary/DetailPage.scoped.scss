@@ -6,6 +6,7 @@
     height: calc(100% - variables.$dock-menu-height);
     position: relative;
     padding-bottom: variables.$page-layout-padding;
+    gap: variables.$page-layout-padding;
     &__header {
         @include mixins.glass;
         height: $article-header;
@@ -28,7 +29,7 @@
                 }
             }
         }
-        .editing {
+        .prevent-route {
             width: 0.5rem;
             height: 0.5rem;
             background-color: var(--danger-color);
@@ -39,7 +40,7 @@
     }
     &__content {
         $resizerWidth: 0.25rem;
-        height: calc(100vh - $article-header - $article-actions - variables.$dock-menu-height);
+        flex: 1 0;
         overflow-y: scroll;
         textarea {
             backdrop-filter: unset;

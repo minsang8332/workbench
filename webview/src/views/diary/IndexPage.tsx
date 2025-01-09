@@ -17,7 +17,7 @@ export default defineComponent({
         const recentDiaries = ref<IDiaryDetail[]>([])
         const onDiaryCard = (diary: IDiary) => {
             router
-                .replace({
+                .push({
                     name: 'diary-detail',
                     params: {
                         path: diary.path
@@ -45,7 +45,7 @@ export default defineComponent({
             }
         )
         return () => (
-            <article class="diary-page">
+            <article class="diary-page flex flex-col">
                 <div class="diary-page__header flex justify-between items-center">
                     <div class="flex items-center gap-1">
                         <button

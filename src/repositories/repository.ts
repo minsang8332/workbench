@@ -62,7 +62,7 @@ abstract class BaseRepository<T extends IStore> {
         this.updateTable(table)
         return payload.id
     }
-    remove(id: string): boolean {
+    delete(id: string): boolean {
         let result = false
         try {
             let table = <T[]>this._store.get(this._key)

@@ -1,11 +1,13 @@
 import { defineComponent, onBeforeMount } from 'vue'
 import { useAppStore } from '@/stores/app'
+import { useSettingStore } from '@/stores/setting'
 export default defineComponent({
     name: 'App',
     setup() {
         const appStore = useAppStore()
+        const settingStore = useSettingStore()
         onBeforeMount(() => {
-            // 앱 업데이트 확인
+            // 앱 업데이트
             appStore
                 .waitUpdate()
                 .then(() => {
@@ -18,6 +20,8 @@ export default defineComponent({
                     })
                 })
                 .catch((e: Error) => e)
+            // 패스코드 사용 확인
+            settingStore.loadPasscode().catch((e) => e)
         })
         return () => <router-view />
     }

@@ -3,6 +3,8 @@
 .diary-page {
     $article-header: 3rem;
     height: calc(100% - variables.$dock-menu-height);
+    padding-bottom: variables.$page-layout-padding;
+    gap: variables.$page-layout-padding;
     &__header {
         @include mixins.glass;
         height: $article-header;
@@ -29,14 +31,13 @@
     }
     &__content {
         $item-size: 20rem;
+        flex: 1 0;
         display: grid;
         grid-template-rows: repeat(auto-fill, $item-size);
         grid-template-columns: repeat(auto-fill, $item-size);
-        height: calc(100vh - variables.$dock-menu-height - $article-header);
         justify-content: center;
         overflow-y: scroll;
         gap: 1rem;
-        padding: 1rem 0;
         &-item {
             height: $item-size;
             width: $item-size;

@@ -1,9 +1,9 @@
 import { defineComponent, onBeforeMount, inject } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useSettingStore } from '@/stores/setting'
 import SwitchField from '@/components/form/SwitchField'
 import './PasscodePage.scoped.scss'
-import { useRouter } from 'vue-router'
 export default defineComponent({
     name: 'PasscodePage',
     components: {
@@ -21,12 +21,16 @@ export default defineComponent({
                     e.message = '패스코드 설정 정보를 불러올 수 없습니다.'
                     $toast.error(e)
                 })
-        const onUpdateActivePasscode = (payload: boolean) => {
+        const onUpdateActivePasscode = () => {
             appStore
-                .blocking(() => settingStore.activatePasscode(payload))
+                .blocking(() => settingStore.activatePasscode(!settingStore.getActivePasscode))
                 .then((response) => {
+                    if (!response.result) {
+                        $toast.error(new Error(response.message))
+                        return
+                    }
                     $toast.success(
-                        `잠금 상태 [ ${response.data.active ? '활성화' : '비활성화'} ] 되었습니다.`
+                        `잠금 ${response.data.active ? '활성화' : '비활성화'} 되었습니다.`
                     )
                 })
                 .catch((e) => $toast.error(e))
@@ -47,8 +51,8 @@ export default defineComponent({
                             </b>
                             <switch-field
                                 model-value={settingStore.getActivePasscode}
-                                onUpdate:modelValue={onUpdateActivePasscode}
                                 disabled={appStore.getDisabled}
+                                onUpdate:model-value={onUpdateActivePasscode}
                             />
                         </div>
                     </div>
