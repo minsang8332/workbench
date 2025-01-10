@@ -34,29 +34,37 @@ export default {
             toastify.showToast()
             return toastify
         }
-        const alert = (message = '', { icon = '' }) => {
-            show({
-                text: `
-                    <div class="toasify__content">
-                        <i class="${icon}"></i>
-                        <p>${message}</p>
-                    </div>
-                `
-            })
-        }
-        const success = (
-            message = '정상적으로 처리되었습니다.',
-            { icon = 'mdi mdi-emoticon-excited-outline', className = 'toastify--success' } = {}
+        const alert = (
+            message = '',
+            { icon = 'mdi mdi-emoticon-excited-outline', className = 'toastify--alert' } = {}
         ) => {
-            show({
-                text: `
+            if (_.isString(message) && message !== 'null') {
+                show({
+                    text: `
                     <div class="toasify__content">
                         <i class="${icon}"></i>
                         <p>${message}</p>
                     </div>
                 `,
-                className
-            })
+                    className
+                })
+            }
+        }
+        const success = (
+            message = '정상적으로 처리되었습니다.',
+            { icon = 'mdi mdi-emoticon-excited-outline', className = 'toastify--success' } = {}
+        ) => {
+            if (_.isString(message) && message !== 'null') {
+                show({
+                    text: `
+                    <div class="toasify__content">
+                        <i class="${icon}"></i>
+                        <p>${message}</p>
+                    </div>
+                `,
+                    className
+                })
+            }
         }
         const error = (
             { message = '작업을 처리할 수 없습니다.' }: Error,

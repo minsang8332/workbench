@@ -1,8 +1,9 @@
 @use '@/assets/css/abstracts/variables';
-@mixin pulse-animation($color, $range: 1) {
-    animation: pulse 1.5s infinite ease-out;
+@mixin pulse-animation($color, $range: 1, $unique-id: 'animation') {
+    $animation-name: pulse-#{$unique-id};
+    animation: #{$animation-name} 1.5s infinite ease-out;
     border-radius: 0.25rem;
-    @keyframes pulse {
+    @keyframes #{$animation-name} {
         0% {
             box-shadow: 0 0 0 0 rgba($color, 0.5);
         }
@@ -104,7 +105,7 @@
     width: $height;
     height: $height;
     border-radius: $border-radius;
-    background: $color;
+    background-color: rgba($color, 0.5);
     transition: 0.3s;
     i {
         font-size: ($height * 0.75);
@@ -114,6 +115,7 @@
         background-color: rgba(#fff, 0.75);
         i {
             color: $color;
+            opacity: 0.5;
         }
     }
     &:active {

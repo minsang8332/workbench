@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import dayjs from 'dayjs'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
-import { ref, defineComponent, reactive, computed, toRaw, type PropType } from 'vue'
+import { defineComponent, reactive, computed, toRaw, type PropType } from 'vue'
 import TextField from '@/components/form/TextField'
 import TodoSprintCard from '@/components/todo/TodoSprintCard'
 import '@/components/todo//TodoForm.scoped.scss'
@@ -118,10 +118,19 @@ export default defineComponent({
                 endedAt: null
             })
         }
-        const onCheckSprint = (id: ITodoSprint['id']) => {
+        const onUpdateSprint = ({
+            id,
+            title,
+            checked
+        }: {
+            id: ITodoSprint['id']
+            title: ITodoSprint['title']
+            checked: ITodoSprint['checked']
+        }) => {
             state.sprints = toRaw(state.sprints).map((sprint) => {
                 if (sprint.id == id) {
-                    sprint.checked = !sprint.checked
+                    sprint.title = title
+                    sprint.checked = checked
                 }
                 return sprint
             })
@@ -162,26 +171,27 @@ export default defineComponent({
                                 placeholder="마감일을 선택해 주세요"
                             />
                         </div>
-                        <div class="flex flex-col flex-1 gap-2">
+                        <div class=" flex flex-col flex-1 gap-2">
                             <div class="flex justify-between items-center">
                                 <label class="text-label">
                                     스프린트 ({printSprintCheckCount.value}/{state.sprints.length})
                                 </label>
                             </div>
+                            <button
+                                type="button"
+                                class="btn-create-sprint flex justify-center items-center h-12 gap-1"
+                                onClick={onCreateSprint}
+                            >
+                                <i class="mdi mdi-plus" />
+                            </button>
                             <ul class="flex flex-col gap-2">
-                                <button
-                                    type="button"
-                                    class="btn-create-sprint flex justify-center items-center gap-1"
-                                    onClick={onCreateSprint}
-                                >
-                                    <i class="mdi mdi-plus" />
-                                </button>
                                 {state.sprints.map((sprint: ITodoSprint, i) => (
                                     <todo-sprint-card
                                         {...sprint}
                                         key={i}
-                                        onCheck={onCheckSprint}
+                                        onUpdate={onUpdateSprint}
                                         onDelete={onDeleteSprint}
+                                        class="!h-12"
                                     />
                                 ))}
                             </ul>

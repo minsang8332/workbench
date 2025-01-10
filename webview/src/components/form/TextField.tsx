@@ -12,6 +12,7 @@ export enum TextField {
 type TextFieldType = TextField[keyof TextField]
 export default defineComponent({
     name: 'TextField',
+    emits: ['update:model-value', 'enter'],
     props: {
         modelValue: {
             type: String as PropType<string>,
@@ -52,6 +53,11 @@ export default defineComponent({
             }
             return errors
         })
+        const onEnter = (event: KeyboardEvent) => {
+            if (event.key == 'Enter') {
+                emit('enter')
+            }
+        }
         const onInput = (event?: Event) => {
             if (!(event && event.target)) {
                 return false
@@ -100,6 +106,7 @@ export default defineComponent({
                         value={props.modelValue}
                         onInput={onInput}
                         placeholder={props.placeholder}
+                        onKeydown={onEnter}
                     />
                 )}
                 {printErrors.value.map((error) => (

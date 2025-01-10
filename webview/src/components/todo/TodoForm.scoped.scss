@@ -5,7 +5,8 @@
     width: 100%;
     padding: 0 2rem;
     &__content {
-        flex: 0 1 85%;
+        flex: 0 0 85%;
+        overflow-y: auto;
         label.text-label {
             font-size: 1rem;
             font-family: 'Pretendard Bold';
@@ -25,9 +26,6 @@
                 color: #fff;
             }
             @include mixins.pulse-animation(variables.$todo-color);
-        }
-        .todo-sprint-card {
-            height: 3rem;
         }
     }
     &__actions {

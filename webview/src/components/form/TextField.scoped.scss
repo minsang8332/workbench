@@ -16,7 +16,7 @@
         border: 1px solid variables.$border-color;
         border-radius: 0.25rem;
         &:focus {
-            border: 1px solid variables.$theme-color !important;
+            border: 1px solid variables.$theme-color;
         }
     }
     &__textarea {
@@ -27,7 +27,7 @@
         border: 1px solid variables.$border-color;
         border-radius: 0.25rem;
         &:focus {
-            border: 1px solid variables.$theme-color !important;
+            border: 1px solid variables.$theme-color;
         }
     }
 }

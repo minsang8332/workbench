@@ -5,24 +5,47 @@
     background-color: variables.$gray-light-color;
     border-radius: 0.25rem;
     padding: 0 0.5rem;
+    box-sizing: border-box;
     cursor: pointer;
     button {
         @include mixins.scale-animation(0.8, 0.8);
         @include mixins.tooltip;
         i {
             font-size: 1.5rem;
-
             opacity: 0.3;
         }
     }
+    .text-field__input,
+    .text-field__input:focus {
+        border: none;
+    }
     &--checked {
-        $checked-color: variables.$todo-color;
-        background-color: rgba($checked-color, 0.2);
-        border: 0.1rem solid $checked-color;
+        $color: variables.$todo-color;
+        background-color: rgba($color, 0.2);
+        border: 0.1rem solid $color;
         i,
         i.mdi-check {
-            color: $checked-color;
-            opacity: 0.6 !important;
+            color: $color;
+            opacity: 0.3 !important;
+        }
+    }
+    &--updated {
+        $color: #8a2be2;
+        border: 0.1rem solid $color;
+        background-color: rgba($color, 0.2);
+        .text-field__input,
+        .text-field__input:focus {
+            color: $color;
+            font-weight: 700;
+            &::placeholder {
+                font-weight: 400;
+            }
+        }
+        i.mdi-pencil-outline {
+            color: $color;
+            opacity: 1 !important;
+            border-radius: 50% !important;
+            @include mixins.pulse-animation($color, 1, 'update-todo-sprint');
         }
     }
 }

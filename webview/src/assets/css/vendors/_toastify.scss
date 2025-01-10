@@ -15,14 +15,22 @@
         }
     }
     &--danger {
-        @include mixins.glass(variables.$danger-color, 0.9);
+        @include mixins.glass(variables.$danger-color, 0.8);
         i,
         p {
             color: #fff;
         }
     }
     &--success {
-        @include mixins.glass(variables.$success-color, 0.9);
+        @include mixins.glass(variables.$success-color, 0.8);
+        backdrop-filter: none !important;
+        i,
+        p {
+            color: #fff;
+        }
+    }
+    &--alert {
+        @include mixins.glass(variables.$theme-color, 0.8);
         backdrop-filter: none !important;
         i,
         p {
