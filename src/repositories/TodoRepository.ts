@@ -1,8 +1,8 @@
 import Todo from '@/models/todo'
-import BaseRepository from './repository'
+import BaseRepository from './BaseRepository'
 class TodoRepository extends BaseRepository<Todo> {
     constructor() {
-        super(Todo.constructor.name)
+        super(Todo.name)
     }
 }
 export default TodoRepository

@@ -94,9 +94,6 @@ contextBridge.exposeInMainWorld('$native', {
         loadSprint(payload: IpcController.Request.Todo.ILoadSprint) {
             return invoke(IPC_TODO.LOAD_SPRINT, payload)
         },
-        saveSprint(payload: IpcController.Request.Todo.ISaveSprint) {
-            return invoke(IPC_TODO.SAVE_SPRINT, payload)
-        },
         deleteSprint(payload: IpcController.Request.Todo.IDeleteSprint) {
             return invoke(IPC_TODO.DELETE_SPRINT, payload)
         },

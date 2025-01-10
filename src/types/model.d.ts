@@ -1,10 +1,11 @@
-interface IStore {
+interface IStore<T> {
+    autoIncrement: number
+    table: T[]
+}
+interface IStoreTable {
     id: string
     createdAt: Date
     updatedAt: Date | null
-}
-interface IStoreTable<T extends IStore> {
-    [props: string]: T[]
 }
 // 파일 시스템
 interface IFile {
@@ -16,7 +17,7 @@ interface IFile {
 // 문서
 interface IDiary extends IFile {}
 // 해야 할 일
-interface ITodo extends IStore {
+interface ITodo extends IStoreTable {
     title: string // 제목
     description: string | null // 내용
     status: TodoStatus // 상태
@@ -24,7 +25,7 @@ interface ITodo extends IStore {
     endedAt: Date | null // 목표일
 }
 // 해야 할 일 스프린트
-interface ITodoSprint extends IStore {
+interface ITodoSprint extends IStoreTable {
     title: string
     checked: boolean
     todoId: ITodo['id']

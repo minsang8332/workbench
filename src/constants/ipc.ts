@@ -27,6 +27,5 @@ export enum IPC_TODO {
     SAVE = 'todo:save',
     DELETE = 'todo:delete',
     LOAD_SPRINT = 'todo:load-sprint',
-    SAVE_SPRINT = 'todo:save-sprint',
     DELETE_SPRINT = 'todo:delete-sprint',
 }

@@ -23,21 +23,21 @@ export const useTodoStore = defineStore('todo', () => {
         }
         updateTodos(response.data.todos)
     }
-    const saveTodo = async (payload: ITodo) => {
-        const response = await window.$native.todo.save(payload)
-        if (!(response && response.data)) {
-            return false
-        }
-        return response.data.id
+    const saveTodo = async (payload: ITodo & { sprints?: ITodoSprint[] }) => {
+        return await window.$native.todo.save(payload)
     }
-    const deleteTodo = async (id: string) => {
+    const deleteTodo = async (id: ITodo['id']) => {
         return await window.$native.todo.delete({ id })
+    }
+    const loadSprint = async (todoId: ITodo['id']) => {
+        return await window.$native.todo.loadSprint({ todoId })
     }
     return {
         state,
         getTodos,
         loadTodos,
         saveTodo,
-        deleteTodo
+        deleteTodo,
+        loadSprint
     }
 })

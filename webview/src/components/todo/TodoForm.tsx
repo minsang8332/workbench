@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import dayjs from 'dayjs'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
-import { defineComponent, reactive, computed, unref, ref, inject, type PropType } from 'vue'
+import { ref, defineComponent, reactive, computed, toRaw, type PropType } from 'vue'
 import TextField from '@/components/form/TextField'
 import TodoSprintCard from '@/components/todo/TodoSprintCard'
 import '@/components/todo//TodoForm.scoped.scss'
@@ -15,7 +15,7 @@ interface ITodoFormState {
     inputEndedAt: Date | null
     inputTitleRules: ((value: string) => string | boolean)[]
     inputEndedAtRules: ((value: Date) => string | boolean)[]
-    todoSprints: ITodoSprint[]
+    sprints: ITodoSprint[]
 }
 export default defineComponent({
     name: 'TodoForm',
@@ -48,10 +48,13 @@ export default defineComponent({
         endedAt: {
             type: Date as PropType<Date | null>,
             default: null
+        },
+        sprints: {
+            type: Array as PropType<ITodoSprint[]>,
+            default: () => []
         }
     },
     setup(props, { emit }) {
-        const $toast = inject('toast') as IToastPlugin
         const state = reactive<ITodoFormState>({
             tabSize: 4,
             inputTitle: props.title,
@@ -80,30 +83,7 @@ export default defineComponent({
                     return '마감일자는 시작일자 이후여야 합니다.'
                 }
             ],
-            todoSprints: [
-                /*
-                {
-                    id: '1',
-                    todoId: props.id,
-                    title: '스프린트 컴포넌트 만들기',
-                    checked: true,
-                    startedAt: new Date(),
-                    endedAt: new Date(),
-                    createdAt: null,
-                    updatedAt: null
-                },
-                {
-                    id: '2',
-                    todoId: props.id,
-                    title: '웹 크롤링 설계',
-                    checked: false,
-                    startedAt: new Date(),
-                    endedAt: new Date(),
-                    createdAt: null,
-                    updatedAt: null
-                }
-                */
-            ]
+            sprints: props.sprints
         })
         const validate = computed(() => {
             return (
@@ -113,35 +93,47 @@ export default defineComponent({
                 state.inputTitleRules.every((rule: Function) => rule(state.inputTitle) === true)
             )
         })
-        const printCheckedSprint = computed(() =>
-            _.toString(
-                state.todoSprints.filter((todoSprint: ITodoSprint) => todoSprint.checked == true)
-                    .length
-            )
+        const printSprintCheckCount = computed(() =>
+            _.toString(state.sprints.filter((sprint: ITodoSprint) => sprint.checked == true).length)
         )
-        const onSubmit = async () => {
-            let submit = false
-            try {
-                emit('submit', {
-                    id: props.id,
-                    title: state.inputTitle,
-                    description: state.inputDescription,
-                    status: state.inputStatus,
-                    tasks: [],
-                    startedAt: state.inputStartedAt,
-                    endedAt: state.inputEndedAt
-                })
-            } catch (e) {
-                $toast.error(e as Error)
-            }
-            return submit
+        const onSubmit = () => {
+            emit('submit', {
+                id: props.id,
+                title: state.inputTitle,
+                description: state.inputDescription,
+                status: state.inputStatus,
+                startedAt: state.inputStartedAt,
+                endedAt: state.inputEndedAt,
+                sprints: toRaw(state.sprints)
+            })
         }
         const onCancel = () => emit('cancel')
-        const onCreateTodoSprint = () => {}
+        const onCreateSprint = () => {
+            state.sprints.push({
+                title: '',
+                todoId: props.id,
+                description: null,
+                checked: false,
+                startedAt: null,
+                endedAt: null
+            })
+        }
+        const onCheckSprint = (id: ITodoSprint['id']) => {
+            state.sprints = toRaw(state.sprints).map((sprint) => {
+                if (sprint.id == id) {
+                    sprint.checked = !sprint.checked
+                }
+                return sprint
+            })
+        }
+        const onDeleteSprint = (id: ITodoSprint['id']) => {
+            const idx = state.sprints.findIndex((sprint: ITodoSprint) => sprint.id == id)
+            state.sprints.splice(idx, 1)
+        }
         return () => (
             <form class="todo-form flex flex-col justify-between" onSubmit={onSubmit}>
-                <div class="todo-form__content flex flex-col justify-between gap-2">
-                    <div class="flex justify-between gap-2">
+                <div class="todo-form__content flex flex-col justify-between gap-4">
+                    <div class="flex justify-between gap-4">
                         <div class="flex flex-col flex-1 gap-2">
                             <text-field
                                 v-model={state.inputTitle}
@@ -173,21 +165,24 @@ export default defineComponent({
                         <div class="flex flex-col flex-1 gap-2">
                             <div class="flex justify-between items-center">
                                 <label class="text-label">
-                                    스프린트 ({printCheckedSprint.value}/{state.todoSprints.length})
+                                    스프린트 ({printSprintCheckCount.value}/{state.sprints.length})
                                 </label>
                             </div>
                             <ul class="flex flex-col gap-2">
                                 <button
                                     type="button"
                                     class="btn-create-sprint flex justify-center items-center gap-1"
-                                    onClick={onCreateTodoSprint}
+                                    onClick={onCreateSprint}
                                 >
                                     <i class="mdi mdi-plus" />
                                 </button>
-                                {state.todoSprints.map((todoSprint: ITodoSprint) => (
-                                    <li>
-                                        <todo-sprint-card {...todoSprint} />
-                                    </li>
+                                {state.sprints.map((sprint: ITodoSprint, i) => (
+                                    <todo-sprint-card
+                                        {...sprint}
+                                        key={i}
+                                        onCheck={onCheckSprint}
+                                        onDelete={onDeleteSprint}
+                                    />
                                 ))}
                             </ul>
                         </div>

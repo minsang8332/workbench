@@ -5,7 +5,7 @@ import {
     ref,
     unref,
     inject,
-    type ComponentPublicInstance,
+    nextTick,
     onMounted,
     Teleport,
     reactive
@@ -21,7 +21,8 @@ import TodoForm from '@/components/todo/TodoForm'
 import '@/views/todo/IndexPage.scoped.scss'
 interface ITodoPageState {
     form: boolean
-    formProps: ITodo | null
+    selectedTodo: ITodo | null
+    selectedSprints: ITodoSprint[]
     keyword: string
     cards: { value: number; label: string }[]
 }
@@ -40,7 +41,8 @@ export default defineComponent({
         const { scss } = useApp()
         const state = reactive<ITodoPageState>({
             form: false,
-            formProps: null,
+            selectedTodo: null,
+            selectedSprints: [],
             keyword: '',
             cards: [
                 {
@@ -61,7 +63,7 @@ export default defineComponent({
                 }
             ]
         })
-        const contentRef = ref<ComponentPublicInstance<HTMLElement> | null>(null)
+        const contentRef = ref<HTMLElement>()
         const filterTodosByStatus = computed(() => {
             let todoMap = []
             try {
@@ -99,23 +101,26 @@ export default defineComponent({
             }
             return todoMap
         })
-        const toggleForm = (value: boolean, props?: ITodo) => {
-            state.form = value
-            if (value && props) {
-                state.formProps = props
-            } else if (value == false) {
-                state.formProps = null
-            }
-        }
-        const onScrollX = (event: WheelEvent) => {
-            const content = unref(contentRef) as HTMLElement
-            if (_.isUndefined(content)) {
+        const onToggleForm = async (value: boolean, todo?: ITodo) => {
+            if (!_.isBoolean(value)) {
                 return
             }
-            content.scrollLeft += event.deltaY * 2
+            if (value && todo) {
+                let sprints = []
+                if (!_.isNil(todo.id)) {
+                    const response = await todoStore.loadSprint(todo.id)
+                    sprints = response.data.sprints
+                }
+                state.selectedTodo = todo
+                state.selectedSprints = sprints
+            } else {
+                state.selectedTodo = null
+                state.selectedSprints = []
+            }
+            state.form = value
         }
         const onRefresh = () => todoStore.loadTodos().catch((e) => e)
-        const onBeforeDelete = ({ title, id }: { title: string; id: string }) => {
+        const onBeforeDelete = ({ id, title }: { id: string; title: string }) => {
             appStore.toggleModal(true, {
                 message: `${title} 카드를 제거하시겠습니까 ?`,
                 ok() {
@@ -164,7 +169,7 @@ export default defineComponent({
                     icon: 'mdi:mdi-file-edit-outline',
                     color: scss('--dark-color'),
                     cb() {
-                        toggleForm(true)
+                        onToggleForm(true)
                         appStore.toggleMenu(false)
                     }
                 }
@@ -203,12 +208,20 @@ export default defineComponent({
         // 취소하기
         const onCancel = () => {
             onRefresh()
-            toggleForm(false)
+            onToggleForm(false)
         }
-        const onSubmit = async (todo: ITodo) => {
-            if (await todoStore.saveTodo(todo)) {
-                $toast.success('정상적으로 등록 및 편집되었습니다.')
-                onCancel()
+        const onSubmit = async (payload: ITodo & { sprints?: ITodoSprint[] }) => {
+            try {
+                const response = await todoStore.saveTodo(payload)
+                if (!(response && response.result)) {
+                    throw new Error('해야 할 일을 작성 할 수 없습니다.')
+                }
+                state.form = false
+                $toast.success('정상적으로 반영되었습니다.')
+            } catch (e) {
+                $toast.error(e as Error)
+            } finally {
+                onRefresh()
             }
         }
         const onDragstart = (event: DragEvent, todo: ITodo) => {
@@ -228,32 +241,30 @@ export default defineComponent({
             const todo = JSON.parse(todoJSON) as ITodo
             // 이동 대상의 상태로 변환해 준다.
             todo.status = status
-            if (await todoStore.saveTodo(todo)) {
-                onRefresh()
-            }
+            onSubmit(todo)
         }
         onMounted(() => {
             onRefresh()
         })
         return () => (
             <div class="todo-page flex flex-col">
-                <Teleport to="body">
-                    <modal-dialog
-                        title={
-                            state.formProps && state.formProps.title ? state.formProps.title : null
-                        }
-                        modelValue={state.form}
-                        onUpdate:modelValue={toggleForm}
-                        persistent
-                        hide-actions
-                        width="70vw"
-                    >
-                        <todo-form {...state.formProps} onSubmit={onSubmit} onCancel={onCancel} />
-                    </modal-dialog>
-                </Teleport>
+                <modal-dialog
+                    modelValue={state.form}
+                    onUpdate:modelValue={onToggleForm}
+                    persistent
+                    hide-actions
+                    width="70vw"
+                >
+                    <todo-form
+                        {...state.selectedTodo}
+                        sprints={state.selectedSprints}
+                        onSubmit={onSubmit}
+                        onCancel={onCancel}
+                    />
+                </modal-dialog>
                 <div class="todo-page__header flex justify-between items-center">
                     <div class="flex items-center gap-1">
-                        <button type="button" onClick={() => toggleForm(true)}>
+                        <button type="button" onClick={() => onToggleForm(true)}>
                             <i class="mdi mdi-flag-variant" />
                         </button>
                         <b class="text-title">해야 할 일</b>
@@ -270,11 +281,7 @@ export default defineComponent({
                         </button>
                     </div>
                 </div>
-                <div
-                    ref={contentRef}
-                    class="todo-page__content flex justify-start items-center "
-                    onWheel={onScrollX}
-                >
+                <div ref={contentRef} class="todo-page__content flex justify-start items-center ">
                     {filterTodosByStatus.value.map((todos: any) => (
                         <div
                             class="todo-page__content-item"
@@ -292,7 +299,7 @@ export default defineComponent({
                                     <todo-card
                                         {...todo}
                                         class="todo-card"
-                                        onClick={() => toggleForm(true, todo)}
+                                        onClick={() => onToggleForm(true, todo)}
                                         onMouseup={(event: MouseEvent) =>
                                             onMenu(event, {
                                                 type: 'card',

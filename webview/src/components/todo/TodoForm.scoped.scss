@@ -10,14 +10,13 @@
             font-size: 1rem;
             font-family: 'Pretendard Bold';
             font-weight: 700;
-            line-height: 1;
+            line-height: 1.5;
             padding: 0 0.25rem;
         }
         button.btn-create-sprint {
-            @include mixins.pulse-animation(variables.$todo-color);
             @include mixins.scale-animation(0.95, 0.95);
             @include mixins.tooltip;
-            height: 2rem;
+            height: 2.5rem;
             width: 100%;
             background-color: rgba(variables.$todo-color, 1);
             border-radius: 0.25rem;
@@ -25,6 +24,7 @@
                 font-size: 1.5rem;
                 color: #fff;
             }
+            @include mixins.pulse-animation(variables.$todo-color);
         }
         .todo-sprint-card {
             height: 3rem;

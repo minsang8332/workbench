@@ -20,14 +20,13 @@ interface ITodo {
     updatedAt?: Date | null
 }
 interface ITodoSprint {
-    id: string
+    id?: string
     todoId: string
     title: string
+    description: string | null
     checked: boolean
     startedAt: Date | null
     endedAt: Date | null
-    createdAt: Date | null
-    updatedAt: Date | null
 }
 interface ITodoStatus {
     label: string

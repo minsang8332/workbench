@@ -53,8 +53,9 @@ namespace IpcController {
                 title: string
                 description?: string | null
                 status: TodoStatus
-                startedAt?: Date | null
-                endedAt?: Date | null
+                startedAt: Date | null
+                endedAt: Date | null
+                sprints?: ISaveSprint[]
             }
             // 제거하기
             interface IDelete {
@@ -65,9 +66,9 @@ namespace IpcController {
             }
             interface ISaveSprint {
                 id?: string
+                todoId: string
                 title: string
                 checked: boolean
-                todoId: string
                 startedAt?: Date | null
                 endedAt?: Date | null
             }
