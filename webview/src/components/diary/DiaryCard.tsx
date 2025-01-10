@@ -61,7 +61,7 @@ export default defineComponent({
         }
         return () => (
             <div class="diary-card" onMouseup={onMouseup}>
-                <div class="diary-card__header flex justify-between items-center px-2">
+                <div class="diary-card__header flex justify-between items-center">
                     {renameRef.value ? (
                         <diary-text-field
                             path={props.path}

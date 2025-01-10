@@ -70,10 +70,10 @@
         height: $article-actions;
         width: 100%;
         button.btn-submit {
-            @include mixins.glass;
             @include mixins.scale-animation(1, 0.8);
             @include mixins.tooltip;
             border-radius: 0.25rem;
+            background-color: rgba(variables.$diary-color, 0.75);
             i {
                 font-size: 2rem;
                 color: rgba(#fff, 0.8);

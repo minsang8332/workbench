@@ -6,18 +6,19 @@
     height: 100%;
     backdrop-filter: unset;
     cursor: pointer;
+    padding: 0.5rem;
     &__header {
         height: 10%;
-        padding: 0.5rem;
+        padding: 0 0.25rem;
         .text-title {
             font-family: 'Pretendard SemiBold';
         }
     }
     &__content {
         height: 70%;
+        padding: 0.25rem;
         overflow-y: hidden;
         width: 100%;
-        padding: 0.5rem;
     }
     &__footer {
         height: 20%;
