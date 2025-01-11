@@ -27,15 +27,20 @@ app.on('ready', () => {
         commands: [
             {
                 type: BROWSER_CRAWLER_COMMAND.REDIRECT,
-                url: 'https://medium.com/',
+                url: 'https://www.naver.com/',
                 timeout: 5000,
             } as WindowUtil.IRedirectCommand,
             {
+                type: BROWSER_CRAWLER_COMMAND.WRITE,
+                selector: '#query',
+                text: '사다리타기',
+                timeout: 5000,
+            } as WindowUtil.IWriteCommand,
+            {
                 type: BROWSER_CRAWLER_COMMAND.CLICK,
-                selector:
-                    '#root > div > div.l.n.x > div.aw.ax.n.x.ay.az.ba > div.bb.av.m.bc.bd.be.bf.bg.bh > div > div > div > div.n.o.bs > div.bi > span > a > button',
-                timeout: 8000,
-            } as WindowUtil.IClickCommand,
+                selector: '#sform > fieldset > button',
+                timeout: 5000,
+            } as WindowUtil.IWriteCommand,
         ],
     })
     */

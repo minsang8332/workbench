@@ -107,6 +107,9 @@ export class BrowserCrawler {
                     case BROWSER_CRAWLER_COMMAND.CLICK:
                         await this.click(window, command as WindowUtil.IClickCommand)
                         break
+                    case BROWSER_CRAWLER_COMMAND.WRITE:
+                        await this.write(window, command as WindowUtil.IWriteCommand)
+                        break
                 }
             }
             commandSet.status = BROWSER_CRWALER_STATUS.COMPLETE
@@ -148,17 +151,18 @@ export class BrowserCrawler {
                     `
                 new Promise((resolve, reject) => {
                     const timeout = ${command.timeout}
-                    const startTime = Date.now();
+                    const startTime = Date.now()
                     const observer = new MutationObserver(() => {
-                    const element = document.querySelector('${command.selector}')
-                    if (element) {
-                        element.click()
-                        observer.disconnect()
-                        resolve(true)
-                    }
+                        const element = document.querySelector('${command.selector}')
+                        if (element) {
+                            element.click()
+                            observer.disconnect()
+                            clearTimeout(timer)
+                            resolve(true)
+                        }
                     })
                     observer.observe(document.body, { childList: true, subtree: true })
-                    setTimeout(() => {
+                    const timer = setTimeout(() => {
                         observer.disconnect()
                         reject(new Error('선택자를 찾을 수 없습니다.'))
                     }, timeout)
@@ -169,7 +173,37 @@ export class BrowserCrawler {
                 .catch((e) => reject(e.message))
         })
     }
-    async input() {}
+    // 입력하기
+    async write(window: BrowserWindow, command: WindowUtil.IWriteCommand) {
+        return new Promise((resolve, reject) => {
+            window.webContents
+                .executeJavaScript(
+                    `
+                new Promise((resolve, reject) => {
+                    const timeout = ${command.timeout}
+                    const startTime = Date.now()
+                    const observer = new MutationObserver(() => {
+                        const element = document.querySelector('${command.selector}')
+                        if (element) {
+                            element.value = '${command.text}'
+                            element.dispatchEvent(new Event('input'))
+                            observer.disconnect()
+                            clearTimeout(timer)
+                            resolve(true)
+                        }
+                    })
+                    observer.observe(document.body, { childList: true, subtree: true })
+                    const timer = setTimeout(() => {
+                        observer.disconnect()
+                        reject(new Error('선택자를 찾을 수 없습니다.'))
+                    }, timeout)
+                })
+                `
+                )
+                .then(() => resolve(true))
+                .catch((e) => reject(e.message))
+        })
+    }
     async selectElememt() {}
     addHistory(
         commandSet: WindowUtil.ICommandSet,

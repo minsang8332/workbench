@@ -19,6 +19,11 @@ export namespace WindowUtil {
         selector: string
         timeout: number
     }
+    interface IWriteCommand extends ICommand {
+        selector: string
+        text: string
+        timeout: number
+    }
     // 실행 내역
     interface IHistory {
         commandSet: ICommandSet
