@@ -24,6 +24,7 @@ export namespace WindowUtil {
         text: string
         timeout: number
     }
+    interface ICursorCommand extends ICommand {}
     // 실행 내역
     interface IHistory {
         commandSet: ICommandSet

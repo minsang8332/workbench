@@ -92,14 +92,32 @@ export class BrowserCrawler {
             }
             // 실행중으로 변경
             commandSet.status = BROWSER_CRWALER_STATUS.RUNNING
+            // 화면 생성
             const window = windowUtil.createWindow({
                 partition: new Date().toString(),
                 width: 800,
                 height: 600,
                 parent: windowUtil.getMainWindow(),
             })
+            // 이동 중일 때에는 명령어를 잠시 멈춰야 함
+            let blocking = false
+            window.webContents.on('did-start-navigation', (event, url) => {
+                blocking = true
+            })
+            window.webContents.on('did-finish-load', () => {
+                blocking = false
+            })
+            window.webContents.on('did-fail-load', () => {
+                blocking = false
+            })
+            /** @TODO 스케줄링의 경우 화면 끈상태로 동작 할 것 */
             window.show()
             for (const command of commandSet.commands) {
+                window.setIgnoreMouseEvents(true)
+                // 블로킹 상태일 때에는 대기하도록 한다.
+                while (blocking) {
+                    await new Promise((resolve) => setTimeout(resolve, 500))
+                }
                 switch (command.type) {
                     case BROWSER_CRAWLER_COMMAND.REDIRECT:
                         await this.redirect(window, command as WindowUtil.IRedirectCommand)
@@ -110,6 +128,9 @@ export class BrowserCrawler {
                     case BROWSER_CRAWLER_COMMAND.WRITE:
                         await this.write(window, command as WindowUtil.IWriteCommand)
                         break
+                    case BROWSER_CRAWLER_COMMAND.CURSOR:
+                        await this.cursor(window, command as WindowUtil.ICursorCommand)
+                        break
                 }
             }
             commandSet.status = BROWSER_CRWALER_STATUS.COMPLETE
@@ -118,17 +139,17 @@ export class BrowserCrawler {
             commandSet.status = BROWSER_CRWALER_STATUS.FAILED
             this.addHistory(commandSet, { error: error as Error })
         }
+        /** @TODO 화면이 켜져있으면 닫도록 한다 */
         // window.close()
     }
     // 이동하기
     async redirect(window: BrowserWindow, command: WindowUtil.IRedirectCommand) {
         return new Promise((resolve, reject) => {
-            const webContents = window.webContents
             const timer = setTimeout(() => reject(new Error('Redirect 시간 초과')), command.timeout)
             const clear = () => {
                 clearTimeout(timer)
-                webContents.removeListener('did-finish-load', onDidFinishLoad)
-                webContents.removeListener('did-fail-load', onDidFailLoad)
+                window.webContents.removeListener('did-finish-load', onDidFinishLoad)
+                window.webContents.removeListener('did-fail-load', onDidFailLoad)
             }
             const onDidFinishLoad = () => {
                 clear()
@@ -138,14 +159,19 @@ export class BrowserCrawler {
                 clear()
                 reject(new Error(errorDescription))
             }
-            webContents.on('did-finish-load', onDidFinishLoad)
-            webContents.on('did-fail-load', onDidFailLoad)
+            window.webContents.on('did-finish-load', onDidFinishLoad)
+            window.webContents.on('did-fail-load', onDidFailLoad)
             window.loadURL(command.url)
         })
     }
     // 클릭하기
     async click(window: BrowserWindow, command: WindowUtil.IClickCommand) {
         return new Promise((resolve, reject) => {
+            // 팝업은 막되 리다이렉션
+            window.webContents.setWindowOpenHandler(({ url }) => {
+                window.loadURL(url)
+                return { action: 'deny' }
+            })
             window.webContents
                 .executeJavaScript(
                     `
@@ -204,7 +230,63 @@ export class BrowserCrawler {
                 .catch((e) => reject(e.message))
         })
     }
-    async selectElememt() {}
+    // HTML 요소 클릭하기
+    async cursor(window: BrowserWindow, command: WindowUtil.ICursorCommand) {
+        window.setIgnoreMouseEvents(false)
+        window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
+        const selector = await window.webContents.executeJavaScript(`
+            const style = document.createElement('style')
+            style.innerHTML = '.web-crawler--mouseover { border: 2px dotted red !important; }'
+            document.head.appendChild(style)
+            const onMouseOver = (event) => {
+                const element = event.target
+                element.classList.add('web-crawler--mouseover')
+            }
+            const onMouseOut = (event) => {
+                const element = event.target
+                element.classList.remove('web-crawler--mouseover')
+            }
+            const getSelector = (el) => {
+                let path = []
+                while (el.nodeType === 1) {
+                    let selector = el.tagName.toLowerCase()
+                    if (el.id) {
+                        selector = '#' + el.id
+                        path.unshift(selector)
+                        break
+                    } else {
+                        let sibling = el
+                        let nthChild = 1
+                        while (sibling = sibling.previousElementSibling) {
+                            if (sibling.tagName === el.tagName) {
+                                nthChild++
+                            }
+                        }
+                        selector += ':nth-of-type(' + nthChild + ')'
+                    }
+                    path.unshift(selector)
+                    el = el.parentElement
+                }
+                return path.join(' > ')
+            }
+            new Promise((resolve) => {
+                const onClickElement = (event) => {
+                    const element = event.target
+                    const selector = getSelector(element)
+                    element.classList.remove('web-crawler--mouseover')
+                    document.removeEventListener('mouseover', onMouseOver)
+                    document.removeEventListener('mouseout', onMouseOut)
+                    document.removeEventListener('click', onClickElement)
+                    resolve(selector)
+                }
+                document.addEventListener('mouseover', onMouseOver)
+                document.addEventListener('mouseout', onMouseOut)
+                document.addEventListener('click', onClickElement)
+            })
+        `)
+        console.log(selector)
+        return selector
+    }
     addHistory(
         commandSet: WindowUtil.ICommandSet,
         {
@@ -230,23 +312,3 @@ export default {
     createMainWindow,
     getMainWindow,
 }
-/*
-  win.webContents.executeJavaScript(`
-    setInterval(function() {
-      const x = window.event.clientX || 0;
-      const y = window.event.clientY || 0;
-      
-      const element = document.elementFromPoint(x, y); // 마우스 위치에 해당하는 엘리먼트 찾기
-      if (element) {
-        // 이전 배경색을 원래대로 복구
-        const previousBackground = element.style.backgroundColor;
-        element.style.backgroundColor = 'rgba(255, 255, 0, 0.5)'; // 투명한 노랑 배경색 적용
-
-        // 1초 후 원래 배경색으로 복구
-        setTimeout(() => {
-          element.style.backgroundColor = previousBackground;
-        }, 1000);
-      }
-    }, 1000); // 1초마다 실행
-  `);
-  */

@@ -2,6 +2,7 @@ export enum BROWSER_CRAWLER_COMMAND {
     REDIRECT = 'redirect',
     CLICK = 'click',
     WRITE = 'write',
+    CURSOR = 'cursor',
 }
 export enum BROWSER_CRWALER_STATUS {
     PREPARE, // 준비

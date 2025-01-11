@@ -19,7 +19,7 @@ app.on('ready', () => {
     protocolUtil.handleMainWindow()
     protocolUtil.handle(PROTOCOL.LOCAL)
     windowUtil.createMainWindow()
-    /*
+
     const crawler = new BrowserCrawler()
     crawler.run({
         label: '웹 자동화 테스트',
@@ -31,19 +31,15 @@ app.on('ready', () => {
                 timeout: 5000,
             } as WindowUtil.IRedirectCommand,
             {
-                type: BROWSER_CRAWLER_COMMAND.WRITE,
-                selector: '#query',
-                text: '사다리타기',
-                timeout: 5000,
-            } as WindowUtil.IWriteCommand,
-            {
                 type: BROWSER_CRAWLER_COMMAND.CLICK,
                 selector: '#sform > fieldset > button',
                 timeout: 5000,
-            } as WindowUtil.IWriteCommand,
+            } as WindowUtil.IClickCommand,
+            {
+                type: BROWSER_CRAWLER_COMMAND.CURSOR,
+            },
         ],
     })
-    */
 })
 app.on('window-all-closed', () => {
     app.quit()
