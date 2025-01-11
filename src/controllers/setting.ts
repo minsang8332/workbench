@@ -3,7 +3,7 @@ import _ from 'lodash'
 import fs from 'fs-extra'
 import url from 'url'
 import { app, dialog } from 'electron'
-import { mainWindow } from '@/utils/window'
+import windowUtil from '@/utils/window'
 import commonUtil from '@/utils/common'
 import { controller } from '@/utils/ipc'
 import { IPC_SETTING } from '@/constants/ipc'
@@ -163,6 +163,7 @@ controller(
 controller(
     IPC_SETTING.UPDATE_OVERLOAY_VIDEO,
     async (request: IpcController.Request.App.IUpdateOverlayVideo, response: IpcController.IResponse) => {
+        const mainWindow = windowUtil.getMainWindow()
         const result = await dialog.showOpenDialog(mainWindow, {
             properties: ['openDirectory'],
         })

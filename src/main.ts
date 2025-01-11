@@ -1,25 +1,39 @@
 import { app } from 'electron'
 import _ from 'lodash'
 import '@/controllers'
-import * as protocolUtil from '@/utils/protocol'
 import windowUtil from '@/utils/window'
-import { PROTOCOL } from './constants/app'
+import protocolUtil from '@/utils/protocol'
+import { BROWSER_CRAWLER_COMMAND, BROWSER_CRWALER_STATUS } from '@/constants/window'
+import { PROTOCOL } from '@/constants/app'
 if (app.requestSingleInstanceLock() == false) {
     app.quit()
     process.exit(0)
 }
 app.on('will-finish-launching', () => {
     protocolUtil.registerMainWindow()
-    protocolUtil.registerScheme(PROTOCOL.LOCAL, { stream: true })
+    protocolUtil.register(PROTOCOL.LOCAL, { stream: true })
 })
 app.on('ready', () => {
     protocolUtil.handleMainWindow()
     protocolUtil.handle(PROTOCOL.LOCAL)
-    const mainWindow = windowUtil.creaateWindow({
-        scheme: PROTOCOL.MAIN_WINDOW,
-        url: process.env.APP_URL,
+    windowUtil.createMainWindow()
+    /*
+    const crawler = new BrowserCrawler()
+    crawler.run({
+        label: '웹 자동화 테스트',
+        status: BROWSER_CRWALER_STATUS.WAITING,
+        commands: [
+            {
+                type: BROWSER_CRAWLER_COMMAND.REDIRECT,
+                url: 'https://google.com',
+            } as BrowserCrawler.IRedirectCommand,
+            {
+                type: BROWSER_CRAWLER_COMMAND.REDIRECT,
+                url: 'https://naver.com',
+            } as BrowserCrawler.IRedirectCommand,
+        ],
     })
-    windowUtil.setMainWindow(mainWindow)
+    */
 })
 app.on('window-all-closed', () => {
     app.quit()

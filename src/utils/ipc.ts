@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron'
-import logger from '@/utils/logger'
+import logger from '@/logger'
 export const controller = async <T>(channel: string, fn: Function) => {
     ipcMain.handle(channel, async (event: Electron.IpcMainInvokeEvent, payload: T) => {
         let response: IpcController.IResponse = {

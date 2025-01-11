@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { app, ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { controller } from '@/utils/ipc'
-import logger from '@/utils/logger'
+import logger from '@/logger'
 import windowUtil from '@/utils/window'
 import { IPC_APP } from '@/constants/ipc'
 // 앱 종료시 자동 업데이트

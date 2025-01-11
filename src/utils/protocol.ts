@@ -3,7 +3,7 @@ import url from 'url'
 import _ from 'lodash'
 import { protocol, net } from 'electron'
 import { PROTOCOL } from '@/constants/app'
-export const registerScheme = (
+export const register = (
     scheme: string,
     {
         secure = true,
@@ -30,7 +30,7 @@ export const registerScheme = (
     ])
 }
 export const registerMainWindow = () => {
-    registerScheme(PROTOCOL.MAIN_WINDOW)
+    register(PROTOCOL.MAIN_WINDOW)
 }
 export const handleMainWindow = () => {
     protocol.handle(PROTOCOL.MAIN_WINDOW, async (request) => {
@@ -50,6 +50,8 @@ export const handle = (scheme: PROTOCOL) => {
     })
 }
 export default {
+    register,
     registerMainWindow,
+    handle,
     handleMainWindow,
 }
