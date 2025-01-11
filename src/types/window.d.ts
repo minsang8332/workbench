@@ -1,5 +1,5 @@
 import { BROWSER_CRAWLER_COMMAND, BROWSER_CRWALER_STATUS } from '@/constants/window'
-export namespace BrowserCrawler {
+export namespace WindowUtil {
     // 명령어 세트
     interface ICommandSet {
         label: string
@@ -13,6 +13,10 @@ export namespace BrowserCrawler {
     // 이동 하기 명령어
     interface IRedirectCommand extends ICommand {
         url: string
+        timeout: number
+    }
+    interface IClickCommand extends ICommand {
+        selector: string
         timeout: number
     }
     // 실행 내역

@@ -1,5 +1,6 @@
 export enum BROWSER_CRAWLER_COMMAND {
     REDIRECT = 'redirect',
+    CLICK = 'click',
 }
 export enum BROWSER_CRWALER_STATUS {
     PREPARE, // 준비

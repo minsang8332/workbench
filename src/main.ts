@@ -5,6 +5,8 @@ import windowUtil from '@/utils/window'
 import protocolUtil from '@/utils/protocol'
 import { BROWSER_CRAWLER_COMMAND, BROWSER_CRWALER_STATUS } from '@/constants/window'
 import { PROTOCOL } from '@/constants/app'
+import { BrowserCrawler } from '@/utils/window'
+import type { WindowUtil } from '@/types/window'
 if (app.requestSingleInstanceLock() == false) {
     app.quit()
     process.exit(0)
@@ -25,12 +27,15 @@ app.on('ready', () => {
         commands: [
             {
                 type: BROWSER_CRAWLER_COMMAND.REDIRECT,
-                url: 'https://google.com',
-            } as BrowserCrawler.IRedirectCommand,
+                url: 'https://medium.com/',
+                timeout: 5000,
+            } as WindowUtil.IRedirectCommand,
             {
-                type: BROWSER_CRAWLER_COMMAND.REDIRECT,
-                url: 'https://naver.com',
-            } as BrowserCrawler.IRedirectCommand,
+                type: BROWSER_CRAWLER_COMMAND.CLICK,
+                selector:
+                    '#root > div > div.l.n.x > div.aw.ax.n.x.ay.az.ba > div.bb.av.m.bc.bd.be.bf.bg.bh > div > div > div > div.n.o.bs > div.bi > span > a > button',
+                timeout: 8000,
+            } as WindowUtil.IClickCommand,
         ],
     })
     */
