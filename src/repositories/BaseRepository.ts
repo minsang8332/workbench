@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import ElectronStore from 'electron-store'
-import type { IStore, IStoreTable } from '@/types/model'
-abstract class BaseRepository<T extends IStoreTable> {
+import type { IRepository, IModel } from '@/types/model'
+abstract class BaseRepository<T extends IModel> {
     _store: ElectronStore
     _key: string
     constructor(key: string) {
@@ -9,11 +9,11 @@ abstract class BaseRepository<T extends IStoreTable> {
         this._key = key
         this.loadStore()
     }
-    loadStore = (): IStore<T> | null => {
-        let store = this._store.get(this._key) as IStore<T>
+    loadStore = (): IRepository<T> | null => {
+        let store = this._store.get(this._key) as IRepository<T>
         if (_.isEmpty(store)) {
             this.createStore()
-            store = this._store.get(this._key) as IStore<T>
+            store = this._store.get(this._key) as IRepository<T>
         }
         return store
     }
@@ -23,7 +23,7 @@ abstract class BaseRepository<T extends IStoreTable> {
             table: [],
         })
     }
-    updateStore(store: IStore<T>) {
+    updateStore(store: IRepository<T>) {
         this._store.set(this._key, store)
     }
     deleteStore() {

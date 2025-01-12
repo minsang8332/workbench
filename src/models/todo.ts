@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { TodoStatus } from '@/constants/model'
+import { TODO_STATUS } from '@/constants/model'
 import type { ITodo } from '@/types/model'
 class Todo implements ITodo {
     id: ITodo['id']
@@ -14,14 +14,14 @@ class Todo implements ITodo {
         id = '',
         title = '',
         description = null,
-        status = TodoStatus.PREPARE,
+        status = TODO_STATUS.PREPARE,
         startedAt = null,
         endedAt = null,
     }: {
         id?: string
         title: string
         description?: string | null
-        status: TodoStatus
+        status: TODO_STATUS
         startedAt?: Date | null
         endedAt?: Date | null
     }) {

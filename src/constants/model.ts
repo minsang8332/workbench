@@ -1,4 +1,4 @@
-export enum TodoStatus {
+export enum TODO_STATUS {
     PREPARE = 0,
     PROCESS = 1,
     DONE = 2,
@@ -16,5 +16,4 @@ export enum CRWALER_STATUS {
     RUNNING, // 실행중
     COMPLETE, // 완료
     FAILED, // 실패
-    STOPPED, // 중지
 }

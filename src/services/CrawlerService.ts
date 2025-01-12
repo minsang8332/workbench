@@ -4,28 +4,30 @@ import windowUtil from '@/utils/window'
 import logger from '@/logger'
 import { CRAWLER_COMMAND, CRWALER_STATUS } from '@/constants/model'
 import type { Crawler } from '@/types/model'
+import { ClickCommand, CursorCommand, RedirectCommand, WriteCommand } from '@/models/crawler/Command'
+import History from '@/models/crawler/History'
 class CrawlerService {
-    private _queue: Crawler.ICommandSet[] = []
+    private _queue: Crawler.IWorker[] = []
     private _queueLimit = 2
     constructor(queueLimit: number = 2) {
         this._queueLimit = queueLimit
     }
-    addQueue(commandSet: Crawler.ICommandSet) {
-        if (this._queue.length < this._queueLimit && commandSet.status == CRWALER_STATUS.PREPARE) {
-            commandSet.status = CRWALER_STATUS.WAITING
-            this._queue.push(commandSet)
+    addQueue(worker: Crawler.IWorker) {
+        if (this._queue.length < this._queueLimit && worker.status == CRWALER_STATUS.PREPARE) {
+            worker.status = CRWALER_STATUS.WAITING
+            this._queue.push(worker)
         }
     }
-    async run(commandSet: Crawler.ICommandSet) {
+    async run(worker: Crawler.IWorker) {
         let round = 1
         let downloads: string[] = []
         let startedAt = new Date()
         try {
-            if (commandSet.status != CRWALER_STATUS.WAITING) {
-                throw new Error(`명령어 세트는 대기상태가 아닙니다. (status: ${commandSet.status})`)
+            if (worker.status != CRWALER_STATUS.WAITING) {
+                throw new Error(`명령어 세트는 대기상태가 아닙니다. (status: ${worker.status})`)
             }
             // 실행중으로 변경
-            commandSet.status = CRWALER_STATUS.RUNNING
+            worker.status = CRWALER_STATUS.RUNNING
             // 화면 생성
             const window = windowUtil.createWindow({
                 partition: new Date().toString(),
@@ -46,52 +48,56 @@ class CrawlerService {
             })
             /** @TODO 스케줄링의 경우 화면 끈상태로 동작 할 것 */
             window.show()
-            for (const command of commandSet.commands) {
+            for (const command of worker.commands) {
                 window.setIgnoreMouseEvents(true)
                 // 블로킹 상태일 때에는 대기하도록 한다.
                 while (blocking) {
                     await new Promise((resolve) => setTimeout(resolve, 500))
                 }
-                switch (command.type) {
+                switch (command.name) {
                     case CRAWLER_COMMAND.REDIRECT:
-                        await this.redirect(window, command as Crawler.IRedirectCommand)
+                        await this.redirect(window, command)
                         break
                     case CRAWLER_COMMAND.CLICK:
-                        await this.click(window, command as Crawler.IClickCommand)
+                        await this.click(window, command)
                         break
                     case CRAWLER_COMMAND.WRITE:
-                        await this.write(window, command as Crawler.IWriteCommand)
+                        await this.write(window, command)
                         break
                     case CRAWLER_COMMAND.CURSOR:
-                        await this.cursor(window, command as Crawler.ICursorCommand)
+                        await this.cursor(window, command)
                         break
                 }
                 round++
             }
-            commandSet.status = CRWALER_STATUS.COMPLETE
-            this.addHistory({
-                commandSet,
-                message: '정상적으로 처리되었습니다.',
-                downloads,
-                startedAt,
-                endedAt: new Date(),
-            })
+            this.addHistory(
+                new History({
+                    workerId: worker.id,
+                    status: CRWALER_STATUS.COMPLETE,
+                    message: '정상적으로 처리되었습니다.',
+                    downloads,
+                    startedAt,
+                    endedAt: new Date(),
+                })
+            )
         } catch (error) {
-            commandSet.status = CRWALER_STATUS.FAILED
-            this.addHistory({
-                commandSet,
-                error: error as Error,
-                errorRound: round,
-                downloads,
-                startedAt,
-                endedAt: new Date(),
-            })
+            this.addHistory(
+                new History({
+                    workerId: worker.id,
+                    status: CRWALER_STATUS.FAILED,
+                    error: error as Error,
+                    errorRound: round,
+                    downloads,
+                    startedAt,
+                    endedAt: new Date(),
+                })
+            )
         }
         /** @TODO 화면이 켜져있으면 닫도록 한다 */
         // window.close()
     }
     // 이동하기
-    async redirect(window: BrowserWindow, command: Crawler.IRedirectCommand) {
+    async redirect(window: BrowserWindow, command: RedirectCommand) {
         return new Promise((resolve, reject) => {
             const timer = setTimeout(() => reject(new Error('Redirect 시간 초과')), command.timeout)
             const clear = () => {
@@ -113,7 +119,7 @@ class CrawlerService {
         })
     }
     // 클릭하기
-    async click(window: BrowserWindow, command: Crawler.IClickCommand) {
+    async click(window: BrowserWindow, command: ClickCommand) {
         return new Promise((resolve, reject) => {
             // 팝업은 막되 리다이렉션
             window.webContents.setWindowOpenHandler(({ url }) => {
@@ -148,7 +154,7 @@ class CrawlerService {
         })
     }
     // 입력하기
-    async write(window: BrowserWindow, command: Crawler.IWriteCommand) {
+    async write(window: BrowserWindow, command: WriteCommand) {
         return new Promise((resolve, reject) => {
             window.webContents
                 .executeJavaScript(
@@ -179,7 +185,7 @@ class CrawlerService {
         })
     }
     // HTML 요소 클릭하기
-    async cursor(window: BrowserWindow, command: Crawler.ICursorCommand) {
+    async cursor(window: BrowserWindow, command: CursorCommand) {
         window.setIgnoreMouseEvents(false)
         window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
         const selector = await window.webContents.executeJavaScript(`
@@ -234,25 +240,9 @@ class CrawlerService {
         `)
         return selector
     }
-    addHistory({
-        commandSet = null,
-        message = null,
-        error = null,
-        errorRound = null,
-        downloads = [],
-        startedAt,
-        endedAt,
-    }: {
-        commandSet: Crawler.ICommandSet | null
-        message?: string | null
-        error?: Error | null
-        errorRound?: number | null
-        downloads: string[]
-        startedAt: Date
-        endedAt: Date
-    }) {
-        console.error({ message, error })
+    addHistory(history: History) {
         // @TODO 스토어 저장
+        console.log({ history })
     }
 }
 export default CrawlerService

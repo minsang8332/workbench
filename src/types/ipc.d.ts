@@ -52,7 +52,7 @@ namespace IpcController {
                 id?: string
                 title: string
                 description?: string | null
-                status: TodoStatus
+                status: TODO_STATUS
                 startedAt: Date | null
                 endedAt: Date | null
                 sprints?: ISaveSprint[]
