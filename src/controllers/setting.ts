@@ -8,10 +8,11 @@ import commonUtil from '@/utils/common'
 import { controller } from '@/utils/ipc'
 import { IPC_SETTING } from '@/constants/ipc'
 import { PROTOCOL } from '@/constants/app'
+import type { IPCRequest, IPCResponse } from '@/types/ipc'
 // 패스코드 정보 가져오기
 controller(
     IPC_SETTING.LOAD_PASSCODE,
-    async (request: IpcController.Request.Setting.ILoadPasscode, response: IpcController.IResponse) => {
+    async (request: IPCRequest.Setting.ILoadPasscode, response: IPCResponse.IBase) => {
         const passcodePath = path.join(app.getPath('userData'), '.passcode')
         if (!commonUtil.isAvailablePath(passcodePath)) {
             throw new Error('관리자 권한으로 실행해 주세요.')
@@ -35,7 +36,7 @@ controller(
 // 패스코드 검증하기
 controller(
     IPC_SETTING.VERIFY_PASSCODE,
-    async (request: IpcController.Request.Setting.IVerifyPasscode, response: IpcController.IResponse) => {
+    async (request: IPCRequest.Setting.IVerifyPasscode, response: IPCResponse.IBase) => {
         if (_.isEmpty(request.text)) {
             throw new Error('패스코드가 입력되지 않았습니다.')
         }
@@ -61,7 +62,7 @@ controller(
 // 패스코드 변경하기
 controller(
     IPC_SETTING.UPDATE_PASSCODE,
-    async (request: IpcController.Request.Setting.IUpdatePasscode, response: IpcController.IResponse) => {
+    async (request: IPCRequest.Setting.IUpdatePasscode, response: IPCResponse.IBase) => {
         if (_.isEmpty(request.text)) {
             throw new Error('패스코드가 입력되지 않았습니다.')
         }
@@ -99,7 +100,7 @@ controller(
 // 패스코드 활성화
 controller(
     IPC_SETTING.ACTIVATE_PASSCODE,
-    async (request: IpcController.Request.Setting.IActivatePasscode, response: IpcController.IResponse) => {
+    async (request: IPCRequest.Setting.IActivatePasscode, response: IPCResponse.IBase) => {
         if (!_.isBoolean(request.active)) {
             throw new Error('패스코드 활성화 여부가 입력되지 않았습니다.')
         }
@@ -130,7 +131,7 @@ controller(
 // 오버레이 비디오 정보 가져오기
 controller(
     IPC_SETTING.LOAD_OVERLAY_VIDEOS,
-    async (request: IpcController.Request.App.ILoadOverlayVideos, response: IpcController.IResponse) => {
+    async (request: IPCRequest.App.ILoadOverlayVideos, response: IPCResponse.IBase) => {
         const overlayVideoPath = path.join(app.getPath('userData'), '.overlay-video')
         if (!fs.existsSync(overlayVideoPath)) {
             return response
@@ -162,7 +163,7 @@ controller(
 // 오버레이 비디오 경로 설정
 controller(
     IPC_SETTING.UPDATE_OVERLOAY_VIDEO,
-    async (request: IpcController.Request.App.IUpdateOverlayVideo, response: IpcController.IResponse) => {
+    async (request: IPCRequest.App.IUpdateOverlayVideo, response: IPCResponse.IBase) => {
         const mainWindow = windowUtil.getMainWindow()
         const result = await dialog.showOpenDialog(mainWindow, {
             properties: ['openDirectory'],

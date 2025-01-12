@@ -4,6 +4,7 @@ import '@/controllers'
 import windowUtil from '@/utils/window'
 import protocolUtil from '@/utils/protocol'
 import { PROTOCOL } from '@/constants/app'
+import logger from './logger'
 /*
 import { CRAWLER_COMMAND, CRWALER_STATUS } from '@/constants/model'
 import CrawlerService from '@/services/CrawlerService'

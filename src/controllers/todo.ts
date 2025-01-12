@@ -6,9 +6,9 @@ import TodoSprintRepository from '@/repositories/TodoSprintRepository'
 import TodoService from '@/services/TodoService'
 import Todo from '@/models/Todo'
 import type { ITodoSprint } from '@/types/model'
-
+import type { IPCRequest, IPCResponse } from '@/types/ipc'
 // 해야 할 일 목록
-controller(IPC_TODO.LOAD, (request: IpcController.Request.Todo.ILoad, response: IpcController.IResponse) => {
+controller(IPC_TODO.LOAD, (request: IPCRequest.Todo.ILoad, response: IPCResponse.IBase) => {
     const todoRepository = new TodoRepository()
     const todos = todoRepository.findAll()
     response.data.todos = todos
@@ -16,7 +16,7 @@ controller(IPC_TODO.LOAD, (request: IpcController.Request.Todo.ILoad, response: 
     return response
 })
 // 해야 할 일 편집
-controller(IPC_TODO.SAVE, (request: IpcController.Request.Todo.ISave, response: IpcController.IResponse) => {
+controller(IPC_TODO.SAVE, (request: IPCRequest.Todo.ISave, response: IPCResponse.IBase) => {
     const todoService = new TodoService()
     const todoRepository = new TodoRepository()
     const todo = new Todo(request)
@@ -30,7 +30,7 @@ controller(IPC_TODO.SAVE, (request: IpcController.Request.Todo.ISave, response: 
     return response
 })
 // 해야 할 일 제거
-controller(IPC_TODO.DELETE, (request: IpcController.Request.Todo.IDelete, response: IpcController.IResponse) => {
+controller(IPC_TODO.DELETE, (request: IPCRequest.Todo.IDelete, response: IPCResponse.IBase) => {
     const todoSprintRepository = new TodoSprintRepository()
     const todoRepository = new TodoRepository()
     todoSprintRepository.deleteByTodoId(request.id)
@@ -38,23 +38,17 @@ controller(IPC_TODO.DELETE, (request: IpcController.Request.Todo.IDelete, respon
     return response
 })
 // 스프린트 가져오기
-controller(
-    IPC_TODO.LOAD_SPRINT,
-    (request: IpcController.Request.Todo.ILoadSprint, response: IpcController.IResponse) => {
-        const todoId = request.todoId
-        const todoSprintRepository = new TodoSprintRepository()
-        const sprints = todoSprintRepository.findByTodoId(todoId)
-        response.data.sprints = sprints
-        response.result = true
-        return response
-    }
-)
+controller(IPC_TODO.LOAD_SPRINT, (request: IPCRequest.Todo.ILoadSprint, response: IPCResponse.IBase) => {
+    const todoId = request.todoId
+    const todoSprintRepository = new TodoSprintRepository()
+    const sprints = todoSprintRepository.findByTodoId(todoId)
+    response.data.sprints = sprints
+    response.result = true
+    return response
+})
 // 스프린트 제거
-controller(
-    IPC_TODO.DELETE_SPRINT,
-    (request: IpcController.Request.Todo.IDeleteSprint, response: IpcController.IResponse) => {
-        const todoSprintRepository = new TodoSprintRepository()
-        response.result = todoSprintRepository.delete(request.id)
-        return response
-    }
-)
+controller(IPC_TODO.DELETE_SPRINT, (request: IPCRequest.Todo.IDeleteSprint, response: IPCResponse.IBase) => {
+    const todoSprintRepository = new TodoSprintRepository()
+    response.result = todoSprintRepository.delete(request.id)
+    return response
+})

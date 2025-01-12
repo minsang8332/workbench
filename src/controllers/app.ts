@@ -5,6 +5,7 @@ import { controller } from '@/utils/ipc'
 import logger from '@/logger'
 import windowUtil from '@/utils/window'
 import { IPC_APP } from '@/constants/ipc'
+import type { IPCResponse } from '@/types/ipc'
 // 앱 종료시 자동 업데이트
 autoUpdater.autoInstallOnAppQuit = false
 let update: boolean = false
@@ -47,6 +48,6 @@ ipcMain.on(IPC_APP.AVAILABLE_UPDATE, () => {
         mainWindow.webContents.send(IPC_APP.AVAILABLE_UPDATE, update)
     }
 })
-controller(IPC_APP.AVAILABLE_UPDATE, (request: unknown, response: IpcController.IResponse) => {
+controller(IPC_APP.AVAILABLE_UPDATE, (request: unknown, response: IPCResponse.IBase) => {
     return response
 })

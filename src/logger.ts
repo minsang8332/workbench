@@ -1,26 +1,28 @@
-import log, { LogFile } from 'electron-log'
 import path from 'path'
-import _ from 'lodash'
 import dayjs from 'dayjs'
+import _ from 'lodash'
 import { app } from 'electron'
-log.transports.file.resolvePathFn = (variables) => {
-    let fileName: string = 'main.log'
-    if (variables.fileName) {
-        fileName = variables.fileName
-    }
-    const today = dayjs().format('YYYY-MM-DD')
-    return path.join(path.resolve(app.getPath('documents'), app.getName()), 'logs', today, fileName)
+import logger from 'electron-log'
+logger.transports.file.resolvePathFn = (variables, options) => {
+    const level = options ? options.level : 'main'
+    const today = dayjs().format('YYYYMMDD')
+    const filePath = path.join(path.resolve(app.getPath('appData'), app.getName()), 'logs', `${level}-${today}.log`)
+    return filePath
 }
-log.error = (error) => {
-    let payload = error
-    if (error instanceof Error) {
+const { error } = logger
+logger.error = (e: unknown) => {
+    let payload = e
+    if (e instanceof Error) {
         payload = {
-            name: error.name,
-            message: error.message
-                ? error.message.toString()
-                : error.toString(),
+            name: e.name,
+            message: e.message,
+            stack: e.stack,
         }
+    } else if (_.isPlainObject(e)) {
+        payload = JSON.stringify(e)
+    } else {
+        payload = _.toString(e)
     }
-    log.error(payload)
+    error(payload)
 }
-export default log
+export default logger
