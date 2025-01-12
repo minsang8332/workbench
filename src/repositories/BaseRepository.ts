@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import ElectronStore from 'electron-store'
+import type { IStore, IStoreTable } from '@/types/model'
 abstract class BaseRepository<T extends IStoreTable> {
     _store: ElectronStore
     _key: string

@@ -1,3 +1,4 @@
+import type { ITodo, ITodoSprint } from '@/types/model'
 class TodoSprint implements ITodoSprint {
     id: ITodoSprint['id']
     todoId: ITodoSprint['todoId']

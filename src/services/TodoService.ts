@@ -1,6 +1,7 @@
 import TodoRepository from '@/repositories/TodoRepository'
-import TodoSprintRepository from '@/repositories/TodoSprintService'
-import TodoSprint from '@/models/todo-sprint'
+import TodoSprintRepository from '@/repositories/TodoSprintRepository'
+import TodoSprint from '@/models/TodoSprint'
+import type { ITodo, ITodoSprint } from '@/types/model'
 class TodoService {
     _todoRepositroy: TodoRepository
     _todoSprintRepository: TodoSprintRepository

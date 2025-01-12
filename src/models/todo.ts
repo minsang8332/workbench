@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import { TodoStatus } from '@/constants/model'
+import type { ITodo } from '@/types/model'
 class Todo implements ITodo {
     id: ITodo['id']
     title: ITodo['title']

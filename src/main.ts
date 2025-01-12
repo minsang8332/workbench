@@ -3,10 +3,11 @@ import _ from 'lodash'
 import '@/controllers'
 import windowUtil from '@/utils/window'
 import protocolUtil from '@/utils/protocol'
-import { BROWSER_CRAWLER_COMMAND, BROWSER_CRWALER_STATUS } from '@/constants/window'
 import { PROTOCOL } from '@/constants/app'
-import { BrowserCrawler } from '@/utils/window'
-import type { WindowUtil } from '@/types/window'
+/*
+import { CRAWLER_COMMAND, CRWALER_STATUS } from '@/constants/model'
+import CrawlerService from '@/services/CrawlerService'
+*/
 if (app.requestSingleInstanceLock() == false) {
     app.quit()
     process.exit(0)
@@ -19,27 +20,28 @@ app.on('ready', () => {
     protocolUtil.handleMainWindow()
     protocolUtil.handle(PROTOCOL.LOCAL)
     windowUtil.createMainWindow()
-
-    const crawler = new BrowserCrawler()
-    crawler.run({
+    /*
+    const crawlerService = new CrawlerService()
+    crawlerService.run({
         label: '웹 자동화 테스트',
         status: BROWSER_CRWALER_STATUS.WAITING,
         commands: [
             {
-                type: BROWSER_CRAWLER_COMMAND.REDIRECT,
+                type: CRAWLER_COMMAND.REDIRECT,
                 url: 'https://www.naver.com/',
                 timeout: 5000,
             } as WindowUtil.IRedirectCommand,
             {
-                type: BROWSER_CRAWLER_COMMAND.CLICK,
+                type: CRAWLER_COMMAND.CLICK,
                 selector: '#sform > fieldset > button',
                 timeout: 5000,
             } as WindowUtil.IClickCommand,
             {
-                type: BROWSER_CRAWLER_COMMAND.CURSOR,
+                type: CRAWLER_COMMAND.CURSOR,
             },
         ],
     })
+    */
 })
 app.on('window-all-closed', () => {
     app.quit()
