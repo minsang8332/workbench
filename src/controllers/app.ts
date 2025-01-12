@@ -4,7 +4,7 @@ import { autoUpdater } from 'electron-updater'
 import { controller } from '@/utils/ipc'
 import logger from '@/logger'
 import windowUtil from '@/utils/window'
-import { IPC_APP } from '@/constants/ipc'
+import { IPC_APP_CHANNEL } from '@/constants/ipc'
 import type { IPCResponse } from '@/types/ipc'
 // 앱 종료시 자동 업데이트
 autoUpdater.autoInstallOnAppQuit = false
@@ -18,7 +18,7 @@ export const checkForUpdates = () => {
 autoUpdater.on('update-available', (event) => {
     let mainWindow = windowUtil.getMainWindow()
     if (mainWindow) {
-        mainWindow.webContents.send(IPC_APP.AVAILABLE_UPDATE)
+        mainWindow.webContents.send(IPC_APP_CHANNEL.AVAILABLE_UPDATE)
         update = true
     }
 })
@@ -34,20 +34,20 @@ autoUpdater.on('error', (error, message) => {
     }
     logger.error(message)
 })
-ipcMain.on(IPC_APP.EXIT, () => app.quit())
-ipcMain.on(IPC_APP.INSTALL_UPDATE, () => {
+ipcMain.on(IPC_APP_CHANNEL.EXIT, () => app.quit())
+ipcMain.on(IPC_APP_CHANNEL.INSTALL_UPDATE, () => {
     try {
         autoUpdater.quitAndInstall()
     } catch (e) {
         logger.error(e)
     }
 })
-ipcMain.on(IPC_APP.AVAILABLE_UPDATE, () => {
+ipcMain.on(IPC_APP_CHANNEL.AVAILABLE_UPDATE, () => {
     let mainWindow = windowUtil.getMainWindow()
     if (mainWindow) {
-        mainWindow.webContents.send(IPC_APP.AVAILABLE_UPDATE, update)
+        mainWindow.webContents.send(IPC_APP_CHANNEL.AVAILABLE_UPDATE, update)
     }
 })
-controller(IPC_APP.AVAILABLE_UPDATE, (request: unknown, response: IPCResponse.IBase) => {
+controller(IPC_APP_CHANNEL.AVAILABLE_UPDATE, (request: unknown, response: IPCResponse.IBase) => {
     return response
 })

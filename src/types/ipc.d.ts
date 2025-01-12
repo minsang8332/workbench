@@ -82,6 +82,9 @@ export namespace IPCRequest {
     // 웹 자동화
     namespace Crawler {
         interface ILoadWorkers {}
+        interface ISaveWorker {}
+        interface ILoadHistories {}
+        interface IScrapingSelector {}
     }
 }
 export namespace IPCResponse {

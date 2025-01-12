@@ -6,16 +6,17 @@ import { app, dialog } from 'electron'
 import windowUtil from '@/utils/window'
 import commonUtil from '@/utils/common'
 import { controller } from '@/utils/ipc'
-import { IPC_SETTING } from '@/constants/ipc'
+import { IPCError } from '@/errors/ipc'
+import { IPC_SETTING_CHANNEL } from '@/constants/ipc'
 import { PROTOCOL } from '@/constants/app'
 import type { IPCRequest, IPCResponse } from '@/types/ipc'
 // 패스코드 정보 가져오기
 controller(
-    IPC_SETTING.LOAD_PASSCODE,
+    IPC_SETTING_CHANNEL.LOAD_PASSCODE,
     async (request: IPCRequest.Setting.ILoadPasscode, response: IPCResponse.IBase) => {
         const passcodePath = path.join(app.getPath('userData'), '.passcode')
         if (!commonUtil.isAvailablePath(passcodePath)) {
-            throw new Error('관리자 권한으로 실행해 주세요.')
+            throw new IPCError('관리자 권한으로 실행해 주세요.')
         }
         try {
             if (!fs.existsSync(passcodePath)) {
@@ -26,23 +27,22 @@ controller(
             const passcode = JSON.parse(json)
             response.data.empty = _.isEmpty(passcode.text)
             response.data.active = passcode.active
-            response.result = true
         } catch (e) {
-            throw new Error('패스코드 검증 중 오류가 발생했습니다.')
+            throw new IPCError('패스코드 검증 중 오류가 발생했습니다.')
         }
         return response
     }
 )
 // 패스코드 검증하기
 controller(
-    IPC_SETTING.VERIFY_PASSCODE,
+    IPC_SETTING_CHANNEL.VERIFY_PASSCODE,
     async (request: IPCRequest.Setting.IVerifyPasscode, response: IPCResponse.IBase) => {
         if (_.isEmpty(request.text)) {
-            throw new Error('패스코드가 입력되지 않았습니다.')
+            throw new IPCError('패스코드가 입력되지 않았습니다.')
         }
         const passcodePath = path.join(app.getPath('userData'), '.passcode')
         if (!fs.existsSync(passcodePath)) {
-            throw new Error('패스코드 정보를 확인 할 수 없습니다.')
+            throw new IPCError('패스코드 정보를 확인 할 수 없습니다.')
         }
         /**
          * 💡TODO
@@ -61,14 +61,14 @@ controller(
 )
 // 패스코드 변경하기
 controller(
-    IPC_SETTING.UPDATE_PASSCODE,
+    IPC_SETTING_CHANNEL.UPDATE_PASSCODE,
     async (request: IPCRequest.Setting.IUpdatePasscode, response: IPCResponse.IBase) => {
         if (_.isEmpty(request.text)) {
-            throw new Error('패스코드가 입력되지 않았습니다.')
+            throw new IPCError('패스코드가 입력되지 않았습니다.')
         }
         const passcodePath = path.join(app.getPath('userData'), '.passcode')
         if (!commonUtil.isAvailablePath(passcodePath)) {
-            throw new Error('관리자 권한으로 실행해 주세요.')
+            throw new IPCError('관리자 권한으로 실행해 주세요.')
         }
         try {
             if (!fs.existsSync(passcodePath)) {
@@ -89,20 +89,19 @@ controller(
             }
             passcode.text = request.text
             fs.writeFileSync(passcodePath, JSON.stringify(passcode))
-            response.result = true
         } catch (e) {
             fs.removeSync(passcodePath)
-            throw new Error('패스코드 변경 중 오류가 발생했습니다.')
+            throw new IPCError('패스코드 변경 중 오류가 발생했습니다.')
         }
         return response
     }
 )
 // 패스코드 활성화
 controller(
-    IPC_SETTING.ACTIVATE_PASSCODE,
+    IPC_SETTING_CHANNEL.ACTIVATE_PASSCODE,
     async (request: IPCRequest.Setting.IActivatePasscode, response: IPCResponse.IBase) => {
         if (!_.isBoolean(request.active)) {
-            throw new Error('패스코드 활성화 여부가 입력되지 않았습니다.')
+            throw new IPCError('패스코드 활성화 여부가 입력되지 않았습니다.')
         }
         const passcodePath = path.join(app.getPath('userData'), '.passcode')
         try {
@@ -120,17 +119,16 @@ controller(
             passcode.active = request.active
             fs.writeFileSync(passcodePath, JSON.stringify(passcode))
             response.data.active = passcode.active
-            response.result = true
         } catch (e) {
             fs.removeSync(passcodePath)
-            throw new Error('패스코드 활성화 중 오류가 발생했습니다.')
+            throw new IPCError('패스코드 활성화 중 오류가 발생했습니다.')
         }
         return response
     }
 )
 // 오버레이 비디오 정보 가져오기
 controller(
-    IPC_SETTING.LOAD_OVERLAY_VIDEOS,
+    IPC_SETTING_CHANNEL.LOAD_OVERLAY_VIDEOS,
     async (request: IPCRequest.App.ILoadOverlayVideos, response: IPCResponse.IBase) => {
         const overlayVideoPath = path.join(app.getPath('userData'), '.overlay-video')
         if (!fs.existsSync(overlayVideoPath)) {
@@ -152,9 +150,8 @@ controller(
                 })
             response.data.dirname = overlayVideo.dirname
             response.data.videos = videos
-            response.result = true
         } catch (e) {
-            throw new Error('배경화면 (오버레이) 정보를 가져오는 중 오류가 발생했습니다.')
+            throw new IPCError('배경화면 (오버레이) 정보를 가져오는 중 오류가 발생했습니다.')
         }
 
         return response
@@ -162,7 +159,7 @@ controller(
 )
 // 오버레이 비디오 경로 설정
 controller(
-    IPC_SETTING.UPDATE_OVERLOAY_VIDEO,
+    IPC_SETTING_CHANNEL.UPDATE_OVERLOAY_VIDEO,
     async (request: IPCRequest.App.IUpdateOverlayVideo, response: IPCResponse.IBase) => {
         const mainWindow = windowUtil.getMainWindow()
         const result = await dialog.showOpenDialog(mainWindow, {
@@ -173,15 +170,14 @@ controller(
         }
         const dirname = _.first(result.filePaths)
         if (!(_.isString(dirname) && fs.lstatSync(dirname).isDirectory())) {
-            throw new Error('옳바른 폴더를 선택해 주세요.')
+            throw new IPCError('옳바른 폴더를 선택해 주세요.')
         }
         const overlayVideoPath = path.join(app.getPath('userData'), '.overlay-video')
         try {
             const overlayVideo: IOverlayVideo = { dirname }
             fs.writeFileSync(overlayVideoPath, JSON.stringify(overlayVideo))
-            response.result = true
         } catch (e) {
-            throw new Error('배경화면 (오버레이) 경로 변경 중 오류가 발생했습니다.')
+            throw new IPCError('배경화면 (오버레이) 경로 변경 중 오류가 발생했습니다.')
         }
         return response
     }

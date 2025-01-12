@@ -12,7 +12,7 @@ export class RedirectCommand extends BaseCommand implements Crawler.Command.IRed
     url: Crawler.Command.IRedirect['url']
     timeout: Crawler.Command.IRedirect['timeout']
     constructor(
-        url: CRAWLER_COMMAND,
+        url: string,
         {
             timeout = 5000,
         }: {

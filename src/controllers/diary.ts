@@ -3,7 +3,8 @@ import path from 'path'
 import fs from 'fs-extra'
 import { app, ipcMain, shell } from 'electron'
 import { controller } from '@/utils/ipc'
-import { IPC_DIARY } from '@/constants/ipc'
+import { IPCError } from '@/errors/ipc'
+import { IPC_DIARY_CHANNEL } from '@/constants/ipc'
 import type { IDiary } from '@/types/model'
 import type { IPCRequest, IPCResponse } from '@/types/ipc'
 const allowedExts = ['.md', '.txt']
@@ -23,9 +24,9 @@ const sliceRootDir = (rootDir: string, destDir: string) => {
 // 앱 실행할 때 폴더 초기화
 fs.ensureDirSync(rootDir, { mode: 0o2775 })
 // 문서함 열기
-ipcMain.on(IPC_DIARY.OPEN_DIR, () => shell.openPath(rootDir))
+ipcMain.on(IPC_DIARY_CHANNEL.OPEN_DIR, () => shell.openPath(rootDir))
 // 모든 문서 목록
-controller(IPC_DIARY.LOAD, async (request: IPCRequest.Diary.ILoad, response: IPCResponse.IBase) => {
+controller(IPC_DIARY_CHANNEL.LOAD, async (request: IPCRequest.Diary.ILoad, response: IPCResponse.IBase) => {
     const diaries: IDiary[] = []
     const search = async (destDir = '/') => {
         const stats = fs.lstatSync(destDir)
@@ -48,30 +49,28 @@ controller(IPC_DIARY.LOAD, async (request: IPCRequest.Diary.ILoad, response: IPC
     }
     await search(rootDir)
     response.data.diaries = diaries
-    response.result = true
     return response
 })
 // 문서 내용 가져오기
-controller(IPC_DIARY.READ, (request: IPCRequest.Diary.IRead, response: IPCResponse.IBase) => {
+controller(IPC_DIARY_CHANNEL.READ, (request: IPCRequest.Diary.IRead, response: IPCResponse.IBase) => {
     let text = null
     if (_.isEmpty(request.filepath)) {
-        throw new Error('문서 경로를 입력해 주세요.')
+        throw new IPCError('문서 경로를 입력해 주세요.')
     }
     const filepath = path.join(rootDir, request.filepath)
     text = fs.readFileSync(filepath, 'utf8')
     response.data.text = text
-    response.result = true
     return response
 })
 // 문서 저장
-controller(IPC_DIARY.WRITE, async (request: IPCRequest.Diary.IWrite, response: IPCResponse.IBase) => {
+controller(IPC_DIARY_CHANNEL.WRITE, async (request: IPCRequest.Diary.IWrite, response: IPCResponse.IBase) => {
     let filepath = request.filepath
     if (_.isEmpty(filepath)) {
         filepath = '/'
     }
     let destDir = path.join(rootDir, request.filepath)
     if (!(await isSubdir(rootDir, destDir))) {
-        throw new Error('유효하지 않은 경로 입니다.')
+        throw new IPCError('유효하지 않은 경로 입니다.')
     }
     // 파일로 들어온 경우 부모 경로로 자동설정
     if (!(await fs.lstat(destDir)).isDirectory()) {
@@ -83,7 +82,7 @@ controller(IPC_DIARY.WRITE, async (request: IPCRequest.Diary.IWrite, response: I
     }
     ext = /^\.(\w)+/.test(ext) ? ext : `.${ext}`
     if (!_.includes(allowedExts, ext)) {
-        throw new Error(`작성 가능한 확장자는 다음과 같습니다. (${allowedExts.join(',')})`)
+        throw new IPCError(`작성 가능한 확장자는 다음과 같습니다. (${allowedExts.join(',')})`)
     }
     // 파일명이 없으면 신규 파일로 간주
     let filename = request.filename
@@ -109,18 +108,17 @@ controller(IPC_DIARY.WRITE, async (request: IPCRequest.Diary.IWrite, response: I
     }
     fs.writeFileSync(path.format({ dir: destDir, name: filename, ext }), text)
     response.data.filename = filename
-    response.result = true
     return response
 })
 // 문서 폴더 생성
-controller(IPC_DIARY.WRITE_DIR, async (request: IPCRequest.Diary.IWriteDir, response: IPCResponse.IBase) => {
+controller(IPC_DIARY_CHANNEL.WRITE_DIR, async (request: IPCRequest.Diary.IWriteDir, response: IPCResponse.IBase) => {
     let dirpath = request.dirpath
     if (_.isEmpty(dirpath)) {
         dirpath = '/'
     }
     dirpath = path.join(rootDir, request.dirpath)
     if (!(await isSubdir(rootDir, dirpath))) {
-        throw new Error('유효하지 않은 경로 입니다.')
+        throw new IPCError('유효하지 않은 경로 입니다.')
     }
     // 파일로 들어온 경우 부모 경로로 자동설정
     if (!(await fs.lstat(dirpath)).isDirectory()) {
@@ -147,18 +145,17 @@ controller(IPC_DIARY.WRITE_DIR, async (request: IPCRequest.Diary.IWriteDir, resp
     dirpath = path.join(dirpath, dirname)
     fs.ensureDir(dirpath)
     response.data.dirname = dirname
-    response.result = true
     return response
 })
 // 문서 삭제
-controller(IPC_DIARY.REMOVE, async (request: IPCRequest.Diary.IRemove, response: IPCResponse.IBase) => {
+controller(IPC_DIARY_CHANNEL.REMOVE, async (request: IPCRequest.Diary.IRemove, response: IPCResponse.IBase) => {
     let filepath = request.filepath
     if (_.isEmpty(filepath)) {
         filepath = '/'
     }
     filepath = path.join(rootDir, filepath)
     if (!(await isSubdir(rootDir, filepath))) {
-        throw new Error('문서를 제거 할 수 없습니다.')
+        throw new IPCError('문서를 제거 할 수 없습니다.')
     }
     await fs.rm(filepath, {
         recursive: true,
@@ -166,24 +163,23 @@ controller(IPC_DIARY.REMOVE, async (request: IPCRequest.Diary.IRemove, response:
     })
     const fileinfo = path.parse(filepath)
     response.data.filename = fileinfo.base
-    response.result = true
     return response
 })
 // 문서 이름 변경
-controller(IPC_DIARY.RENAME, async (request: IPCRequest.Diary.IRename, response: IPCResponse.IBase) => {
+controller(IPC_DIARY_CHANNEL.RENAME, async (request: IPCRequest.Diary.IRename, response: IPCResponse.IBase) => {
     let filepath = request.filepath
     if (_.isEmpty(filepath)) {
         filepath = '/'
     }
     filepath = path.join(rootDir, filepath)
     if (!(await isSubdir(rootDir, filepath))) {
-        throw new Error('유효하지 않은 경로 입니다.')
+        throw new IPCError('유효하지 않은 경로 입니다.')
     }
     const fromParsed = path.parse(filepath)
     const destParsed = path.parse(request.filename)
     // 파일이면 확장자 확인하여 예외처리
     if (fs.lstatSync(filepath).isFile() && _.includes(allowedExts, destParsed.ext) == false) {
-        throw new Error(`작성 가능한 확장자는 다음과 같습니다. (${allowedExts.join(',')})`)
+        throw new IPCError(`작성 가능한 확장자는 다음과 같습니다. (${allowedExts.join(',')})`)
     }
     // 새로운 경로를 생성
     const renameDir = path.format({
@@ -192,15 +188,14 @@ controller(IPC_DIARY.RENAME, async (request: IPCRequest.Diary.IRename, response:
         ext: destParsed.ext,
     })
     if (fs.existsSync(renameDir)) {
-        throw new Error('이미 존재하는 파일명 입니다.')
+        throw new IPCError('이미 존재하는 파일명 입니다.')
     }
     fs.renameSync(filepath, renameDir)
     response.data.filepath = sliceRootDir(rootDir, renameDir)
-    response.result = true
     return response
 })
 // 문서 이동
-controller(IPC_DIARY.MOVE, async (request: IPCRequest.Diary.IMove, response: IPCResponse.IBase) => {
+controller(IPC_DIARY_CHANNEL.MOVE, async (request: IPCRequest.Diary.IMove, response: IPCResponse.IBase) => {
     let frompath = request.frompath
     if (_.isEmpty(frompath)) {
         frompath = '/'
@@ -213,12 +208,12 @@ controller(IPC_DIARY.MOVE, async (request: IPCRequest.Diary.IMove, response: IPC
     destpath = path.join(rootDir, destpath)
     // 목적지가 대상의 하위 상위 경로인 경우
     if (await isSubdir(frompath, destpath)) {
-        throw new Error('하위 경로로 이동할 수 없습니다.')
+        throw new IPCError('하위 경로로 이동할 수 없습니다.')
     }
     const fromParsed = path.parse(frompath)
     const destParsed = path.parse(destpath)
     if (fromParsed.base == destParsed.base) {
-        throw new Error('대상과 이동할 곳의 이름이 일치하여 덮어 쓸 수 없습니다.')
+        throw new IPCError('대상과 이동할 곳의 이름이 일치하여 덮어 쓸 수 없습니다.')
     }
     // 목적지가 파일인 경우
     if (fs.lstatSync(destpath).isFile()) {
@@ -227,11 +222,10 @@ controller(IPC_DIARY.MOVE, async (request: IPCRequest.Diary.IMove, response: IPC
         destpath = path.join(destpath, fromParsed.base)
     }
     if (frompath == destpath) {
-        throw new Error('목적지가 현재 경로 입니다.')
+        throw new IPCError('목적지가 현재 경로 입니다.')
     }
     // 대상을 목적 경로의 부모 디렉토리로 이동
     fs.moveSync(frompath, destpath)
     response.data.filename = sliceRootDir(rootDir, destpath)
-    response.result = true
     return response
 })

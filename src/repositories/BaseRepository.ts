@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import ElectronStore from 'electron-store'
+import { IPCError } from '@/errors/ipc'
 import type { IRepository, IModel } from '@/types/model'
 abstract class BaseRepository<T extends IModel> {
     _store: ElectronStore
@@ -32,7 +33,7 @@ abstract class BaseRepository<T extends IModel> {
     findAll = (): T[] => {
         const store = this.loadStore()
         if (!(store && store.table)) {
-            throw new Error(`findAll - ${this._key} 테이블을 찾을 수 없습니다.`)
+            throw new IPCError(`${this._key} 테이블을 찾을 수 없습니다.`)
         }
         return store.table
     }
@@ -43,10 +44,10 @@ abstract class BaseRepository<T extends IModel> {
     insert(payload: T) {
         const store = this.loadStore()
         if (!(store && store.table)) {
-            throw new Error(`insert - ${this._key} 테이블을 찾을 수 없습니다.`)
+            throw new IPCError(`${this._key} 테이블을 찾을 수 없습니다.`)
         }
         if (!_.isEmpty(payload.id)) {
-            throw new Error(`insert - ${this._key} id 값을 선언하면 안됩니다.`)
+            throw new IPCError(`${this._key} id 값을 선언하면 안됩니다.`)
         }
         store.autoIncrement++
         payload.id = _.toString(store.autoIncrement)
@@ -56,15 +57,15 @@ abstract class BaseRepository<T extends IModel> {
     }
     update(payload: T) {
         if (_.isNil(payload.id)) {
-            throw new Error(`update - ${this._key} id 값이 유효하지 않습니다.`)
+            throw new IPCError(`${this._key} id 값이 유효하지 않습니다.`)
         }
         const store = this.loadStore()
         if (!(store && store.table)) {
-            throw new Error(`update - ${this._key} 테이블을 찾을 수 없습니다.`)
+            throw new IPCError(`${this._key} 테이블을 찾을 수 없습니다.`)
         }
         const idx = store.table.findIndex((field) => field.id == payload.id)
         if (idx == -1) {
-            throw new Error(`update - ${this._key} 필드 ${payload.id} 를 찾을 수 없습니다.`)
+            throw new IPCError(`${this._key} 필드 ${payload.id} 를 찾을 수 없습니다.`)
         }
         payload.updatedAt = new Date()
         store.table.splice(idx, 1, payload)
@@ -73,15 +74,15 @@ abstract class BaseRepository<T extends IModel> {
     }
     delete(id: string): boolean {
         if (_.isNil(id)) {
-            throw new Error(`delete - ${this._key} id 값이 유효하지 않습니다.`)
+            throw new IPCError(`${this._key} id 값이 유효하지 않습니다.`)
         }
         const store = this.loadStore()
         if (!(store && store.table)) {
-            throw new Error(`delete - ${this._key} 테이블을 찾을 수 없습니다.`)
+            throw new IPCError(`${this._key} 테이블을 찾을 수 없습니다.`)
         }
         const idx = store.table.findIndex((field) => field.id == id)
         if (idx == -1) {
-            throw new Error(`delete - ${this._key} 필드 ${id} 를 찾을 수 없습니다.`)
+            throw new IPCError(`${this._key} 필드 ${id} 를 찾을 수 없습니다.`)
         }
         store.table.splice(idx, 1)
         this.updateStore(store)
