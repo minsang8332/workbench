@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { type NavigationGuardNext, type RouteLocationNormalized } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 export const useRouterGuard = () => {
-    const onBeforeEnterSetting = (
+    const onBeforeEnterDrawerOpen = (
         from: RouteLocationNormalized,
         to: RouteLocationNormalized,
         next: NavigationGuardNext
@@ -12,6 +12,6 @@ export const useRouterGuard = () => {
         next()
     }
     return {
-        onBeforeEnterSetting
+        onBeforeEnterDrawerOpen
     }
 }

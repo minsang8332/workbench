@@ -1,0 +1,39 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.worker-form {
+    height: 100%;
+    width: 100%;
+    padding: 0 2rem;
+    &__content {
+        overflow-y: auto;
+        label.text-label {
+            font-size: 1rem;
+            font-family: 'Pretendard Bold';
+            font-weight: 700;
+            line-height: 1.5;
+            padding: 0 0.25rem;
+        }
+    }
+    &__actions {
+        min-height: 4.5rem;
+        width: 100%;
+        button {
+            @include mixins.scale-animation;
+            border-radius: 0.25rem;
+            height: 2.5rem;
+            width: 50%;
+            &.btn-cancel {
+                background-color: variables.$gray-light-color;
+            }
+            &.btn-submit {
+                background-color: variables.$dark-color;
+                color: #fff;
+                &:disabled {
+                    transform: unset;
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+            }
+        }
+    }
+}

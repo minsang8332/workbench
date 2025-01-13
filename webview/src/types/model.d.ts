@@ -1,26 +1,31 @@
-interface IDiary {
+import { TODO_STATUS, CRAWLER_STATUS, CRAWLER_COMMAND } from '@/costants/model'
+export interface IModel {
+    id?: string
+    createdAt?: Date
+    updatedAt?: Date | null
+}
+export interface IFile {
     path: string
-    filename?: string
     isDir: boolean
+    createdAt: Date
+    updatedAt: Date | null
+}
+export interface IDiary extends IFile {
+    path: string
+    isDir: boolean
+    filename?: string
     createdAt: number
     updatedAt: number
 }
-interface IDiaryDetail extends IDiary {
-    text: string
-}
-interface ITodo {
-    id: string
+export interface ITodo extends IModel {
     title: string // 제목
     description: string // 내용
-    status: ITodoStatus['value'] // 상태
+    status: TODO_STATUS
     tasks: ITodoSprint[]
     startedAt: Date | null // 시작일
     endedAt: Date | null // 목표일
-    createdAt?: Date | null
-    updatedAt?: Date | null
 }
-interface ITodoSprint {
-    id?: string
+export interface ITodoSprint extends IModel {
     todoId: string
     title: string
     description: string | null
@@ -28,7 +33,39 @@ interface ITodoSprint {
     startedAt: Date | null
     endedAt: Date | null
 }
-interface ITodoStatus {
-    label: string
-    value: number
+export namespace Crawler {
+    interface IWorker extends IModel {
+        label: string
+        status: CRAWLER_STATUS
+        commands: Crawler.Command.IBase[]
+    }
+    interface IHistory extends IModel {
+        workerId: Crawler.IWorker['id']
+        status: CRAWLER_STATUS | null
+        message: string | null
+        error: Error | null
+        errorRound: number | null
+        downloads: string[]
+        startedAt: Date
+        endedAt: Date
+    }
+    namespace Command {
+        interface IBase {
+            name: CRAWLER_COMMAND
+        }
+        interface IRedirect extends Crawler.Command.IBase {
+            url: string
+            timeout: number
+        }
+        interface IClick extends Crawler.Command.IBase {
+            selector: string
+            timeout: number
+        }
+        interface IWrite extends Crawler.Command.IBase {
+            selector: string
+            text: string
+            timeout: number
+        }
+        interface ICursor extends Crawler.Command.IBase {}
+    }
 }

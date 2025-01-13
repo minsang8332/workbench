@@ -1,7 +1,7 @@
 interface IContextMenuItem {
     name: string
     icon: string
-    color: string
+    color?: string
     desc: string
     shortcut: string
     cb?: () => void

@@ -14,11 +14,19 @@ controller(IPC_TODO_CHANNEL.LOAD, (request: IPCRequest.Todo.ILoad, response: IPC
     response.data.todos = todos
     return response
 })
+
 // 해야 할 일 편집
 controller(IPC_TODO_CHANNEL.SAVE, (request: IPCRequest.Todo.ISave, response: IPCResponse.IBase) => {
     const todoService = new TodoService()
     const todoRepository = new TodoRepository()
-    const todo = new Todo(request)
+    const todo = new Todo({
+        id: request.id,
+        title: request.title,
+        description: request.description,
+        status: request.status,
+        startedAt: request.startedAt,
+        endedAt: request.endedAt,
+    })
     const id = request.id ? todoRepository.update(todo) : todoRepository.insert(todo)
     // 스프린트 일괄 처리
     if (id && _.isArray(request.sprints)) {
@@ -27,6 +35,7 @@ controller(IPC_TODO_CHANNEL.SAVE, (request: IPCRequest.Todo.ISave, response: IPC
     response.data.id = id
     return response
 })
+
 // 해야 할 일 제거
 controller(IPC_TODO_CHANNEL.DELETE, (request: IPCRequest.Todo.IDelete, response: IPCResponse.IBase) => {
     const todoSprintRepository = new TodoSprintRepository()

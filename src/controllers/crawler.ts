@@ -4,11 +4,12 @@ import WorkerRepository from '@/repositories/crawler/WorkerRepository'
 import HistoryRepository from '@/repositories/crawler/HistoryRepository'
 import CrawlerService from '@/services/CrawlerService'
 import { IPCError } from '@/errors/ipc'
+import Worker from '@/models/crawler/Worker'
 import { IPC_CRAWLER_CHANNEL } from '@/constants/ipc'
 import type { IPCRequest, IPCResponse } from '@/types/ipc'
-import { CursorCommand, RedirectCommand } from '@/models/crawler/Command'
+import { CursorCommand } from '@/models/crawler/Command'
 
-// 웹 자동화 작업 목록
+// 웹 자동화 목록
 controller(
     IPC_CRAWLER_CHANNEL.LOAD_WORKERS,
     async (request: IPCRequest.Crawler.ILoadWorkers, response: IPCResponse.IBase) => {
@@ -17,6 +18,51 @@ controller(
         return response
     }
 )
+
+// 웹 자동화 생성 및 편집
+controller(IPC_CRAWLER_CHANNEL.SAVE_WORKER, (request: IPCRequest.Crawler.ISaveWorker, response: IPCResponse.IBase) => {
+    const workerRepository = new WorkerRepository()
+    const worker = new Worker({
+        id: request.id,
+        label: request.label,
+        status: request.status,
+        commands: request.commands,
+    })
+    const id = request.id ? workerRepository.update(worker) : workerRepository.insert(worker)
+    response.data.id = id
+    return response
+})
+
+// 웹 자동화 라벨 편집
+controller(
+    IPC_CRAWLER_CHANNEL.SAVE_WORKER_LABEL,
+    (request: IPCRequest.Crawler.ISaveWorker, response: IPCResponse.IBase) => {
+        const workerRepository = new WorkerRepository()
+        const worker = workerRepository.findOne(request.id)
+        if (!(worker && worker.id)) {
+            throw new IPCError('자동화 세트를 식별 할 수 없습니다')
+        }
+        const id = workerRepository.update(
+            new Worker({
+                ...worker,
+                label: request.label,
+            })
+        )
+        response.data.id = id
+        return response
+    }
+)
+
+// 웹 자동화 제거
+controller(
+    IPC_CRAWLER_CHANNEL.DELETE_WORKER,
+    (request: IPCRequest.Crawler.IDeleteWorker, response: IPCResponse.IBase) => {
+        const workerRepository = new WorkerRepository()
+        response.result = workerRepository.delete(request.id)
+        return response
+    }
+)
+
 // 웹 자동화 히스토리 내역
 controller(
     IPC_CRAWLER_CHANNEL.LOAD_HISTORIES,

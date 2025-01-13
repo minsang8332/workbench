@@ -4,7 +4,11 @@ import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useDiaryStore } from '@/stores/diary'
 import DiaryCard from '@/components/diary/DiaryCard'
+import type { IDiary } from '@/types/model'
 import './IndexPage.scoped.scss'
+interface IRecentDiary extends IDiary {
+    text: string
+}
 export default defineComponent({
     name: 'DiaryPage',
     components: {
@@ -14,7 +18,7 @@ export default defineComponent({
         const router = useRouter()
         const appStore = useAppStore()
         const diaryStore = useDiaryStore()
-        const recentDiaries = ref<IDiaryDetail[]>([])
+        const recentDiaries = ref<IRecentDiary[]>([])
         const onDiaryCard = (diary: IDiary) => {
             router
                 .push({
@@ -70,7 +74,7 @@ export default defineComponent({
                     </div>
                 </div>
                 <div class="diary-page__content">
-                    {recentDiaries.value.map((diary: IDiaryDetail) => (
+                    {recentDiaries.value.map((diary: IRecentDiary) => (
                         <div class="diary-page__content-item">
                             <diary-card {...diary} onclick={() => onDiaryCard(diary)} />
                         </div>

@@ -1,11 +1,12 @@
 import _ from 'lodash'
-import { BrowserWindow, Event } from 'electron'
+import path from 'path'
+import { BrowserWindow, Event, session, app } from 'electron'
 import History from '@/models/crawler/History'
 import HistoryRepository from '@/repositories/crawler/HistoryRepository'
 import windowUtil from '@/utils/window'
 import { ClickCommand, CursorCommand, RedirectCommand, WriteCommand } from '@/models/crawler/Command'
 import { IPCError } from '@/errors/ipc'
-import { CRAWLER_COMMAND, CRWALER_STATUS } from '@/constants/model'
+import { CRAWLER_COMMAND, CRAWLER_STATUS } from '@/constants/model'
 import type { Crawler } from '@/types/model'
 class CrawlerService {
     private _blocking = false
@@ -18,38 +19,33 @@ class CrawlerService {
         let downloads: string[] = []
         let startedAt = new Date()
         try {
-            if (worker.status != CRWALER_STATUS.WAITING) {
+            if (worker.status != CRAWLER_STATUS.WAITING) {
                 throw new IPCError(`Worker ${worker.id} 는 대기상태가 아닙니다. (status: ${worker.status})`)
             }
             // 실행중으로 변경
-            worker.status = CRWALER_STATUS.RUNNING
+            worker.status = CRAWLER_STATUS.RUNNING
             const window = this.createWindow()
             window.show()
             for (const command of worker.commands) {
-                // 블로킹 상태일 때에는 대기하도록 한다.
+                // 블로킹 처리
                 while (this._blocking) {
                     await new Promise((resolve) => setTimeout(resolve, 500))
                 }
-                switch (command.name) {
-                    case CRAWLER_COMMAND.REDIRECT:
-                        await this.redirect(window, command)
-                        break
-                    case CRAWLER_COMMAND.CLICK:
-                        await this.click(window, command)
-                        break
-                    case CRAWLER_COMMAND.WRITE:
-                        await this.write(window, command)
-                        break
-                    case CRAWLER_COMMAND.CURSOR:
-                        await this.cursor(window, command)
-                        break
+                if (command instanceof RedirectCommand) {
+                    await this.redirect(window, command)
+                } else if (command instanceof ClickCommand) {
+                    await this.click(window, command)
+                } else if (command instanceof WriteCommand) {
+                    await this.write(window, command)
+                } else if (command instanceof CursorCommand) {
+                    await this.cursor(window, command)
                 }
                 round++
             }
             this.addHistory(
                 new History({
                     workerId: worker.id,
-                    status: CRWALER_STATUS.COMPLETE,
+                    status: CRAWLER_STATUS.COMPLETE,
                     message: '정상적으로 처리되었습니다.',
                     downloads,
                     startedAt,
@@ -60,7 +56,7 @@ class CrawlerService {
             this.addHistory(
                 new History({
                     workerId: worker.id,
-                    status: CRWALER_STATUS.FAILED,
+                    status: CRAWLER_STATUS.FAILED,
                     error: error as Error,
                     errorRound: round,
                     downloads,
@@ -223,13 +219,21 @@ class CrawlerService {
         return selector
     }
     createWindow() {
+        const partition = new Date().getTime().toString()
         const window = windowUtil.createWindow({
-            partition: new Date().toString(),
+            partition,
             width: 800,
             height: 600,
             parent: windowUtil.getMainWindow(),
             frame: true,
         })
+        const sess = session.fromPartition(partition)
+        // 다운로드가 발생하면 모달은 생략하고 downloads 폴더에 내려받도록 함
+        sess.on('will-download', (event, item, webContents) => {
+            const filePath = path.join(app.getPath('downloads'), item.getFilename())
+            item.setSavePath(filePath)
+        })
+        // 화면 이동중 명령 처리를 블로킹 하도록 함
         window.webContents.on('did-start-navigation', (event, url) => {
             this._blocking = true
         })

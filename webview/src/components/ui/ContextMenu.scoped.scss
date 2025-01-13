@@ -1,7 +1,6 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
 .context-menu {
-    @include mixins.glass(#fff);
     position: absolute;
     top: 0;
     left: 0;
@@ -9,19 +8,26 @@
     width: calc(1rem * 15);
     border-radius: 0.25rem;
     border: 2px solid variables.$border-color;
+    background-color: rgba(#fff, 0.95);
     &__header {
-        button.btn-close {
-            @include mixins.scale-animation;
-            border-radius: 0.25rem;
-            padding: 0.1rem;
-            i {
-                font-size: 1.2rem;
-                color: variables.$dark-color;
+        border-bottom: 1px solid variables.$border-color;
+        button {
+            @include mixins.scale-animation(0.8, 0.8);
+            &.btn-close {
+                border-radius: 0.25rem;
+                padding: 0.1rem;
+                i {
+                    font-size: 1.2rem;
+                    color: variables.$dark-color;
+                }
             }
         }
     }
     &__content {
         padding: 0.5rem 0;
+        button {
+            @include mixins.scale-animation(0.95, 0.95);
+        }
         .text-label {
             font-size: 0.9rem;
             color: variables.$dark-color;

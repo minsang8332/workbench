@@ -23,7 +23,10 @@
             @include mixins.cubic(variables.$todo-color, 2.25rem);
         }
         &.btn-setting {
-            @include mixins.cubic(variables.$setting-color, 2.25rem);
+            @include mixins.cubic(variables.$dark-color, 2.25rem);
+        }
+        &.btn-crawler {
+            @include mixins.cubic(variables.$crawler-color, 2.25rem);
         }
         &.btn-exit {
             @include mixins.cubic(variables.$dark-color, 2.25rem);

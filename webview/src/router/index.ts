@@ -73,7 +73,17 @@ const router = createRouter({
                             }
                         }
                     ],
-                    beforeEnter: [routerGuard.onBeforeEnterSetting]
+                    beforeEnter: [routerGuard.onBeforeEnterDrawerOpen]
+                },
+                // 웹 자동화
+                {
+                    name: 'crawler',
+                    path: 'crawler',
+                    components: {
+                        default: () => import('@/views/crawler/IndexPage'),
+                        drawer: () => import('@/components/crawler/WorkerDrawerMenu')
+                    },
+                    beforeEnter: [routerGuard.onBeforeEnterDrawerOpen]
                 }
             ]
         },

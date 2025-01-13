@@ -5,6 +5,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useDiaryStore } from '@/stores/diary'
 import { useDiary } from '@/composables/useDiary'
 import DiaryTextField from '@/components/diary/DiaryTextField'
+import type { IDiary } from '@/types/model'
 import './DiaryFile.scoped.scss'
 export interface IDiaryFile extends IDiary {
     title: string

@@ -1,11 +1,12 @@
+import _ from 'lodash'
 import { computed, unref, reactive } from 'vue'
 import { defineStore } from 'pinia'
-import _ from 'lodash'
-interface ITodoState {
+import type { ITodo, ITodoSprint } from '@/types/model'
+interface ITodoStoreState {
     todos: ITodo[]
 }
 export const useTodoStore = defineStore('todo', () => {
-    const state = reactive<ITodoState>({
+    const state = reactive<ITodoStoreState>({
         todos: []
     })
     // Getters

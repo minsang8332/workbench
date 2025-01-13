@@ -1,4 +1,4 @@
-import { CRWALER_STATUS } from '@/constants/model'
+import { CRAWLER_STATUS } from '@/constants/model'
 import type { Crawler } from '@/types/model'
 class Worket implements Crawler.IWorker {
     id: Crawler.IWorker['id']
@@ -8,14 +8,14 @@ class Worket implements Crawler.IWorker {
     createdAt: Crawler.IWorker['createdAt']
     updatedAt: Crawler.IWorker['updatedAt']
     constructor({
-        id = 'id',
+        id = '',
         label = '',
-        status = CRWALER_STATUS.PREPARE,
+        status = CRAWLER_STATUS.PREPARE,
         commands = [],
     }: {
         id?: string
         label: string
-        status: CRWALER_STATUS
+        status: CRAWLER_STATUS
         commands: Crawler.Command.IBase[]
     }) {
         this.id = id

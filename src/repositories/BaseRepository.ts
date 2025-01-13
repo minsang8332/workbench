@@ -47,7 +47,7 @@ abstract class BaseRepository<T extends IModel> {
             throw new IPCError(`${this._key} 테이블을 찾을 수 없습니다.`)
         }
         if (!_.isEmpty(payload.id)) {
-            throw new IPCError(`${this._key} id 값을 선언하면 안됩니다.`)
+            throw new IPCError(`${this._key} id 값이 선언되었습니다. (id: ${payload.id})`)
         }
         store.autoIncrement++
         payload.id = _.toString(store.autoIncrement)

@@ -86,8 +86,8 @@ contextBridge.exposeInMainWorld('$native', {
         writeDir(payload: IPCRequest.Diary.IWriteDir) {
             return invoke(IPC_DIARY_CHANNEL.WRITE_DIR, payload)
         },
-        remove(payload: IPCRequest.Diary.IRemove) {
-            return invoke(IPC_DIARY_CHANNEL.REMOVE, payload)
+        delete(payload: IPCRequest.Diary.IDelete) {
+            return invoke(IPC_DIARY_CHANNEL.DELETE, payload)
         },
         rename(payload: IPCRequest.Diary.IRename) {
             return invoke(IPC_DIARY_CHANNEL.RENAME, payload)
@@ -114,6 +114,18 @@ contextBridge.exposeInMainWorld('$native', {
         },
     },
     crawler: {
+        loadWorkers(payload: IPCRequest.Crawler.ILoadWorkers) {
+            return invoke(IPC_CRAWLER_CHANNEL.LOAD_WORKERS, payload)
+        },
+        saveWorker(payload: IPCRequest.Crawler.ISaveWorker) {
+            return invoke(IPC_CRAWLER_CHANNEL.SAVE_WORKER, payload)
+        },
+        saveWorkerLabel(payload: IPCRequest.Crawler.ISaveWorkerLabel) {
+            return invoke(IPC_CRAWLER_CHANNEL.SAVE_WORKER_LABEL, payload)
+        },
+        deleteWorker(payload: IPCRequest.Crawler.IDeleteWorker) {
+            return invoke(IPC_CRAWLER_CHANNEL.DELETE_WORKER, payload)
+        },
         scrapingSelector(payload: IPCRequest.Crawler.IScrapingSelector) {
             return invoke(IPC_CRAWLER_CHANNEL.SCRAPING_SELECTOR, payload)
         },

@@ -1,6 +1,6 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
-.setting-page {
+.crawler-page {
     $article-header: 3rem;
     height: calc(100% - variables.$dock-menu-height);
     padding-bottom: variables.$page-layout-padding;
@@ -9,6 +9,10 @@
         @include mixins.glass;
         height: $article-header;
         padding: 0 0.5rem;
+        i.mdi-robot {
+            color: variables.$crawler-color;
+            opacity: 0.5;
+        }
         i.mdi-chevron-right {
             font-size: 1.5rem;
         }
@@ -38,17 +42,5 @@
         @include mixins.glass;
         flex: 1 0;
         padding: 1rem;
-        .introduce {
-            flex: 0 0 15%;
-            b.text-title {
-                font-size: 1.25rem;
-            }
-            p.text-desc {
-                font-size: 0.9rem;
-            }
-        }
-        .inner-page {
-            flex: 1 0 85%;
-        }
     }
 }

@@ -1,0 +1,41 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.worker-drawer-menu {
+    $search-field-height: calc(variables.$dock-menu-height / 2);
+    @include mixins.glass;
+    height: 100%;
+    width: 100%;
+    padding: 0.5rem;
+    &__header {
+        flex: 0 0 $search-field-height;
+        .text-field__input {
+            padding: unset;
+            border: unset;
+            height: $search-field-height;
+            font-size: 0.9rem;
+            min-height: unset;
+            background-color: rgba(#fff, 0.3);
+            padding: 0 0.5rem;
+            &::placeholder {
+                color: variables.$dark-color;
+            }
+        }
+    }
+    &__content {
+        flex: 1 0;
+        overflow-y: scroll;
+    }
+    &__actions {
+        flex: 0 0 $search-field-height * 1.5;
+        button.btn-create {
+            @include mixins.scale-animation;
+            background-color: variables.$dark-color;
+            width: 100%;
+            height: 100%;
+            border-radius: 0.25rem;
+            b {
+                color: #fff;
+            }
+        }
+    }
+}

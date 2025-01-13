@@ -1,0 +1,40 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.worker-card {
+    @include mixins.scale-animation;
+    min-height: 4rem;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(variables.$dark-color, 0.3);
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    b,
+    p,
+    span,
+    i {
+        color: #fff;
+        font-size: 0.9rem !important;
+    }
+    button {
+        @include mixins.glass-animation;
+        border-radius: 50%;
+    }
+    .worker-status {
+        border-radius: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        background-color: rgba(#fff, 0.2);
+        &--waiting {
+            background-color: rgba(variables.$warning-color, 0.8);
+        }
+        &--running {
+            background-color: rgba(variables.$primary-color, 0.8);
+        }
+        &--complete {
+            background-color: rgba(variables.$success-color, 0.8);
+        }
+        &--failed {
+            background-color: rgba(variables.$danger-color, 0.8);
+        }
+    }
+}

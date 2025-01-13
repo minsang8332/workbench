@@ -4,10 +4,10 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import { defineComponent, reactive, computed, toRaw, type PropType } from 'vue'
 import TextField from '@/components/form/TextField'
 import TodoSprintCard from '@/components/todo/TodoSprintCard'
+import type { ITodoSprint } from '@/types/model'
 import '@/components/todo//TodoForm.scoped.scss'
 dayjs.extend(isSameOrBefore)
 interface ITodoFormState {
-    tabSize: number
     inputTitle: string
     inputDescription: string
     inputStatus: number
@@ -56,7 +56,6 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const state = reactive<ITodoFormState>({
-            tabSize: 4,
             inputTitle: props.title,
             inputDescription: props.description,
             inputStatus: props.status,
@@ -96,7 +95,8 @@ export default defineComponent({
         const printSprintCheckCount = computed(() =>
             _.toString(state.sprints.filter((sprint: ITodoSprint) => sprint.checked == true).length)
         )
-        const onSubmit = () => {
+        const onSubmit = (event: Event) => {
+            event.preventDefault()
             emit('submit', {
                 id: props.id,
                 title: state.inputTitle,

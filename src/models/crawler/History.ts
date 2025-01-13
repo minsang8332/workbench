@@ -1,4 +1,4 @@
-import { CRWALER_STATUS } from '@/constants/model'
+import { CRAWLER_STATUS } from '@/constants/model'
 import type { Crawler } from '@/types/model'
 class History implements Crawler.IHistory {
     id: Crawler.IHistory['id']
@@ -25,7 +25,7 @@ class History implements Crawler.IHistory {
     }: {
         id?: Crawler.IHistory['id']
         workerId: Crawler.IWorker['id']
-        status?: CRWALER_STATUS | null
+        status?: CRAWLER_STATUS | null
         message?: string | null
         error?: Error | null
         errorRound?: number | null

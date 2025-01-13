@@ -1,4 +1,4 @@
-import { CRAWLER_COMMAND, CRWALER_STATUS } from '@/constants/model'
+import { CRAWLER_COMMAND, CRAWLER_STATUS } from '@/constants/model'
 export interface IRepository<T extends IModel> {
     autoIncrement: number
     table: T[]
@@ -8,7 +8,6 @@ export interface IModel {
     createdAt: Date
     updatedAt: Date | null
 }
-// 파일 시스템
 export interface IFile {
     path: string
     isDir: boolean
@@ -37,12 +36,12 @@ export interface ITodoSprint extends IModel {
 export namespace Crawler {
     interface IWorker extends IModel {
         label: string
-        status: CRWALER_STATUS
-        commands: ICommand[]
+        status: CRAWLER_STATUS
+        commands: Crawler.Command.IBase[]
     }
     interface IHistory extends IModel {
         workerId: Crawler.IWorker['id']
-        status: CRWALER_STATUS | null
+        status: CRAWLER_STATUS | null
         message: string | null
         error: Error | null
         errorRound: number | null

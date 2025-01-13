@@ -1,12 +1,13 @@
 import { computed, reactive } from 'vue'
 import { defineStore } from 'pinia'
+import type { IDiary } from '@/types/model'
 import _ from 'lodash'
-interface IDiaryState {
+interface IDiaryStoreState {
     diaries: IDiary[]
     preventRoute: boolean
 }
 export const useDiaryStore = defineStore('diary', () => {
-    const state = reactive<IDiaryState>({
+    const state = reactive<IDiaryStoreState>({
         diaries: [],
         preventRoute: false
     })
@@ -130,7 +131,7 @@ export const useDiaryStore = defineStore('diary', () => {
     }
     // 문서 삭제
     const rmDiary = async ({ filepath }: { filepath: string }) => {
-        const response = await window.$native.diary.remove({ filepath })
+        const response = await window.$native.diary.delete({ filepath })
         return response.data.filename
     }
     // 문서 이동

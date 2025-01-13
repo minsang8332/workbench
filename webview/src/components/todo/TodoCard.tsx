@@ -79,7 +79,7 @@ export default defineComponent({
                         </button>
                     </div>
                 </div>
-                <div class="todo-card__actions flex justify-start items-end">
+                <div class="todo-card__actions flex justify-end items-end">
                     {printPeriod.value && (
                         <div class={classListPeriod.value}>{printPeriod.value}</div>
                     )}

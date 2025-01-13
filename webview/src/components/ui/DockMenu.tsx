@@ -25,14 +25,6 @@ export default defineComponent({
                 <div class="dock-menu__left flex justify-center items-center gap-2 h-full">
                     <button
                         type="button"
-                        class="btn-setting flex justify-center items-center"
-                        onClick={() => router.push({ name: 'setting' })}
-                    >
-                        <i class="mdi mdi-cog"></i>
-                        <span class="tooltip">환경설정</span>
-                    </button>
-                    <button
-                        type="button"
                         class="btn-diary flex justify-center items-center"
                         onClick={() => router.push({ name: 'diary' })}
                     >
@@ -47,6 +39,14 @@ export default defineComponent({
                         <i class="mdi mdi-flag-variant" />
                         <span class="tooltip">해야 할 일</span>
                     </button>
+                    <button
+                        type="button"
+                        class="btn-crawler flex justify-center items-center"
+                        onClick={() => router.push({ name: 'crawler' })}
+                    >
+                        <i class="mdi mdi-robot" />
+                        <span class="tooltip">웹 자동화</span>
+                    </button>
                 </div>
                 <div class="dock-menu__right flex justify-center items-center gap-2 h-full">
                     {settingStore.getActivePasscode && (
@@ -59,6 +59,14 @@ export default defineComponent({
                             <span class="tooltip">잠금</span>
                         </button>
                     )}
+                    <button
+                        type="button"
+                        class="btn-setting flex justify-center items-center"
+                        onClick={() => router.push({ name: 'setting' })}
+                    >
+                        <i class="mdi mdi-cog"></i>
+                        <span class="tooltip">환경설정</span>
+                    </button>
                     <button
                         type="button"
                         class="btn-exit flex justify-center items-center"

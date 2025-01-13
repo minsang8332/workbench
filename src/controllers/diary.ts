@@ -148,7 +148,7 @@ controller(IPC_DIARY_CHANNEL.WRITE_DIR, async (request: IPCRequest.Diary.IWriteD
     return response
 })
 // 문서 삭제
-controller(IPC_DIARY_CHANNEL.REMOVE, async (request: IPCRequest.Diary.IRemove, response: IPCResponse.IBase) => {
+controller(IPC_DIARY_CHANNEL.DELETE, async (request: IPCRequest.Diary.IDelete, response: IPCResponse.IBase) => {
     let filepath = request.filepath
     if (_.isEmpty(filepath)) {
         filepath = '/'

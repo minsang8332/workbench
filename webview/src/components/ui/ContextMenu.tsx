@@ -62,13 +62,13 @@ export default defineComponent({
         return () => (
             <div
                 ref={menuRef}
-                class="context-menu"
+                class="context-menu box-shadow"
                 style={unref(styleMenu)}
                 v-show={props.modelValue}
                 onFocusout={onFocusout}
                 tabindex="0"
             >
-                <div class="context-menu__header flex justify-end items-center box-shadow h-7 px-2 w-100">
+                <div class="context-menu__header flex justify-end items-center h-7 px-2 w-100">
                     <button type="button" class="btn-close" onClick={onClose}>
                         <i class="mdi mdi-close" />
                     </button>

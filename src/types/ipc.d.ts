@@ -1,4 +1,5 @@
-import { TODO_STATUS } from '@/constants/model'
+import { TODO_STATUS, CRAWLER_STATUS } from '@/constants/model'
+import { Crawler as CrawlerModel } from '@/types/model'
 export namespace IPCRequest {
     namespace App {
         interface ILoadOverlayVideos {}
@@ -22,7 +23,7 @@ export namespace IPCRequest {
             dirpath: string
             dirname: string
         }
-        interface IRemove {
+        interface IDelete {
             filepath: string
         }
         interface IRename {
@@ -66,7 +67,7 @@ export namespace IPCRequest {
             id: string
         }
     }
-    // 설정하기
+    // 환경설정
     namespace Setting {
         interface ILoadPasscode {}
         interface IUpdatePasscode {
@@ -82,7 +83,19 @@ export namespace IPCRequest {
     // 웹 자동화
     namespace Crawler {
         interface ILoadWorkers {}
-        interface ISaveWorker {}
+        interface ISaveWorker {
+            id?: string
+            label: string
+            status: CRAWLER_STATUS
+            commands: CrawlerModel.Command.IBase[]
+        }
+        interface ISaveWorkerLabel {
+            id?: string
+            label: string
+        }
+        interface IDeleteWorker {
+            id: string
+        }
         interface ILoadHistories {}
         interface IScrapingSelector {}
     }

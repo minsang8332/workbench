@@ -18,7 +18,7 @@ export enum IPC_DIARY_CHANNEL {
     WRITE = 'diary:write',
     OPEN_DIR = 'diary:open-dir',
     WRITE_DIR = 'diary:write-dir',
-    REMOVE = 'diary:remove',
+    DELETE = 'diary:delete',
     RENAME = 'diary:rename',
     MOVE = 'diary:move',
 }
@@ -31,7 +31,9 @@ export enum IPC_TODO_CHANNEL {
 }
 export enum IPC_CRAWLER_CHANNEL {
     LOAD_WORKERS = 'crawler:load-workers',
-    SAVE_WORKER = 'crawler:save-workers',
+    SAVE_WORKER = 'crawler:save-worker',
+    SAVE_WORKER_LABEL = 'crawler:save-worker-label',
+    DELETE_WORKER = 'crawler:delete-worker',
     LOAD_HISTORIES = 'crawler:load-histories',
     SCRAPING_SELECTOR = 'crawler:scraping-selector',
 }

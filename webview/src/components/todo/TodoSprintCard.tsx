@@ -1,5 +1,6 @@
 import { defineComponent, reactive, type PropType } from 'vue'
 import TextField from '@/components/form/TextField'
+import type { ITodoSprint } from '@/types/model'
 import './TodoSprintCard.scoped.scss'
 enum TodoSprintCardMode {
     VIEW_MODE,

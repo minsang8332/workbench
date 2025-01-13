@@ -1,13 +1,13 @@
 import { computed, unref, reactive } from 'vue'
 import { defineStore } from 'pinia'
 import _ from 'lodash'
-interface ISettingState {
+interface ISettingStoreState {
     activePasscode: boolean
     emptyPasscode: boolean
     overlayVideoDirname: string
 }
 export const useSettingStore = defineStore('setting', () => {
-    const state = reactive<ISettingState>({
+    const state = reactive<ISettingStoreState>({
         activePasscode: false,
         emptyPasscode: false,
         overlayVideoDirname: ''
@@ -17,10 +17,10 @@ export const useSettingStore = defineStore('setting', () => {
     const getEmptyPasscode = computed(() => state.emptyPasscode)
     const getOverlayVideoDirname = computed(() => state.overlayVideoDirname)
     // Mutations
-    const updateActivePasscode = (payload: ISettingState['activePasscode'] = false) => {
+    const updateActivePasscode = (payload: ISettingStoreState['activePasscode'] = false) => {
         state.activePasscode = payload
     }
-    const updateEmptyPasscode = (payload: ISettingState['emptyPasscode'] = false) => {
+    const updateEmptyPasscode = (payload: ISettingStoreState['emptyPasscode'] = false) => {
         state.emptyPasscode = payload
     }
     const updateOverlayVideoDirname = (payload: string) => {

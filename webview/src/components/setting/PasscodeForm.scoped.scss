@@ -10,7 +10,7 @@
         @include mixins.scale-animation;
         i {
             font-size: 5rem;
-            color: variables.$setting-color;
+            color: variables.$dark-color;
         }
     }
     input.passcode {
