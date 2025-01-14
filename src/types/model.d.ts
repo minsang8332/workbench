@@ -36,7 +36,6 @@ export interface ITodoSprint extends IModel {
 export namespace Crawler {
     interface IWorker extends IModel {
         label: string
-        status: CRAWLER_STATUS
         commands: Crawler.Command.IBase[]
     }
     interface IHistory extends IModel {

@@ -6,7 +6,7 @@ import HistoryRepository from '@/repositories/crawler/HistoryRepository'
 import windowUtil from '@/utils/window'
 import { ClickCommand, CursorCommand, RedirectCommand, WriteCommand } from '@/models/crawler/Command'
 import { IPCError } from '@/errors/ipc'
-import { CRAWLER_COMMAND, CRAWLER_STATUS } from '@/constants/model'
+import { CRAWLER_STATUS } from '@/constants/model'
 import type { Crawler } from '@/types/model'
 class CrawlerService {
     private _blocking = false
@@ -19,11 +19,6 @@ class CrawlerService {
         let downloads: string[] = []
         let startedAt = new Date()
         try {
-            if (worker.status != CRAWLER_STATUS.WAITING) {
-                throw new IPCError(`Worker ${worker.id} 는 대기상태가 아닙니다. (status: ${worker.status})`)
-            }
-            // 실행중으로 변경
-            worker.status = CRAWLER_STATUS.RUNNING
             const window = this.createWindow()
             window.show()
             for (const command of worker.commands) {

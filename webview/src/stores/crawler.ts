@@ -1,7 +1,6 @@
 import _ from 'lodash'
 import { reactive, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { CRAWLER_STATUS } from '@/costants/model'
 import type { Crawler } from '@/types/model'
 interface ICrawlerStoreState {
     workers: Crawler.IWorker[]

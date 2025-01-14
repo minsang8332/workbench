@@ -6,14 +6,14 @@ import { useDiaryStore } from '@/stores/diary'
 import { useDiary } from '@/composables/useDiary'
 import DiaryTextField from '@/components/diary/DiaryTextField'
 import type { IDiary } from '@/types/model'
-import './DiaryFile.scoped.scss'
+import './DiaryTree.scoped.scss'
 export interface IDiaryFile extends IDiary {
     title: string
     parent: string
     items: IDiaryFile[]
 }
 export default defineComponent({
-    name: 'DiaryFile',
+    name: 'DiaryTree',
     components: {
         DiaryTextField
     },
@@ -137,16 +137,19 @@ export default defineComponent({
         return () =>
             props.depth >= 0 &&
             props.depth <= props.maxDepth && (
-                <div class="diary-file">
+                <div class="diary-tree">
                     <div
-                        class="diary-file__content"
+                        class="diary-tree__content"
                         onDblclick={onDblClick}
                         onClick={() => (slideRef.value = !slideRef.value)}
                         onMouseup={onMouseup}
                         // v-ripple={!isRenaming.value}
                     >
                         <div
-                            class="diary-file__content-item flex items-center text-truncate"
+                            class={{
+                                'diary-tree__content-item flex items-center text-truncate': true,
+                                'diary-tree__content-item--active': route.params.path == props.path
+                            }}
                             draggable={!renameRef.value}
                             onDragenter={onPrevent}
                             onDragover={onPrevent}
@@ -184,7 +187,7 @@ export default defineComponent({
                         getItems.value.length > 0 &&
                         slideRef.value &&
                         getItems.value.map((item) => (
-                            <diary-file {...item} depth={props.depth + 1} />
+                            <diary-tree {...item} depth={props.depth + 1} />
                         ))}
                 </div>
             )

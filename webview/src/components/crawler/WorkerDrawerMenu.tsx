@@ -1,10 +1,17 @@
 import _ from 'lodash'
 import dayjs from 'dayjs'
-import { computed, reactive, defineComponent, inject, onBeforeMount, Teleport } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import {
+    computed,
+    reactive,
+    defineComponent,
+    inject,
+    onBeforeMount,
+    Teleport,
+    type PropType
+} from 'vue'
+import { useRouter } from 'vue-router'
 import { useCrawlerStore } from '@/stores/crawler'
 import commonUtil from '@/utils/common'
-import { CRAWLER_STATUS } from '@/costants/model'
 import type { Crawler } from '@/types/model'
 import ModalDialog from '@/components/ui/ModalDialog'
 import TextField from '@/components/form/TextField'
@@ -27,8 +34,15 @@ export default defineComponent({
         WorkerCard,
         WorkerForm
     },
-    setup() {
+    props: {
+        id: {
+            type: String as PropType<Crawler.IWorker['id']>,
+            default: ''
+        }
+    },
+    setup(props) {
         const $toast = inject('toast') as IToastPlugin
+        const router = useRouter()
         const appStore = useAppStore()
         const crawlerStore = useCrawlerStore()
         const state = reactive<IWorkerDrawerMenu>({
@@ -138,7 +152,6 @@ export default defineComponent({
             crawlerStore
                 .saveWorker({
                     label: `자동화 세트 ${dayjs().format('HHmm')}`,
-                    status: CRAWLER_STATUS.PREPARE,
                     commands: []
                 })
                 .then(() => $toast.success('자동화를 생성 했습니다'))
@@ -153,6 +166,9 @@ export default defineComponent({
                     $toast.error(new Error(`${worker.label ?? '자동화'} 을/를 제거 할 수 없습니다`))
                 )
                 .finally(onRefresh)
+        }
+        const onRouteWorkerCard = (event: Event, worker: Crawler.IWorker) => {
+            router.push({ name: 'worker', params: { id: worker.id } })
         }
         onBeforeMount(() => {
             onRefresh()
@@ -171,6 +187,8 @@ export default defineComponent({
                             <li class="worker-menu__item flex justify-start items-center gap-2">
                                 <worker-card
                                     {...worker}
+                                    active={props.id == worker.id}
+                                    onClick={(event: Event) => onRouteWorkerCard(event, worker)}
                                     onMouseup={(event: MouseEvent) => onContextMenu(event, worker)}
                                 />
                             </li>

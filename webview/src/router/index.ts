@@ -77,12 +77,13 @@ const router = createRouter({
                 },
                 // 웹 자동화
                 {
-                    name: 'crawler',
-                    path: 'crawler',
+                    name: 'worker',
+                    path: 'worker/:id?',
                     components: {
-                        default: () => import('@/views/crawler/IndexPage'),
+                        default: () => import('@/views/crawler/WorkerPage'),
                         drawer: () => import('@/components/crawler/WorkerDrawerMenu')
                     },
+                    props: true,
                     beforeEnter: [routerGuard.onBeforeEnterDrawerOpen]
                 }
             ]

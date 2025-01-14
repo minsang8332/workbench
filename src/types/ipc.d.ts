@@ -1,4 +1,4 @@
-import { TODO_STATUS, CRAWLER_STATUS } from '@/constants/model'
+import { TODO_STATUS } from '@/constants/model'
 import { Crawler as CrawlerModel } from '@/types/model'
 export namespace IPCRequest {
     namespace App {
@@ -86,7 +86,6 @@ export namespace IPCRequest {
         interface ISaveWorker {
             id?: string
             label: string
-            status: CRAWLER_STATUS
             commands: CrawlerModel.Command.IBase[]
         }
         interface ISaveWorkerLabel {

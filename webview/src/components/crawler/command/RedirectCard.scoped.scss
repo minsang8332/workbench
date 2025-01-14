@@ -1,0 +1,20 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.redirect-card {
+    height: 100%;
+    width: 100%;
+    border-radius: 0.25rem;
+    background-color: variables.$danger-color;
+    box-shadow: 0 0.25rem 0.5rem #000;
+    cursor: pointer;
+    &__header {
+        padding: 0.5rem;
+        height: 2rem;
+        b {
+            color: #fff;
+        }
+    }
+    &__content {
+        flex: 1;
+    }
+}

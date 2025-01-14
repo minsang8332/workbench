@@ -1,6 +1,6 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
-.diary-file {
+.diary-tree {
     &__content {
         &-item {
             @include mixins.glass-animation;
@@ -18,6 +18,12 @@
                 font-size: 0.9rem;
                 font-family: 'Pretendard SemiBold';
                 line-height: 1;
+            }
+            &--active {
+                p,
+                i {
+                    color: variables.$diary-color;
+                }
             }
             &:active {
                 transform: scale(0.8);

@@ -1,15 +1,15 @@
 import { defineComponent } from 'vue'
-import DiaryFile from '@/components/diary/DiaryFile'
+import DiaryTree from '@/components/diary/DiaryTree'
 import './DiaryDrawerMenu.scoped.scss'
 export default defineComponent({
     name: 'DiaryDrawerMenu',
     components: {
-        DiaryFile
+        DiaryTree
     },
     setup() {
         return () => (
             <div class="diary-drawer-menu">
-                <diary-file />
+                <diary-tree />
             </div>
         )
     }
