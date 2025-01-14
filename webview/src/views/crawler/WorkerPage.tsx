@@ -61,12 +61,21 @@ export default defineComponent({
             if (!(event && event.dataTransfer)) {
                 return
             }
-            const data = event.dataTransfer.getData('create-command')
-            if (_.isEmpty(data)) {
-                return
+            for (const key of ['create', 'move']) {
+                const data = event.dataTransfer.getData(key)
+                if (_.isEmpty(data)) {
+                    continue
+                }
+                if (key == 'create') {
+                    const command = JSON.parse(data)
+                    state.commands.push(command)
+                } else if (key == 'move') {
+                    const command = JSON.parse(data)
+                    const tmp = state.commands[command.sortNo]
+                    state.commands.splice(command.sortNo, 1)
+                    state.commands.push(tmp)
+                }
             }
-            const command = JSON.parse(data)
-            state.commands.push(command)
         }
         const onDropOutWorkerContainer = (event: DragEvent) => {
             event.preventDefault()
@@ -74,7 +83,7 @@ export default defineComponent({
             if (!(event && event.dataTransfer)) {
                 return
             }
-            const data = event.dataTransfer.getData('move-command')
+            const data = event.dataTransfer.getData('move')
             if (data) {
                 const command = JSON.parse(data)
                 if (_.isNumber(command.sortNo)) {
@@ -82,10 +91,13 @@ export default defineComponent({
                 }
             }
         }
-        const onDropCommandCard = (a: number, b: number) => {
+        const onReplaceCommand = (a: number, b: number) => {
             const tmp = state.commands[a]
             state.commands[a] = state.commands[b]
             state.commands[b] = tmp
+        }
+        const onSpliceCommand = (sortNo: number, command: Crawler.Command.IBase) => {
+            state.commands.splice(sortNo + 1, 0, command)
         }
         onBeforeMount(() => {
             initWorkerCommands()
@@ -152,7 +164,8 @@ export default defineComponent({
                                                 class="command-card"
                                                 {...commnad}
                                                 sort-no={i}
-                                                onDrop={onDropCommandCard}
+                                                onReplace={onReplaceCommand}
+                                                onSplice={onSpliceCommand}
                                             />
                                         )
                                         break
@@ -162,7 +175,8 @@ export default defineComponent({
                                                 class="command-card"
                                                 {...commnad}
                                                 sort-no={i}
-                                                onDrop={onDropCommandCard}
+                                                onReplace={onReplaceCommand}
+                                                onSplice={onSpliceCommand}
                                             />
                                         )
                                         break
@@ -172,7 +186,8 @@ export default defineComponent({
                                                 class="command-card"
                                                 {...commnad}
                                                 sort-no={i}
-                                                onDrop={onDropCommandCard}
+                                                onReplace={onReplaceCommand}
+                                                onSplice={onSpliceCommand}
                                             />
                                         )
                                         break
@@ -181,14 +196,13 @@ export default defineComponent({
                             })}
                         </ul>
                     </div>
-                </div>
-                <div class="worker-page__actions flex items-center">
                     <div class="command-panel flex items-start justify-start">
                         <write-card class="command-card" create />
                         <click-card class="command-card" create />
                         <redirect-card class="command-card" create />
                     </div>
                 </div>
+                <div class="worker-page__actions flex items-center"></div>
             </article>
         )
     }

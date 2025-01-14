@@ -1,11 +1,11 @@
 import _ from 'lodash'
 import { defineComponent, type PropType } from 'vue'
-import { CRAWLER_COMMAND } from '@/costants/model'
+import { useCrawler } from '@/composables/useCrawler'
 import type { Crawler } from '@/types/model'
 import './RedirectCard.scoped.scss'
 export default defineComponent({
     name: 'RedirectCard',
-    emits: ['drop'],
+    emits: ['replace', 'splice'],
     props: {
         url: {
             type: String as PropType<Crawler.Command.IRedirect['url']>
@@ -24,56 +24,25 @@ export default defineComponent({
         }
     },
     setup(props, { emit }) {
-        const onCreateCommand = (event: DragEvent) => {
-            event.stopPropagation()
-            if (event.dataTransfer) {
-                event.dataTransfer.setData(
-                    'create-command',
-                    JSON.stringify({
-                        name: CRAWLER_COMMAND.REDIRECT,
-                        url: '',
-                        timeout: 5000
-                    })
-                )
-            }
-        }
-        const onMoveCommand = (event: DragEvent) => {
-            event.stopPropagation()
-            if (event.dataTransfer) {
-                event.dataTransfer.setData(
-                    'move-command',
-                    JSON.stringify({
-                        sortNo: props.sortNo
-                    })
-                )
-            }
-        }
-        const onDropCommand = (event: DragEvent) => {
-            event.preventDefault()
-            event.stopPropagation()
-            if (!(event && event.dataTransfer)) {
-                return
-            }
-            const data = event.dataTransfer.getData('move-command')
-            if (_.isEmpty(data)) {
-                return
-            }
-            const command = JSON.parse(data)
-            emit('drop', props.sortNo, command.sortNo)
-        }
+        const crawler = useCrawler(emit, { sortNo: props.sortNo })
         return () => (
             <div
                 class="redirect-card flex flex-col"
                 draggable
                 onDragstart={(event) =>
-                    props.create ? onCreateCommand(event) : onMoveCommand(event)
+                    props.create
+                        ? crawler.onCreateRedirectCommand(event)
+                        : crawler.onMoveCommand(event)
                 }
-                onDrop={onDropCommand}
+                onDrop={crawler.onDropCommand}
             >
-                <div class="redirect-card__header flex justify-start items-center">
-                    <b>이동하기</b>
+                <div class="redirect-card__header flex justify-between items-center gap-1">
+                    <span>이동하기</span>
+                    {_.isNumber(props.sortNo) && <span>{props.sortNo + 1}</span>}
                 </div>
-                <div class="redirect-card__content flex justify-center items-center"></div>
+                <div class="redirect-card__content flex flex-col justify-center items-center gap-1">
+                    <p class="text-url">{props.url}</p>
+                </div>
             </div>
         )
     }

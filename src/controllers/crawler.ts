@@ -25,7 +25,6 @@ controller(IPC_CRAWLER_CHANNEL.SAVE_WORKER, (request: IPCRequest.Crawler.ISaveWo
     const worker = new Worker({
         id: request.id,
         label: request.label,
-        status: request.status,
         commands: request.commands,
     })
     const id = request.id ? workerRepository.update(worker) : workerRepository.insert(worker)

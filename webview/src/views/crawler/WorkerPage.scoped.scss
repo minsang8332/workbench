@@ -58,24 +58,20 @@
                 height: calc($command-card-height * 1.1);
                 width: 100%;
                 border-radius: 0.25rem;
-                background-color: rgba(variables.$dark-color, 0.8);
-                padding: 0 0.5rem !important;
+                background-color: rgba(#fff, 0.3);
+                padding: 0.5rem !important;
             }
             .command-card {
-                height: $command-card-height;
+                height: 100%;
                 width: $comamnd-card_width;
             }
         }
-    }
-    &__actions {
-        @include mixins.glass;
-        flex: 0 0 variables.$dock-menu-height;
         .command-panel {
             flex: 0 0 $command-card-height;
             position: relative;
             .command-card {
                 position: absolute;
-                left: calc($comamnd-card_width * 1.5);
+                left: 50%;
                 bottom: 0;
                 height: $command-card-height;
                 width: $comamnd-card_width;
@@ -97,5 +93,9 @@
                 }
             }
         }
+    }
+    &__actions {
+        @include mixins.glass;
+        flex: 0 0 variables.$dock-menu-height;
     }
 }
