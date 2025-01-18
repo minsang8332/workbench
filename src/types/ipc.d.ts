@@ -86,7 +86,7 @@ export namespace IPCRequest {
         interface ISaveWorker {
             id?: string
             label: string
-            commands: CrawlerModel.Command.IBase[]
+            commands: CrawlerModel.IWorker['commands']
         }
         interface ISaveWorkerLabel {
             id: string
@@ -97,6 +97,9 @@ export namespace IPCRequest {
             commands: CrawlerModel.Command.IBase[]
         }
         interface IDeleteWorker {
+            id: string
+        }
+        interface IRunWorker {
             id: string
         }
         interface ILoadHistories {}

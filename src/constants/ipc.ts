@@ -35,5 +35,6 @@ export enum IPC_CRAWLER_CHANNEL {
     SAVE_WORKER_LABEL = 'crawler:save-worker-label',
     SAVE_WORKER_COMMANDS = 'crawler:save-worker-commands',
     DELETE_WORKER = 'crawler:delete-worker',
+    RUN_WORKER = 'crawler:run-worker',
     LOAD_HISTORIES = 'crawler:load-histories',
 }

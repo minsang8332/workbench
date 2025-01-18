@@ -1,68 +1,129 @@
 import _ from 'lodash'
 import path from 'path'
-import { BrowserWindow, Event, session, app } from 'electron'
+import { dialog, BrowserWindow, Event, session, app } from 'electron'
 import History from '@/models/crawler/History'
 import HistoryRepository from '@/repositories/crawler/HistoryRepository'
 import windowUtil from '@/utils/window'
 import { ClickCommand, CursorCommand, RedirectCommand, WriteCommand } from '@/models/crawler/Command'
 import { IPCError } from '@/errors/ipc'
-import { CRAWLER_STATUS } from '@/constants/model'
+import { CRAWLER_COMMAND, CRAWLER_STATUS } from '@/constants/model'
 import type { Crawler } from '@/types/model'
+import WorkerRepository from '@/repositories/crawler/WorkerRepository'
 class CrawlerService {
     private _blocking = false
+    private _headless = false
+    private _workerRepository: WorkerRepository
     private _historyRepository: HistoryRepository
     constructor() {
+        this._workerRepository = new WorkerRepository()
         this._historyRepository = new HistoryRepository()
     }
-    async run(worker: Crawler.IWorker) {
+    getWorker(id: Crawler.IWorker['id']) {
+        return this._workerRepository.findOne(id)
+    }
+    build(worker: Crawler.IWorker) {
+        if (_.isEmpty(worker)) {
+            throw new IPCError('자동화 세트가 유효하지 않습니다.')
+        }
+        for (let i = 0; i < worker.commands.length; i++) {
+            switch (worker.commands[i].name) {
+                case CRAWLER_COMMAND.REDIRECT: {
+                    const command = worker.commands[i] as Crawler.Command.IRedirect
+                    worker.commands[i] = new RedirectCommand(command.url, {
+                        timeout: command.timeout,
+                    })
+                    break
+                }
+                case CRAWLER_COMMAND.CLICK: {
+                    const command = worker.commands[i] as Crawler.Command.IClick
+                    if (_.isEmpty(command.selector)) {
+                        worker.commands.splice(i, 0, new CursorCommand())
+                        i++
+                    }
+                    worker.commands[i] = new ClickCommand(command.selector, {
+                        timeout: command.timeout,
+                    })
+                    break
+                }
+                case CRAWLER_COMMAND.WRITE: {
+                    const command = worker.commands[i] as Crawler.Command.IWrite
+                    if (_.isEmpty(command.selector)) {
+                        worker.commands.splice(i, 0, new CursorCommand())
+                        i++
+                    }
+                    worker.commands[i] = new WriteCommand(command.selector, command.text, {
+                        timeout: command.timeout,
+                    })
+                    break
+                }
+            }
+        }
+        return worker
+    }
+    async run(worker: Crawler.IWorker, window: BrowserWindow) {
         let round = 1
         let downloads: string[] = []
         let startedAt = new Date()
+        let history = null
+        let selector = null
         try {
-            const window = this.createWindow()
-            window.show()
+            worker = this.build(worker)
             for (const command of worker.commands) {
+                console.log('START_BLOKING', this._blocking)
                 // 블로킹 처리
                 while (this._blocking) {
+                    console.log('BLOCKING')
                     await new Promise((resolve) => setTimeout(resolve, 500))
                 }
-                if (command instanceof RedirectCommand) {
-                    await this.redirect(window, command)
+                if (command instanceof CursorCommand) {
+                    console.log('START_CURSOR')
+                    selector = await this.cursor(command, window)
+                    console.log('END_CURSOR', selector)
+                } else if (command instanceof RedirectCommand) {
+                    await this.redirect(command, window)
                 } else if (command instanceof ClickCommand) {
-                    await this.click(window, command)
+                    command.selector = selector ? selector : command.selector
+                    console.log('START_CLICK', command.selector)
+                    await this.click(command, window)
+                    console.log('END_CLICK')
+                    selector = null
                 } else if (command instanceof WriteCommand) {
-                    await this.write(window, command)
-                } else if (command instanceof CursorCommand) {
-                    await this.cursor(window, command)
+                    command.selector = selector ? selector : command.selector
+                    console.log('START_WRITE', command.selector, command.text)
+                    const writed = await this.write(command, window)
+                    console.log('END_WRITE', writed)
+                    selector = null
                 }
+                console.log('END_BLOKING', this._blocking)
                 round++
             }
-            this.addHistory(
-                new History({
-                    workerId: worker.id,
-                    status: CRAWLER_STATUS.COMPLETE,
-                    message: '정상적으로 처리되었습니다.',
-                    downloads,
-                    startedAt,
-                    endedAt: new Date(),
-                })
-            )
+            history = {
+                workerId: worker.id,
+                status: CRAWLER_STATUS.COMPLETE,
+                message: '정상적으로 실행이 종료되었습니다.',
+                downloads,
+                startedAt,
+                endedAt: new Date(),
+            }
         } catch (error) {
-            this.addHistory(
-                new History({
-                    workerId: worker.id,
-                    status: CRAWLER_STATUS.FAILED,
-                    error: error as Error,
-                    errorRound: round,
-                    downloads,
-                    startedAt,
-                    endedAt: new Date(),
-                })
-            )
+            history = {
+                workerId: worker.id,
+                status: CRAWLER_STATUS.FAILED,
+                error: error as Error,
+                errorRound: round,
+                downloads,
+                startedAt,
+                endedAt: new Date(),
+            }
+        }
+        this.addHistory(new History(history))
+        return {
+            ...history,
+            commands: worker.commands,
         }
     }
     // 이동하기
-    async redirect(window: BrowserWindow, command: RedirectCommand) {
+    async redirect(command: RedirectCommand, window: BrowserWindow) {
         return new Promise((resolve, reject) => {
             const timer = setTimeout(() => reject(new Error('Redirect 시간 초과')), command.timeout)
             const clear = () => {
@@ -84,34 +145,42 @@ class CrawlerService {
         })
     }
     // 클릭하기
-    async click(window: BrowserWindow, command: ClickCommand) {
+    async click(command: ClickCommand, window: BrowserWindow) {
         return new Promise((resolve, reject) => {
-            // 팝업은 막되 리다이렉션 허용
+            // 팝업을 리다이렉션으로 변경
             window.webContents.setWindowOpenHandler(({ url }) => {
                 window.loadURL(url)
                 return { action: 'deny' }
             })
+            window.webContents.once('did-finish-load', () => resolve(true))
+            window.webContents.once('did-fail-load', () => resolve(true))
             window.webContents
                 .executeJavaScript(
                     `
-                new Promise((resolve, reject) => {
-                    const timeout = ${command.timeout}
-                    const startTime = Date.now()
-                    const observer = new MutationObserver(() => {
-                        const element = document.querySelector('${command.selector}')
-                        if (element) {
-                            element.click()
-                            observer.disconnect()
-                            clearTimeout(timer)
-                            resolve(true)
-                        }
-                    })
-                    observer.observe(document.body, { childList: true, subtree: true })
-                    const timer = setTimeout(() => {
-                        observer.disconnect()
-                        reject(new Error('선택자를 찾을 수 없습니다.'))
-                    }, timeout)
-                })
+                    (() => {
+                        return new Promise((resolve, reject) => {
+                            const onClear = () => {
+                                clearTimeout(timer)
+                                clearInterval(intval)
+                                window.removeEventListener('beforeunload', onClear)
+                            }
+                            window.addEventListener('beforeunload', onClear)
+                            const intval = setInterval(() => {
+                                const element = document.querySelector('${command.selector}')
+                                if (element) {
+                                    element.click()
+                                    onClear()
+                                    resolve(true)
+                                } else if (element.tagName) {
+                                    reject(new Error('클릭할 수 없는 요소입니다: ' + element.tagName))
+                                }
+                            }, 500)
+                            const timer = setTimeout(() => {
+                                onClear()
+                                reject(new Error('입력 요소를 찾을 수 없습니다.'))
+                            }, ${command.timeout})
+                        })
+                    })()
                 `
                 )
                 .then(() => resolve(true))
@@ -119,108 +188,123 @@ class CrawlerService {
         })
     }
     // 입력하기
-    async write(window: BrowserWindow, command: WriteCommand) {
+    async write(command: WriteCommand, window: BrowserWindow) {
         return new Promise((resolve, reject) => {
             window.webContents
                 .executeJavaScript(
                     `
-                new Promise((resolve, reject) => {
-                    const timeout = ${command.timeout}
-                    const startTime = Date.now()
-                    const observer = new MutationObserver(() => {
-                        const element = document.querySelector('${command.selector}')
-                        if (element) {
-                            element.value = '${command.text}'
-                            element.dispatchEvent(new Event('input'))
-                            observer.disconnect()
-                            clearTimeout(timer)
-                            resolve(true)
-                        }
-                    })
-                    observer.observe(document.body, { childList: true, subtree: true })
-                    const timer = setTimeout(() => {
-                        observer.disconnect()
-                        reject(new Error('선택자를 찾을 수 없습니다.'))
-                    }, timeout)
-                })
+                    (() => {
+                        return new Promise((resolve, reject) => {
+                            const onClear = () => {
+                                clearTimeout(timer)
+                                clearInterval(intval)
+                                window.removeEventListener('beforeunload', onClear)
+                            }
+                            window.addEventListener('beforeunload', onClear)
+                            const intval = setInterval(() => {
+                                const element = document.querySelector('${command.selector}')
+                                if (element && (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') && element.type !== 'file') {
+                                    element.value = '${command.text}'
+                                    element.dispatchEvent(new Event('input'))
+                                    onClear()
+                                    resolve(true)
+                                } else if (element.tagName) {
+                                    reject(new Error('입력할 수 없는 요소입니다: ' + element.tagName))
+                                }
+                            }, 500)
+                            const timer = setTimeout(() => {
+                                onClear()
+                                reject(new Error('입력 요소를 찾을 수 없습니다.'))
+                            }, ${command.timeout})
+                        })
+                    })()
                 `
                 )
                 .then(() => resolve(true))
                 .catch((e) => reject(e.message))
         })
     }
-    // HTML 요소 클릭하기
-    async cursor(window: BrowserWindow, command: CursorCommand) {
+    // 요소 선택하기
+    async cursor(command: CursorCommand, window: BrowserWindow) {
         window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
-        window.setIgnoreMouseEvents(false)
-        const selector = await new Promise((resolve, reject) => {
+        await dialog.showMessageBox(window, {
+            type: 'none',
+            buttons: ['확인'],
+            title: '자동화 가이드',
+            message: '마우스 커서를 이동하여 클릭해 주세요.',
+        })
+        const selector: string = await new Promise((resolve, reject) => {
             window.webContents
                 .executeJavaScript(
                     `
-                    const style = document.createElement('style')
-                    style.innerHTML = '.web-crawler--mouseover { border: 2px dotted red !important; }'
-                    document.head.appendChild(style)
-                    const onMouseOver = (event) => {
-                        const element = event.target
-                        element.classList.add('web-crawler--mouseover')
-                    }
-                    const onMouseOut = (event) => {
-                        const element = event.target
-                        element.classList.remove('web-crawler--mouseover')
-                    }
-                    const getSelector = (el) => {
-                        let path = []
-                        while (el.nodeType === 1) {
-                            let selector = el.tagName.toLowerCase()
-                            if (el.id) {
-                                selector = '#' + el.id
-                                path.unshift(selector)
-                                break
-                            } else {
-                                let sibling = el
-                                let nthChild = 1
-                                while (sibling = sibling.previousElementSibling) {
-                                    if (sibling.tagName === el.tagName) {
-                                        nthChild++
-                                    }
-                                }
-                                selector += ':nth-of-type(' + nthChild + ')'
-                            }
-                            path.unshift(selector)
-                            el = el.parentElement
-                        }
-                        return path.join(' > ')
-                    }
-                    new Promise((resolve) => {
-                        const onClickElement = (event) => {
+                    (() => {
+                        const style = document.createElement('style')
+                        style.classList.add('web-crawler-style')
+                        style.innerHTML = '.web-crawler--mouseover { border: 2px dotted red !important; }'
+                        document.head.appendChild(style)
+                        const onMouseOver = (event) => {
                             const element = event.target
-                            const selector = getSelector(element)
-                            element.classList.remove('web-crawler--mouseover')
-                            document.removeEventListener('mouseover', onMouseOver)
-                            document.removeEventListener('mouseout', onMouseOut)
-                            document.removeEventListener('click', onClickElement)
-                            resolve(selector)
+                            element.classList.add('web-crawler--mouseover')
                         }
-                        document.addEventListener('mouseover', onMouseOver)
-                        document.addEventListener('mouseout', onMouseOut)
-                        document.addEventListener('click', onClickElement)
-                    })
+                        const onMouseOut = (event) => {
+                            const element = event.target
+                            element.classList.remove('web-crawler--mouseover')
+                        }
+                        const getSelector = (el) => {
+                            let path = []
+                            while (el.nodeType === 1) {
+                                let selector = el.tagName.toLowerCase()
+                                if (el.id) {
+                                    selector = '#' + el.id
+                                    path.unshift(selector)
+                                    break
+                                } else {
+                                    let sibling = el
+                                    let nthChild = 1
+                                    while (sibling = sibling.previousElementSibling) {
+                                        if (sibling.tagName === el.tagName) {
+                                            nthChild++
+                                        }
+                                    }
+                                    selector += ':nth-of-type(' + nthChild + ')'
+                                }
+                                path.unshift(selector)
+                                el = el.parentElement
+                            }
+                            return path.join(' > ')
+                        }
+                        return new Promise((resolve) => {
+                            const onClickElement = (event) => {
+                                const element = event.target
+                                const selector = getSelector(element)
+                                element.classList.remove('web-crawler--mouseover')
+                                document.removeEventListener('mouseover', onMouseOver)
+                                document.removeEventListener('mouseout', onMouseOut)
+                                document.removeEventListener('click', onClickElement)
+                                resolve(selector)
+                            }
+                            document.addEventListener('mouseover', onMouseOver)
+                            document.addEventListener('mouseout', onMouseOut)
+                            document.addEventListener('click', onClickElement)
+                        })
+                    })()
                 `
                 )
                 .then((selector) => resolve(selector))
-                .catch((e) => reject(e))
-                .finally(() => window.setIgnoreMouseEvents(true))
         })
         return selector
     }
     createWindow() {
         const partition = new Date().getTime().toString()
+        const parent = windowUtil.getMainWindow()
         const window = windowUtil.createWindow({
             partition,
             width: 800,
             height: 600,
-            parent: windowUtil.getMainWindow(),
+            parent,
             frame: true,
+            resizable: true,
+            devTools: true,
         })
         const sess = session.fromPartition(partition)
         // 다운로드가 발생하면 모달은 생략하고 downloads 폴더에 내려받도록 함
@@ -228,15 +312,19 @@ class CrawlerService {
             const filePath = path.join(app.getPath('downloads'), item.getFilename())
             item.setSavePath(filePath)
         })
-        // 화면 이동중 명령 처리를 블로킹 하도록 함
-        window.webContents.on('did-start-navigation', (event, url) => {
-            this._blocking = true
+        // 화면 이동중에는 블로킹
+        window.webContents.on('did-start-navigation', (event, url, isInPlace) => {
+            if (isInPlace) {
+                console.log('DID_START_NAVI', url)
+                this.setBlocking(true)
+            }
         })
-        window.webContents.on('did-finish-load', () => {
-            this._blocking = false
-        })
-        window.webContents.on('did-fail-load', () => {
-            this._blocking = false
+        window.webContents.on('did-navigate', (event) => this.setBlocking(false))
+        window.webContents.on('did-navigate-in-page', (event) => this.setBlocking(false))
+        window.webContents.on('did-finish-load', () => this.setBlocking(false))
+        window.webContents.on('did-fail-load', () => this.setBlocking(false))
+        window.on('close', () => {
+            this.setBlocking(false)
         })
         return window
     }
@@ -247,8 +335,17 @@ class CrawlerService {
             })
         })
     }
+    setBlocking(payload: boolean = false) {
+        this._blocking = payload
+        return this
+    }
+    setHeadless(payload: boolean = false) {
+        this._headless = payload
+        return this
+    }
     addHistory(history: History) {
         this._historyRepository.insert(history)
+        return this
     }
 }
 export default CrawlerService

@@ -19,7 +19,7 @@ export const controller = async <T>(channel: string, fn: Function) => {
             if (e instanceof IPCError) {
                 response.message = e.message
             } else if (e instanceof Error) {
-                response.message = '내부 에러가 발생헀습니다. 로그 파일을 확인해 주세요.'
+                response.message = '런타임 에러가 발생헀습니다. 로그 파일을 확인해 주세요.'
             }
             response.result = false
             logger.error(e)

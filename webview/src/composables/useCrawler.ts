@@ -52,21 +52,6 @@ export const useCrawler = (state: ICrawlerState) => {
                 $toast.error(new Error('자동화 세트를 불러올 수 없습니다.'))
             })
     }
-    const saveCommands = () => {
-        const id = route.params.id
-        if (!_.isString(id)) {
-            $toast.error(new Error('자동화 세트를 선택해 주세요.'))
-            return
-        }
-        crawlerStore
-            .saveWorkerCommands({ id, commands: crawlerState.commands })
-            .then(() => $toast.success('자동화 세트를 저장했습니다.'))
-            .catch((e) => {
-                console.error(e)
-                $toast.error(new Error('자동화 세트를 저장 할 수 없습니다.'))
-            })
-            .finally(crawlerStore.loadWorkers)
-    }
     const onToggleCommandForm = (modal: boolean, sortNo?: number) => {
         if (!_.isBoolean(modal)) {
             return
@@ -281,7 +266,6 @@ export const useCrawler = (state: ICrawlerState) => {
     }
     return {
         loadWorker,
-        saveCommands,
         onCreateRedirectCommand,
         onUpdateRedirectCommand,
         onCreateClickCommand,

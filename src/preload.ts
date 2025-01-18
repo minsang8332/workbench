@@ -129,5 +129,8 @@ contextBridge.exposeInMainWorld('$native', {
         deleteWorker(payload: IPCRequest.Crawler.IDeleteWorker) {
             return invoke(IPC_CRAWLER_CHANNEL.DELETE_WORKER, payload)
         },
+        runWorker(payload: IPCRequest.Crawler.IRunWorker) {
+            return invoke(IPC_CRAWLER_CHANNEL.RUN_WORKER, payload)
+        },
     },
 })

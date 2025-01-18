@@ -77,7 +77,7 @@ export default defineComponent({
             >
                 {props.form ? (
                     <form onSubmit={onSubmit}>
-                        <div class="command-card__content flex flex-col justify-center items-center gap-1">
+                        <div class="base-card__content flex flex-col justify-center items-center gap-1">
                             <text-field
                                 v-model={state.inputSelector}
                                 label="스크래핑 대상"
@@ -91,7 +91,7 @@ export default defineComponent({
                                 placeholder="클릭에 소요되는 시간을 초과하지 않도록 합니다."
                             />
                         </div>
-                        <div class="command-card__actions flex justify-center items-center gap-6">
+                        <div class="base-card__actions flex justify-center items-center gap-6">
                             <button
                                 type="button"
                                 class="btn-cancel"

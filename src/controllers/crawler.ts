@@ -6,9 +6,9 @@ import CrawlerService from '@/services/CrawlerService'
 import { IPCError } from '@/errors/ipc'
 import Worker from '@/models/crawler/Worker'
 import { IPC_CRAWLER_CHANNEL } from '@/constants/ipc'
+import { CRAWLER_STATUS } from '@/constants/model'
 import type { IPCRequest, IPCResponse } from '@/types/ipc'
-import { CursorCommand } from '@/models/crawler/Command'
-
+import type { Crawler } from '@/types/model'
 // 웹 자동화 목록
 controller(
     IPC_CRAWLER_CHANNEL.LOAD_WORKERS,
@@ -72,6 +72,38 @@ controller(
     }
 )
 
+// 웹 자동화 명령 배열 실행
+controller(
+    IPC_CRAWLER_CHANNEL.RUN_WORKER,
+    async (request: IPCRequest.Crawler.IRunWorker, response: IPCResponse.IBase) => {
+        const crawlerService = new CrawlerService()
+        const worker = crawlerService.getWorker(request.id)
+        if (_.isEmpty(worker)) {
+            throw new IPCError(`유효하지 않은 자동화 세트 ID 입니다. (id: ${request.id})`)
+        }
+        const window = crawlerService.createWindow()
+        const runner = new Promise((resolve, reject) => {
+            const timeout = 2000
+            window.show()
+            window.webContents.openDevTools()
+            crawlerService
+                .run(worker, window)
+                .then((history) => setTimeout(() => resolve(history), timeout))
+                .catch((e) => setTimeout(() => reject(e), timeout))
+        })
+        // 실행 도중 창이 닫히면 에러가 발생함
+        const history = (await Promise.race([runner, crawlerService.detectClose(window)])) as Crawler.IHistory
+        // 실행 완료시 창을 종료한다.
+        window.close()
+        if (!(history.status === CRAWLER_STATUS.COMPLETE)) {
+            throw new IPCError('자동화 실행 중 오류가 발생했습니다. 히스토리를 확인해 주세요.')
+        }
+        response.message = history.message
+        response.data.history = history
+        return response
+    }
+)
+
 // 웹 자동화 제거
 controller(
     IPC_CRAWLER_CHANNEL.DELETE_WORKER,
@@ -91,26 +123,3 @@ controller(
         return response
     }
 )
-// 웹 자동화 화면에서 사용자가 HTML 선택자를 클릭 할 수 있도록 윈도우 화면을 띄움
-/*
-controller(
-    IPC_CRAWLER_CHANNEL.SCRAPING_SELECTOR,
-    async (request: IPCRequest.Crawler.IScrapingSelector, response: IPCResponse.IBase) => {
-        const crawlerService = new CrawlerService()
-        const window = crawlerService.createWindow()
-        // 사용자가 스크래핑 하기위한 윈도우 화면을 연다.
-        const detectScraping = new Promise((resolve, reject) => {
-            window.show()
-            crawlerService
-                .cursor(window, new CursorCommand())
-                .then((selector) => resolve(selector))
-                .catch((e) => reject(e))
-                .finally(() => window.hide())
-        })
-        // 사용자가 스크래핑 하거나 창을 닫을 수 있어 이를 감지하도록 함
-        const selector = await Promise.race([detectScraping, crawlerService.detectClose(window)])
-        response.data.selector = selector
-        return response
-    }
-)
-*/

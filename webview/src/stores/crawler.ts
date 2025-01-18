@@ -47,6 +47,9 @@ export const useCrawlerStore = defineStore('crawler', () => {
     const deleteWorker = async (id: Crawler.IWorker['id']) => {
         return await window.$native.crawler.deleteWorker({ id })
     }
+    const runWorker = async (id: Crawler.IWorker['id']) => {
+        return await window.$native.crawler.runWorker({ id })
+    }
     return {
         state,
         getWorkers,
@@ -55,6 +58,7 @@ export const useCrawlerStore = defineStore('crawler', () => {
         saveWorker,
         saveWorkerLabel,
         saveWorkerCommands,
-        deleteWorker
+        deleteWorker,
+        runWorker
     }
 })

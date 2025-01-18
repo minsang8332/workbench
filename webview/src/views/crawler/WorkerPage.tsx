@@ -12,6 +12,7 @@ import RedirectCard from '@/components/crawler/command/RedirectCard'
 import ClickCard from '@/components/crawler/command/ClickCard'
 import WriteCard from '@/components/crawler/command/WriteCard'
 import './WorkerPage.scoped.scss'
+import { useApp } from '@/composables/useApp'
 export default defineComponent({
     name: 'WorkerPage',
     components: {
@@ -30,10 +31,10 @@ export default defineComponent({
     setup(props, { emit }) {
         const router = useRouter()
         const appStore = useAppStore()
+        const { $toast } = useApp()
         const crawlerStore = useCrawlerStore()
         const { getWorkers } = storeToRefs(crawlerStore)
-        const { loadWorker, saveCommands, onCommandContextMenu, onDropInContent } =
-            useCrawler(crawlerState)
+        const { loadWorker, onCommandContextMenu, onDropInContent } = useCrawler(crawlerState)
         const printWorkerLabel = computed(() => {
             const worker = getWorkers.value.find((worker) => worker.id == props.id)
             if (!(worker && worker.id)) {
@@ -47,6 +48,31 @@ export default defineComponent({
                 return
             }
             router.replace({ name: 'crawler' }).catch((e) => e)
+        }
+        const onSave = async () => {
+            try {
+                const id = props.id
+                if (!_.isString(id)) {
+                    $toast.error(new Error('자동화 세트를 선택해 주세요.'))
+                    return
+                }
+                await crawlerStore.saveWorkerCommands({
+                    id,
+                    commands: crawlerState.commands
+                })
+                $toast.success('자동화 세트를 저장했습니다.')
+                await crawlerStore.loadWorkers
+            } catch (e) {
+                console.error(e)
+                $toast.error(new Error('자동화 세트를 저장 할 수 없습니다.'))
+            }
+        }
+        const onRun = async () => {
+            await onSave()
+            await crawlerStore
+                .runWorker(props.id)
+                .then((response) => $toast.success(response.message))
+                .catch((e) => $toast.error(e))
         }
         onBeforeRouteUpdate(() => {
             loadWorker()
@@ -98,7 +124,7 @@ export default defineComponent({
                         <div class="flex flex-col gap-2">
                             <div class="flex justify-between items-center">
                                 <b class="text-title">자동화 컨테이너</b>
-                                <button class="btn-save" onClick={saveCommands}>
+                                <button class="btn-save" onClick={onSave}>
                                     <i class="mdi mdi-content-save"></i>
                                     <span class="tooltip">저장하기</span>
                                 </button>
@@ -117,7 +143,9 @@ export default defineComponent({
                     </div>
                 </div>
                 <div class="worker-page__actions flex justify-end items-center w-full gap-2">
-                    <button class="btn-run col-span-1">실행하기</button>
+                    <button class="btn-run col-span-1" onClick={onRun}>
+                        실행하기
+                    </button>
                 </div>
             </article>
         )

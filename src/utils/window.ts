@@ -12,6 +12,7 @@ export const createWindow = ({
     modal = false,
     frame = false,
     resizable = false,
+    devTools = false,
 }: {
     partition?: string
     parent?: BrowserWindow
@@ -20,6 +21,7 @@ export const createWindow = ({
     modal?: boolean
     frame?: boolean
     resizable?: boolean
+    devTools?: boolean
 } = {}) => {
     const icon = path.join(__dirname, 'assets', 'favicon.png')
     if (app.dock && process.platform == 'darwin') {
@@ -35,6 +37,7 @@ export const createWindow = ({
             contextIsolation: true,
             partition,
             preload: path.join(__dirname, 'preload.js'),
+            devTools,
         },
         title: `${app.getName()} v${app.getVersion()}`,
         icon,
@@ -50,10 +53,11 @@ export const createMainWindow = () => {
     mainWindow = createWindow({
         frame: true,
         resizable: true,
+        devTools: !app.isPackaged,
     })
     const onceLoad = () => {
         mainWindow.show()
-        if (app.isPackaged == false) {
+        if (!app.isPackaged) {
             mainWindow.webContents.openDevTools()
         }
         checkForUpdates()

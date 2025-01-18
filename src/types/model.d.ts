@@ -36,7 +36,12 @@ export interface ITodoSprint extends IModel {
 export namespace Crawler {
     interface IWorker extends IModel {
         label: string
-        commands: Crawler.Command.IBase[]
+        commands: (
+            | Crawler.Command.IBase
+            | Crawler.Command.IRedirect
+            | Crawler.Command.IClick
+            | Crawler.Command.IWrite
+        )[]
     }
     interface IHistory extends IModel {
         workerId: Crawler.IWorker['id']
