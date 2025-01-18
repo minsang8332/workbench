@@ -5,7 +5,7 @@
     $command-card-height: 12rem;
     $comamnd-card_width: 9rem;
     $command-count: 3;
-    height: calc(100% - variables.$dock-menu-height);
+    height: 100%;
     max-width: calc(100vw - variables.$drawer-menu-width - variables.$page-layout-padding * 3);
     padding-bottom: variables.$page-layout-padding;
     gap: variables.$page-layout-padding;
@@ -47,6 +47,20 @@
         flex: 1;
         padding: 1rem;
         position: relative;
+        button {
+            @include mixins.glass-animation;
+            @include mixins.tooltip;
+            height: 2.25rem;
+            &.btn-save {
+                @include mixins.scale-animation;
+                width: 2.25rem;
+                border-radius: 0.25rem;
+                i {
+                    font-size: 2rem;
+                    color: variables.$dark-color;
+                }
+            }
+        }
         .worker {
             flex: 1;
             b.text-title {
@@ -67,7 +81,6 @@
             }
         }
         .command-panel {
-            flex: 0 0 $command-card-height;
             position: relative;
             .command-card {
                 position: absolute;
@@ -78,7 +91,7 @@
                 transition: transform 0.5s;
                 @for $i from 1 through $command-count {
                     &:nth-child(#{$i}) {
-                        transform: translate(-50%, -2rem)
+                        transform: translate(-50%, -10%)
                             rotate(calc(-30deg / 2 + 30deg / ($command-count + 1) * $i));
                         transform-origin: center 225%;
                     }
@@ -87,7 +100,7 @@
             &:hover {
                 @for $i from 1 through $command-count {
                     .command-card:nth-child(#{$i}) {
-                        transform: translate(-50%, -2rem)
+                        transform: translate(-50%, -15%)
                             rotate(calc(-75deg / 2 + 75deg / ($command-count + 1) * $i));
                     }
                 }

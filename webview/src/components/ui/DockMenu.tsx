@@ -42,7 +42,7 @@ export default defineComponent({
                     <button
                         type="button"
                         class="btn-crawler flex justify-center items-center"
-                        onClick={() => router.push({ name: 'worker' })}
+                        onClick={() => router.push({ name: 'crawler-worker' })}
                     >
                         <i class="mdi mdi-robot" />
                         <span class="tooltip">웹 자동화</span>

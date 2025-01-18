@@ -35,7 +35,7 @@ controller(IPC_CRAWLER_CHANNEL.SAVE_WORKER, (request: IPCRequest.Crawler.ISaveWo
 // 웹 자동화 라벨 편집
 controller(
     IPC_CRAWLER_CHANNEL.SAVE_WORKER_LABEL,
-    (request: IPCRequest.Crawler.ISaveWorker, response: IPCResponse.IBase) => {
+    (request: IPCRequest.Crawler.ISaveWorkerLabel, response: IPCResponse.IBase) => {
         const workerRepository = new WorkerRepository()
         const worker = workerRepository.findOne(request.id)
         if (!(worker && worker.id)) {
@@ -45,6 +45,26 @@ controller(
             new Worker({
                 ...worker,
                 label: request.label,
+            })
+        )
+        response.data.id = id
+        return response
+    }
+)
+
+// 웹 자동화 명령배열 저장
+controller(
+    IPC_CRAWLER_CHANNEL.SAVE_WORKER_COMMANDS,
+    (request: IPCRequest.Crawler.ISaveWorkerCommands, response: IPCResponse.IBase) => {
+        const workerRepository = new WorkerRepository()
+        const worker = workerRepository.findOne(request.id)
+        if (!(worker && worker.id)) {
+            throw new IPCError('자동화 세트를 식별 할 수 없습니다')
+        }
+        const id = workerRepository.update(
+            new Worker({
+                ...worker,
+                commands: request.commands,
             })
         )
         response.data.id = id
@@ -72,6 +92,7 @@ controller(
     }
 )
 // 웹 자동화 화면에서 사용자가 HTML 선택자를 클릭 할 수 있도록 윈도우 화면을 띄움
+/*
 controller(
     IPC_CRAWLER_CHANNEL.SCRAPING_SELECTOR,
     async (request: IPCRequest.Crawler.IScrapingSelector, response: IPCResponse.IBase) => {
@@ -92,3 +113,4 @@ controller(
         return response
     }
 )
+*/

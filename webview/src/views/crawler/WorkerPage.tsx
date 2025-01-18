@@ -1,6 +1,7 @@
 import _ from 'lodash'
-import { computed, defineComponent, onMounted, type PropType } from 'vue'
+import { computed, defineComponent, onBeforeMount, type PropType } from 'vue'
 import { onBeforeRouteUpdate, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useAppStore } from '@/stores/app'
 import { useCrawlerStore } from '@/stores/crawler'
 import { crawlerState, useCrawler } from '@/composables/useCrawler'
@@ -30,7 +31,16 @@ export default defineComponent({
         const router = useRouter()
         const appStore = useAppStore()
         const crawlerStore = useCrawlerStore()
-        const { onRefreshCommands, onContextMenu, onDropInContent } = useCrawler(crawlerState)
+        const { getWorkers } = storeToRefs(crawlerStore)
+        const { loadWorker, saveCommands, onCommandContextMenu, onDropInContent } =
+            useCrawler(crawlerState)
+        const printWorkerLabel = computed(() => {
+            const worker = getWorkers.value.find((worker) => worker.id == props.id)
+            if (!(worker && worker.id)) {
+                return String()
+            }
+            return worker.label
+        })
         const onBack = () => {
             if (window.history && window.history.length > 1) {
                 router.back()
@@ -38,18 +48,11 @@ export default defineComponent({
             }
             router.replace({ name: 'crawler' }).catch((e) => e)
         }
-        const printWorkerLabel = computed(() => {
-            const worker = crawlerStore.getWorkers.find((worker) => worker.id == props.id)
-            if (!(worker && worker.id)) {
-                return String()
-            }
-            return worker.label
-        })
-        const onRun = () => {
-            console.log('run')
-        }
         onBeforeRouteUpdate(() => {
-            onRefreshCommands()
+            loadWorker()
+        })
+        onBeforeMount(() => {
+            loadWorker()
         })
         return () => (
             <article class="worker-page flex flex-col">
@@ -87,15 +90,24 @@ export default defineComponent({
                 </div>
                 <div
                     class="worker-page__content flex flex-col justify-between"
-                    onMouseup={(e) => onContextMenu(e)}
+                    onMouseup={(e) => onCommandContextMenu(e)}
                     onDrop={(e: DragEvent) => onDropInContent(e)}
                     onDragover={(e) => e.preventDefault()}
                 >
-                    <div class="worker flex flex-col items-start gap-4">
-                        <b class="text-title">자동화 컨테이너</b>
-                        <p class="text-desc">
-                            카드를 선택 한 후 아래 컨테이너에 넣고 실행 버튼을 클릭해 주세요.
-                        </p>
+                    <div class="worker flex flex-col gap-4">
+                        <div class="flex flex-col gap-2">
+                            <div class="flex justify-between items-center">
+                                <b class="text-title">자동화 컨테이너</b>
+                                <button class="btn-save" onClick={saveCommands}>
+                                    <i class="mdi mdi-content-save"></i>
+                                    <span class="tooltip">저장하기</span>
+                                </button>
+                            </div>
+                            <p class="text-desc">
+                                카드를 선택 한 후 아래 컨테이너에 넣고 [실행하기] 버튼을 클릭해
+                                주세요. 컨테이너 상의 명령대로 브라우저가 동작하게 됩니다.
+                            </p>
+                        </div>
                         <worker-container />
                     </div>
                     <div class="command-panel flex items-start justify-start">
@@ -105,9 +117,7 @@ export default defineComponent({
                     </div>
                 </div>
                 <div class="worker-page__actions flex justify-end items-center w-full gap-2">
-                    <button class="btn-run col-span-1" onClick={onRun}>
-                        실행하기
-                    </button>
+                    <button class="btn-run col-span-1">실행하기</button>
                 </div>
             </article>
         )

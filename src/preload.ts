@@ -120,14 +120,14 @@ contextBridge.exposeInMainWorld('$native', {
         saveWorker(payload: IPCRequest.Crawler.ISaveWorker) {
             return invoke(IPC_CRAWLER_CHANNEL.SAVE_WORKER, payload)
         },
+        saveWorkerCommands(payload: IPCRequest.Crawler.ISaveWorkerCommands) {
+            return invoke(IPC_CRAWLER_CHANNEL.SAVE_WORKER_COMMANDS, payload)
+        },
         saveWorkerLabel(payload: IPCRequest.Crawler.ISaveWorkerLabel) {
             return invoke(IPC_CRAWLER_CHANNEL.SAVE_WORKER_LABEL, payload)
         },
         deleteWorker(payload: IPCRequest.Crawler.IDeleteWorker) {
             return invoke(IPC_CRAWLER_CHANNEL.DELETE_WORKER, payload)
-        },
-        scrapingSelector(payload: IPCRequest.Crawler.IScrapingSelector) {
-            return invoke(IPC_CRAWLER_CHANNEL.SCRAPING_SELECTOR, payload)
         },
     },
 })

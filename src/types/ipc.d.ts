@@ -89,8 +89,12 @@ export namespace IPCRequest {
             commands: CrawlerModel.Command.IBase[]
         }
         interface ISaveWorkerLabel {
-            id?: string
+            id: string
             label: string
+        }
+        interface ISaveWorkerCommands {
+            id: string
+            commands: CrawlerModel.Command.IBase[]
         }
         interface IDeleteWorker {
             id: string

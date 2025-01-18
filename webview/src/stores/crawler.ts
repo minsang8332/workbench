@@ -34,11 +34,18 @@ export const useCrawlerStore = defineStore('crawler', () => {
     }) => {
         return await window.$native.crawler.saveWorkerLabel({ id, label })
     }
+    const saveWorkerCommands = async ({
+        id,
+        commands
+    }: {
+        id: Crawler.IWorker['id']
+        commands: Crawler.IWorker['commands']
+    }) => {
+        commands = JSON.parse(JSON.stringify(commands))
+        return await window.$native.crawler.saveWorkerCommands({ id, commands })
+    }
     const deleteWorker = async (id: Crawler.IWorker['id']) => {
         return await window.$native.crawler.deleteWorker({ id })
-    }
-    const scrapingSelector = async () => {
-        return await window.$native.crawler.scrapingSelector()
     }
     return {
         state,
@@ -47,7 +54,7 @@ export const useCrawlerStore = defineStore('crawler', () => {
         loadWorkers,
         saveWorker,
         saveWorkerLabel,
-        deleteWorker,
-        scrapingSelector
+        saveWorkerCommands,
+        deleteWorker
     }
 })

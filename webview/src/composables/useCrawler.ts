@@ -1,11 +1,11 @@
 import _ from 'lodash'
-import { ref, reactive } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useRoute } from 'vue-router'
+import { inject, unref, reactive } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { CRAWLER_COMMAND } from '@/costants/model'
 import { useAppStore } from '@/stores/app'
 import { useCrawlerStore } from '@/stores/crawler'
 import type { Crawler } from '@/types/model'
+import { storeToRefs } from 'pinia'
 interface ICrawlerState {
     commands: Crawler.IWorker['commands']
     commandForm: {
@@ -21,16 +21,51 @@ export const crawlerState = reactive(<ICrawlerState>{
     }
 })
 export const useCrawler = (state: ICrawlerState) => {
+    const $toast = inject('toast') as IToastPlugin
     const route = useRoute()
+    const router = useRouter()
     const appStore = useAppStore()
-    const { getWorkers } = storeToRefs(useCrawlerStore())
-    const onRefreshCommands = () => {
-        const worker = getWorkers.value.find((worker) => worker.id == route.params.id)
-        if (!(worker && worker.id)) {
-            state.commands = []
+    const crawlerStore = useCrawlerStore()
+    const { getWorkers } = storeToRefs(crawlerStore)
+    const loadWorker = () => {
+        crawlerStore
+            .loadWorkers()
+            .then(() => {
+                const workers = unref(getWorkers)
+                if (!(workers && workers.length > 0)) {
+                    return
+                }
+                if (_.isEmpty(route.params.id)) {
+                    const id = _.first(workers)?.id
+                    router.push({ name: 'crawler-worker', params: { id } })
+                    return
+                }
+                const worker = workers.find((worker) => worker.id == route.params.id)
+                if (!(worker && worker.id)) {
+                    crawlerState.commands = []
+                    return
+                }
+                crawlerState.commands = [...worker.commands]
+            })
+            .catch((e) => {
+                console.error(e)
+                $toast.error(new Error('자동화 세트를 불러올 수 없습니다.'))
+            })
+    }
+    const saveCommands = () => {
+        const id = route.params.id
+        if (!_.isString(id)) {
+            $toast.error(new Error('자동화 세트를 선택해 주세요.'))
             return
         }
-        state.commands = [...worker.commands]
+        crawlerStore
+            .saveWorkerCommands({ id, commands: crawlerState.commands })
+            .then(() => $toast.success('자동화 세트를 저장했습니다.'))
+            .catch((e) => {
+                console.error(e)
+                $toast.error(new Error('자동화 세트를 저장 할 수 없습니다.'))
+            })
+            .finally(crawlerStore.loadWorkers)
     }
     const onToggleCommandForm = (modal: boolean, sortNo?: number) => {
         if (!_.isBoolean(modal)) {
@@ -43,7 +78,7 @@ export const useCrawler = (state: ICrawlerState) => {
         }
         state.commandForm.modal = modal
     }
-    const onContextMenu = (event: MouseEvent, sortNo?: number) => {
+    const onCommandContextMenu = (event: MouseEvent, sortNo?: number) => {
         event.stopPropagation()
         if (event.button != 2) {
             return
@@ -55,7 +90,7 @@ export const useCrawler = (state: ICrawlerState) => {
                 shortcut: 'R',
                 icon: 'mdi:mdi-refresh',
                 cb() {
-                    onRefreshCommands()
+                    loadWorker()
                     appStore.toggleMenu(false)
                 }
             }
@@ -245,19 +280,20 @@ export const useCrawler = (state: ICrawlerState) => {
         state.commands.splice(sortNo + 1, 0, command)
     }
     return {
-        onContextMenu,
-        onToggleCommandForm,
+        loadWorker,
+        saveCommands,
         onCreateRedirectCommand,
         onUpdateRedirectCommand,
         onCreateClickCommand,
         onUpdateClickCommand,
         onCreateWriteCommand,
         onUpdateWriteCommand,
+        onCommandContextMenu,
+        onToggleCommandForm,
         onMoveAnyCommand,
         onDropInContainer,
         onDropOntoCard,
         onDropInContent,
-        onRefreshCommands,
         onDeleteCommands,
         onReplaceCommands,
         onSpliceCommands

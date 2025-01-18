@@ -9,7 +9,7 @@ import {
     Teleport,
     type PropType
 } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useCrawlerStore } from '@/stores/crawler'
 import commonUtil from '@/utils/common'
 import type { Crawler } from '@/types/model'
@@ -32,14 +32,9 @@ export default defineComponent({
         TextField,
         WorkerForm
     },
-    props: {
-        id: {
-            type: String as PropType<Crawler.IWorker['id']>,
-            default: ''
-        }
-    },
     setup(props) {
         const $toast = inject('toast') as IToastPlugin
+        const route = useRoute()
         const router = useRouter()
         const appStore = useAppStore()
         const crawlerStore = useCrawlerStore()
@@ -166,11 +161,8 @@ export default defineComponent({
                 .finally(onRefresh)
         }
         const onRouteWorkerCard = (event: Event, worker: Crawler.IWorker) => {
-            router.push({ name: 'worker', params: { id: worker.id } })
+            router.push({ name: 'crawler-worker', params: { id: worker.id } })
         }
-        onBeforeMount(() => {
-            onRefresh()
-        })
         return () => (
             <div class="worker-drawer-menu flex flex-col gap-2">
                 <div class="worker-drawer-menu__header">
@@ -186,7 +178,7 @@ export default defineComponent({
                                 <div
                                     class={{
                                         'worker-card box-shadow': true,
-                                        'worker-card--active': props.id == worker.id
+                                        'worker-card--active': route.params.id == worker.id
                                     }}
                                     onClick={(event: Event) => onRouteWorkerCard(event, worker)}
                                     onMouseup={(event: MouseEvent) => onContextMenu(event, worker)}
