@@ -24,6 +24,30 @@
     &__content {
         flex: 1 0;
         overflow-y: scroll;
+        .worker-card {
+            @include mixins.scale-animation;
+            min-height: 4rem;
+            height: 100%;
+            width: 100%;
+            background-color: variables.$dark-color;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            b,
+            p,
+            span,
+            i {
+                color: #fff;
+                font-size: 0.9rem !important;
+            }
+            button {
+                @include mixins.glass-animation;
+                border-radius: 50%;
+            }
+            &--active {
+                background-color: rgba(variables.$crawler-color, 0.75);
+            }
+        }
     }
     &__actions {
         flex: 0 0 $search-field-height * 1.5;

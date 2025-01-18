@@ -4,27 +4,27 @@ import VueDatePicker from '@vuepic/vue-datepicker'
 import { computed, defineComponent, type PropType } from 'vue'
 import '@vuepic/vue-datepicker/dist/main.css'
 import './TextField.scoped.scss'
-export enum TextField {
-    INPUT = 'input',
+export enum TEXT_FIELD {
+    TEXT = 'text',
+    NUMBER = 'number',
     TEXTAREA = 'textarea',
     DATEPICKER = 'datepicker'
 }
-type TextFieldType = TextField[keyof TextField]
 export default defineComponent({
     name: 'TextField',
     emits: ['update:model-value', 'enter'],
     props: {
         modelValue: {
-            type: String as PropType<string>,
+            type: [String, Number] as PropType<string | number>,
             default: undefined
         },
         type: {
-            type: String as PropType<TextFieldType>,
-            default: TextField.INPUT
+            type: String as PropType<TEXT_FIELD[keyof TEXT_FIELD]>,
+            default: TEXT_FIELD.TEXT
         },
         name: {
             type: String as PropType<string>,
-            default: TextField.INPUT
+            default: TEXT_FIELD.TEXT
         },
         label: {
             type: String as PropType<string>,
@@ -82,7 +82,7 @@ export default defineComponent({
             <div class="text-field">
                 {props.label && <label for={props.name}>{props.label}</label>}
                 {props.required && <span class="text-red-500">*</span>}
-                {props.type === TextField.DATEPICKER ? (
+                {props.type === TEXT_FIELD.DATEPICKER ? (
                     <VueDatePicker
                         model-value={props.modelValue}
                         placeholder={props.placeholder}
@@ -93,12 +93,21 @@ export default defineComponent({
                         teleport
                         onUpdate:model-value={onInputDatePicker}
                     />
-                ) : props.type === TextField.TEXTAREA ? (
+                ) : props.type === TEXT_FIELD.TEXTAREA ? (
                     <textarea
                         class="text-field__textarea"
                         value={props.modelValue}
                         onInput={onInput}
                         placeholder={props.placeholder}
+                    />
+                ) : props.type === TEXT_FIELD.NUMBER ? (
+                    <input
+                        class="text-field__input"
+                        type={props.type}
+                        value={props.modelValue}
+                        onInput={onInput}
+                        placeholder={props.placeholder}
+                        onKeydown={onEnter}
                     />
                 ) : (
                     <input

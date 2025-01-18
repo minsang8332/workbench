@@ -1,11 +1,96 @@
-import { CRAWLER_COMMAND } from '@/costants/model'
-import type { Crawler } from '@/types/model'
 import _ from 'lodash'
-export const useCrawler = (
-    emit: ((event: 'replace', a: number | null, b: number | null) => void) &
-        ((event: 'splice', sortNo: number | null, command: Crawler.Command.IBase) => void),
-    { sortNo }: { sortNo: number | null }
-) => {
+import { ref, reactive } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
+import { CRAWLER_COMMAND } from '@/costants/model'
+import { useAppStore } from '@/stores/app'
+import { useCrawlerStore } from '@/stores/crawler'
+import type { Crawler } from '@/types/model'
+interface ICrawlerState {
+    commands: Crawler.IWorker['commands']
+    commandForm: {
+        modal: boolean
+        props: (Crawler.Command.IBase & { sortNo: number }) | null
+    }
+}
+export const crawlerState = reactive(<ICrawlerState>{
+    commands: [],
+    commandForm: {
+        modal: false,
+        props: null
+    }
+})
+export const useCrawler = (state: ICrawlerState) => {
+    const route = useRoute()
+    const appStore = useAppStore()
+    const { getWorkers } = storeToRefs(useCrawlerStore())
+    const onRefreshCommands = () => {
+        const worker = getWorkers.value.find((worker) => worker.id == route.params.id)
+        if (!(worker && worker.id)) {
+            state.commands = []
+            return
+        }
+        state.commands = [...worker.commands]
+    }
+    const onToggleCommandForm = (modal: boolean, sortNo?: number) => {
+        if (!_.isBoolean(modal)) {
+            return
+        }
+        if (modal && _.isNumber(sortNo)) {
+            state.commandForm.props = _.merge({ sortNo }, state.commands[sortNo])
+        } else {
+            state.commandForm.props = null
+        }
+        state.commandForm.modal = modal
+    }
+    const onContextMenu = (event: MouseEvent, sortNo?: number) => {
+        event.stopPropagation()
+        if (event.button != 2) {
+            return
+        }
+        let items = [
+            {
+                name: 'refresh',
+                desc: '새로고침',
+                shortcut: 'R',
+                icon: 'mdi:mdi-refresh',
+                cb() {
+                    onRefreshCommands()
+                    appStore.toggleMenu(false)
+                }
+            }
+        ]
+        if (_.isNumber(sortNo)) {
+            items = [
+                ...items,
+                {
+                    name: 'edit-label-worker',
+                    desc: '카드 편집',
+                    shortcut: 'E',
+                    icon: 'mdi:mdi-file-edit-outline',
+                    cb() {
+                        onToggleCommandForm(true, sortNo)
+                        appStore.toggleMenu(false)
+                    }
+                },
+                {
+                    name: 'delete-worker',
+                    desc: '카드 삭제',
+                    shortcut: 'D',
+                    icon: 'mdi:mdi-trash-can-outline',
+                    cb() {
+                        onDeleteCommands(sortNo)
+                        appStore.toggleMenu(false)
+                    }
+                }
+            ]
+        }
+        appStore.toggleMenu(true, {
+            pageX: event.pageX,
+            pageY: event.pageY,
+            items
+        })
+    }
     const onCreateRedirectCommand = (event: DragEvent) => {
         event.stopPropagation()
         if (event.dataTransfer) {
@@ -19,6 +104,17 @@ export const useCrawler = (
             )
         }
     }
+    const onUpdateRedirectCommand = (
+        sortNo: number,
+        url: Crawler.Command.IRedirect['url'],
+        timeout: Crawler.Command.IRedirect['timeout']
+    ) => {
+        state.commands[sortNo] = {
+            name: CRAWLER_COMMAND.REDIRECT,
+            url,
+            timeout: _.toNumber(timeout)
+        }
+    }
     const onCreateClickCommand = (event: DragEvent) => {
         event.stopPropagation()
         if (event.dataTransfer) {
@@ -30,6 +126,17 @@ export const useCrawler = (
                     timeout: 5000
                 })
             )
+        }
+    }
+    const onUpdateClickCommand = (
+        sortNo: number,
+        selector: Crawler.Command.IClick['selector'],
+        timeout: Crawler.Command.IClick['timeout']
+    ) => {
+        state.commands[sortNo] = {
+            name: CRAWLER_COMMAND.CLICK,
+            selector,
+            timeout: _.toNumber(timeout)
         }
     }
     const onCreateWriteCommand = (event: DragEvent) => {
@@ -46,7 +153,20 @@ export const useCrawler = (
             )
         }
     }
-    const onMoveCommand = (event: DragEvent) => {
+    const onUpdateWriteCommand = (
+        sortNo: number,
+        selector: Crawler.Command.IWrite['selector'],
+        text: Crawler.Command.IWrite['text'],
+        timeout: Crawler.Command.IWrite['timeout']
+    ) => {
+        state.commands[sortNo] = {
+            name: CRAWLER_COMMAND.WRITE,
+            selector,
+            text,
+            timeout: _.toNumber(timeout)
+        }
+    }
+    const onMoveAnyCommand = (event: DragEvent, sortNo: number) => {
         event.stopPropagation()
         if (event.dataTransfer) {
             event.dataTransfer.setData(
@@ -57,7 +177,7 @@ export const useCrawler = (
             )
         }
     }
-    const onDropCommand = (event: DragEvent) => {
+    const onDropInContainer = (event: DragEvent) => {
         event.preventDefault()
         event.stopPropagation()
         if (!(event && event.dataTransfer)) {
@@ -70,18 +190,76 @@ export const useCrawler = (
             }
             if (key == 'create') {
                 const command = JSON.parse(data)
-                emit('splice', sortNo, command)
+                state.commands.push(command)
             } else if (key == 'move') {
                 const command = JSON.parse(data)
-                emit('replace', sortNo, command.sortNo)
+                const tmp = state.commands[command.sortNo]
+                state.commands.splice(command.sortNo, 1)
+                state.commands.push(tmp)
             }
         }
     }
+    const onDropOntoCard = (event: DragEvent, sortNo: number | null) => {
+        event.preventDefault()
+        event.stopPropagation()
+        if (!(event && event.dataTransfer && _.isNumber(sortNo))) {
+            return
+        }
+        for (const key of ['create', 'move']) {
+            const data = event.dataTransfer.getData(key)
+            if (_.isEmpty(data)) {
+                continue
+            }
+            if (key == 'create') {
+                const command = JSON.parse(data)
+                onSpliceCommands(sortNo, command)
+            } else if (key == 'move') {
+                const command = JSON.parse(data)
+                onReplaceCommands(sortNo, command.sortNo)
+            }
+        }
+    }
+    const onDropInContent = (event: DragEvent) => {
+        event.preventDefault()
+        event.stopPropagation()
+        if (!(event && event.dataTransfer)) {
+            return
+        }
+        const data = event.dataTransfer.getData('move')
+        if (data) {
+            const command = JSON.parse(data)
+            if (_.isNumber(command.sortNo)) {
+                onDeleteCommands(command.sortNo)
+            }
+        }
+    }
+    const onDeleteCommands = (sortNo: number) => {
+        state.commands.splice(sortNo, 1)
+    }
+    const onReplaceCommands = (a: number, b: number) => {
+        const tmp = state.commands[a]
+        state.commands[a] = state.commands[b]
+        state.commands[b] = tmp
+    }
+    const onSpliceCommands = (sortNo: number, command: Crawler.Command.IBase) => {
+        state.commands.splice(sortNo + 1, 0, command)
+    }
     return {
+        onContextMenu,
+        onToggleCommandForm,
         onCreateRedirectCommand,
+        onUpdateRedirectCommand,
         onCreateClickCommand,
+        onUpdateClickCommand,
         onCreateWriteCommand,
-        onMoveCommand,
-        onDropCommand
+        onUpdateWriteCommand,
+        onMoveAnyCommand,
+        onDropInContainer,
+        onDropOntoCard,
+        onDropInContent,
+        onRefreshCommands,
+        onDeleteCommands,
+        onReplaceCommands,
+        onSpliceCommands
     }
 }

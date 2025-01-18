@@ -1,10 +1,20 @@
 import _ from 'lodash'
-import { defineComponent, type PropType } from 'vue'
-import { useCrawler } from '@/composables/useCrawler'
+import { reactive, computed, defineComponent, type PropType } from 'vue'
+import { crawlerState, useCrawler } from '@/composables/useCrawler'
+import TextField from '@/components/form/TextField'
 import type { Crawler } from '@/types/model'
-import './WriteCard.scoped.scss'
+import './BaseCard.scoped.scss'
+interface IWriteCardState {
+    inputSelector: string
+    inputText: string
+    inputTimeout: number
+    inputTimeoutRules: ((value: number) => string | boolean)[]
+}
 export default defineComponent({
     name: 'WriteCard',
+    components: {
+        TextField
+    },
     emits: ['replace', 'splice'],
     props: {
         selector: {
@@ -14,33 +24,114 @@ export default defineComponent({
         text: {
             type: String as PropType<Crawler.Command.IRedirect['url']>
         },
+        timeout: {
+            type: Number as PropType<Crawler.Command.IRedirect['timeout']>,
+            default: 5000
+        },
         sortNo: {
             type: Number as PropType<number | null>,
             default: null
         },
-        create: {
+        form: {
             type: Boolean as PropType<boolean>,
             default: false
         }
     },
     setup(props, { emit }) {
-        const crawler = useCrawler(emit, { sortNo: props.sortNo })
+        const {
+            onToggleCommandForm,
+            onDropOntoCard,
+            onMoveAnyCommand,
+            onCreateWriteCommand,
+            onUpdateWriteCommand
+        } = useCrawler(crawlerState)
+        const state = reactive<IWriteCardState>({
+            inputSelector: props.selector ?? '',
+            inputText: props.text ?? '',
+            inputTimeout: props.timeout ?? 5000,
+            inputTimeoutRules: [
+                (value: number): string | boolean => {
+                    return value && value >= 0 ? true : '0 이상의 숫자를 입력해 주세요'
+                }
+            ]
+        })
+        const validate = computed(() => {
+            return state.inputTimeoutRules.every((fn) => fn(state.inputTimeout) === true)
+        })
+        const onSubmit = (event: Event) => {
+            event.preventDefault()
+            if (validate.value === true && _.isNumber(props.sortNo)) {
+                onUpdateWriteCommand(
+                    props.sortNo,
+                    state.inputSelector,
+                    state.inputText,
+                    state.inputTimeout
+                )
+                onToggleCommandForm(false)
+            }
+        }
         return () => (
             <div
-                class="write-card flex flex-col"
+                class={{
+                    'base-card flex flex-col': true,
+                    'base-card--form': props.form
+                }}
                 draggable
                 onDragstart={(event) =>
-                    props.create
-                        ? crawler.onCreateWriteCommand(event)
-                        : crawler.onMoveCommand(event)
+                    _.isNumber(props.sortNo)
+                        ? onMoveAnyCommand(event, props.sortNo)
+                        : onCreateWriteCommand(event)
                 }
-                onDrop={crawler.onDropCommand}
+                onDragover={(e) => e.preventDefault()}
+                onDrop={(e) => onDropOntoCard(e, props.sortNo)}
             >
-                <div class="write-card__header flex justify-between items-center gap-1">
-                    <span>입력하기</span>
-                    {_.isNumber(props.sortNo) && <span>{props.sortNo + 1}</span>}
-                </div>
-                <div class="write-card__content flex justify-center items-center"></div>
+                {props.form ? (
+                    <form onSubmit={onSubmit}>
+                        <div class="base-card__content flex flex-col justify-center items-center gap-1">
+                            <text-field
+                                v-model={state.inputSelector}
+                                label="스크래핑 대상"
+                                placeholder="값이 없는 경우 브라우저 화면에서 선택하도록 합니다."
+                            />
+                            <text-field
+                                v-model={state.inputText}
+                                label="문자열"
+                                placeholder="스크래핑 대상에 입력할 문구를 입력해 주세요."
+                            />
+                            <text-field
+                                v-model={state.inputTimeout}
+                                rules={state.inputTimeoutRules}
+                                type="number"
+                                label="입력시간 (ms)"
+                                placeholder="입력에 소요되는 시간을 초과하지 않도록 합니다."
+                            />
+                        </div>
+                        <div class="base-card__actions flex justify-center items-center gap-6">
+                            <button
+                                type="button"
+                                class="btn-cancel"
+                                onClick={(e) => onToggleCommandForm(false)}
+                            >
+                                취소
+                            </button>
+                            <button type="submit" class="btn-submit" disabled={!validate.value}>
+                                확인
+                            </button>
+                        </div>
+                    </form>
+                ) : (
+                    <>
+                        <div class="base-card__header flex justify-between items-center gap-1 ">
+                            <span class="text-white">입력하기</span>
+                            {_.isNumber(props.sortNo) && (
+                                <span class="text-white">{props.sortNo + 1}</span>
+                            )}
+                        </div>
+                        <div class="base-card__content flex flex-col justify-center items-center gap-1">
+                            <p class="text-white break-all">{props.text}</p>
+                        </div>
+                    </>
+                )}
             </div>
         )
     }

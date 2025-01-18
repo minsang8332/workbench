@@ -10,3 +10,8 @@
 .box-shadow {
     box-shadow: 0px 0.5rem 0.5rem rgba(0, 0, 0, 0.1);
 }
+.no-scroll {
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}

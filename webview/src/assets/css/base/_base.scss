@@ -18,14 +18,13 @@
     display: none;
 }
 * {
-    scroll-behavior: smooth;
     outline: none;
     background-color: transparent;
-    user-select: none;
 }
 html {
     font-size: 16px;
     scroll-behavior: smooth;
+    overflow: hidden;
 }
 ul {
     padding-left: unset !important;

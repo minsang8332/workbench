@@ -22,6 +22,7 @@
         "marked": "^12.0.0",
         "pinia": "^2.1.7",
         "pure-snow.js": "^2.1.0",
+        "swiper": "^11.2.1",
         "toastify-js": "^1.12.0",
         "vue": "^3.4.15",
         "vue-element-loading": "^3.0.1",

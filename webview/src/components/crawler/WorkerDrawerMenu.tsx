@@ -15,7 +15,6 @@ import commonUtil from '@/utils/common'
 import type { Crawler } from '@/types/model'
 import ModalDialog from '@/components/ui/ModalDialog'
 import TextField from '@/components/form/TextField'
-import WorkerCard from '@/components/crawler/WorkerCard'
 import WorkerForm from '@/components/crawler/WorkerForm'
 import './WorkerDrawerMenu.scoped.scss'
 import { useAppStore } from '@/stores/app'
@@ -31,7 +30,6 @@ export default defineComponent({
     components: {
         ModalDialog,
         TextField,
-        WorkerCard,
         WorkerForm
     },
     props: {
@@ -117,6 +115,17 @@ export default defineComponent({
                 .loadWorkers()
                 .catch((e) => $toast.error(new Error('자동화 세트를 불러올 수 없습니다.')))
         }
+        const onToggleForm = (modal: boolean, worker: Crawler.IWorker) => {
+            if (!_.isBoolean(modal)) {
+                return
+            }
+            if (modal && worker) {
+                state.workerForm.props = worker
+            } else {
+                state.workerForm.props = null
+            }
+            state.workerForm.modal = modal
+        }
         const onSubmitForm = ({
             id,
             label
@@ -136,17 +145,6 @@ export default defineComponent({
         const onCancelForm = () => {
             onRefresh()
             state.workerForm.modal = false
-        }
-        const onToggleForm = (modal: boolean, worker: Crawler.IWorker) => {
-            if (!_.isBoolean(modal)) {
-                return
-            }
-            if (modal && worker) {
-                state.workerForm.props = worker
-            } else {
-                state.workerForm.props = null
-            }
-            state.workerForm.modal = modal
         }
         const onCreateWorker = () => {
             crawlerStore
@@ -184,13 +182,19 @@ export default defineComponent({
                 >
                     <ul class="worker-menu flex flex-col gap-2 w-full">
                         {filterItems.value.map((worker) => (
-                            <li class="worker-menu__item flex justify-start items-center gap-2">
-                                <worker-card
-                                    {...worker}
-                                    active={props.id == worker.id}
+                            <li class="worker-menu__item flex justify-start items-center">
+                                <div
+                                    class={{
+                                        'worker-card box-shadow': true,
+                                        'worker-card--active': props.id == worker.id
+                                    }}
                                     onClick={(event: Event) => onRouteWorkerCard(event, worker)}
                                     onMouseup={(event: MouseEvent) => onContextMenu(event, worker)}
-                                />
+                                >
+                                    <div class="flex justify-between items-center">
+                                        <p>{worker.label}</p>
+                                    </div>
+                                </div>
                             </li>
                         ))}
                     </ul>

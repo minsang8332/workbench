@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { reactive, computed } from 'vue'
+import { reactive, computed, toRaw } from 'vue'
 import { defineStore } from 'pinia'
 import type { Crawler } from '@/types/model'
 interface ICrawlerStoreState {
