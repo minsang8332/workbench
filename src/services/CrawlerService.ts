@@ -68,11 +68,11 @@ class CrawlerService {
         let selector = null
         try {
             worker = this.build(worker)
+            console.log(worker.commands)
             for (const command of worker.commands) {
-                console.log('START_BLOKING', this._blocking)
-                // 블로킹 처리
+                // console.log('START_BLOKING', this._blocking)
                 while (this._blocking) {
-                    console.log('BLOCKING')
+                    // console.log('BLOCKING')
                     await new Promise((resolve) => setTimeout(resolve, 500))
                 }
                 if (command instanceof CursorCommand) {
@@ -94,7 +94,7 @@ class CrawlerService {
                     console.log('END_WRITE', writed)
                     selector = null
                 }
-                console.log('END_BLOKING', this._blocking)
+                // console.log('END_BLOKING', this._blocking)
                 round++
             }
             history = {
@@ -174,7 +174,7 @@ class CrawlerService {
                                 } else if (element.tagName) {
                                     reject(new Error('클릭할 수 없는 요소입니다: ' + element.tagName))
                                 }
-                            }, 500)
+                            }, 1000)
                             const timer = setTimeout(() => {
                                 onClear()
                                 reject(new Error('입력 요소를 찾을 수 없습니다.'))
@@ -211,7 +211,7 @@ class CrawlerService {
                                 } else if (element.tagName) {
                                     reject(new Error('입력할 수 없는 요소입니다: ' + element.tagName))
                                 }
-                            }, 500)
+                            }, 1000)
                             const timer = setTimeout(() => {
                                 onClear()
                                 reject(new Error('입력 요소를 찾을 수 없습니다.'))
@@ -299,8 +299,8 @@ class CrawlerService {
         const parent = windowUtil.getMainWindow()
         const window = windowUtil.createWindow({
             partition,
-            width: 800,
-            height: 600,
+            width: 480,
+            height: 720,
             parent,
             frame: true,
             resizable: true,
