@@ -80,7 +80,7 @@
                 @include mixins.neon-animation(variables.$crawler-color);
                 border: 1px solid #1eff43;
                 color: #fff;
-                width: calc(2.25rem * 2 + 0.25rem * 3);
+                width: calc(2.25rem * 2 + 0.5rem);
                 text-wrap: nowrap;
                 transition-property: transform, box-shadow;
                 transition-duration: 0.3s;

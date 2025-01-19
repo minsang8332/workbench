@@ -47,14 +47,17 @@ span,
 input,
 button,
 textarea,
-label {
+select,
+label,
+td {
     font-size: 1rem;
     font-family: 'Pretendard';
     font-weight: 400;
     line-height: 1;
     color: variables.$dark-color;
 }
-b {
+b,
+th {
     font-size: 1rem;
     font-family: 'Pretendard SemiBold';
     font-weight: 700;

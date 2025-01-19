@@ -27,6 +27,7 @@ export const useCrawler = (state: ICrawlerState) => {
     const appStore = useAppStore()
     const crawlerStore = useCrawlerStore()
     const { getWorkers } = storeToRefs(crawlerStore)
+    // Actions
     const loadWorker = () => {
         crawlerStore
             .loadWorkers()
@@ -48,6 +49,24 @@ export const useCrawler = (state: ICrawlerState) => {
                 console.error(e)
                 $toast.error(new Error('자동화 세트를 불러올 수 없습니다.'))
             })
+    }
+    const runWorker = (id?: string) => {
+        if (!_.isEmpty(id)) {
+            crawlerStore
+                .saveWorkerCommands({
+                    id,
+                    commands: crawlerState.commands
+                })
+                .then(() =>
+                    crawlerStore
+                        .runWorker(id)
+                        .then((response) => $toast.success(response.message))
+                        .catch((e) => $toast.error(e))
+                        .finally(loadHistories)
+                        .finally(() => router.push({ name: 'crawler' }))
+                )
+                .catch((e) => $toast.error(e))
+        }
     }
     const loadHistories = () => {
         crawlerStore.loadHistories().catch((e) => $toast.error(e))
@@ -114,6 +133,29 @@ export const useCrawler = (state: ICrawlerState) => {
                 }
             ]
         }
+        appStore.toggleMenu(true, {
+            pageX: event.pageX,
+            pageY: event.pageY,
+            items
+        })
+    }
+    const onHistoryContextMenu = (event: MouseEvent) => {
+        event.stopPropagation()
+        if (event.button != 2) {
+            return
+        }
+        let items = [
+            {
+                name: 'refresh',
+                desc: '새로고침',
+                shortcut: 'R',
+                icon: 'mdi:mdi-refresh',
+                cb() {
+                    loadHistories()
+                    appStore.toggleMenu(false)
+                }
+            }
+        ]
         appStore.toggleMenu(true, {
             pageX: event.pageX,
             pageY: event.pageY,
@@ -275,6 +317,7 @@ export const useCrawler = (state: ICrawlerState) => {
     }
     return {
         loadWorker,
+        runWorker,
         loadHistories,
         deleteWorker,
         onCreateRedirectCommand,
@@ -284,6 +327,7 @@ export const useCrawler = (state: ICrawlerState) => {
         onCreateWriteCommand,
         onUpdateWriteCommand,
         onCommandContextMenu,
+        onHistoryContextMenu,
         onToggleCommandForm,
         onMoveAnyCommand,
         onDropInContainer,

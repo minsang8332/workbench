@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { CRAWLER_STATUS } from '@/constants/model'
 import type { Crawler } from '@/types/model'
 class History implements Crawler.IHistory {
@@ -5,7 +6,6 @@ class History implements Crawler.IHistory {
     status: Crawler.IHistory['status']
     round: Crawler.IHistory['round']
     message: Crawler.IHistory['message']
-    error: Crawler.IHistory['error']
     commands: Crawler.IHistory['commands']
     workerId: Crawler.IHistory['workerId']
     downloads: Crawler.IHistory['downloads']
@@ -18,7 +18,6 @@ class History implements Crawler.IHistory {
         status = null,
         round = null,
         message = null,
-        error = null,
         workerId = '',
         commands = [],
         downloads = [],
@@ -29,7 +28,6 @@ class History implements Crawler.IHistory {
         status?: CRAWLER_STATUS | null
         round?: number | null
         message?: string | null
-        error?: Error | null
         workerId: Crawler.IWorker['id']
         commands?: Crawler.IWorker['commands']
         downloads?: string[]
@@ -40,7 +38,6 @@ class History implements Crawler.IHistory {
         this.status = status
         this.round = round
         this.message = message
-        this.error = error
         this.workerId = workerId
         this.commands = commands
         this.downloads = downloads
@@ -55,16 +52,14 @@ class History implements Crawler.IHistory {
         return this
     }
     setRound(payload: number) {
-        this.status = payload
+        this.round = payload
         return this
     }
-    setMessage(payload: string = '') {
-        this.message = payload
-        return this
-    }
-    setError(payload: unknown) {
-        if (payload instanceof Error) {
-            this.error = payload
+    setMessage(payload: unknown = '') {
+        if (_.isString(payload)) {
+            this.message = payload
+        } else if (_.isError(payload)) {
+            this.message = payload.message
         }
         return this
     }

@@ -2,7 +2,7 @@ import TodoSprint from '@/models/TodoSprint'
 import BaseRepository from './BaseRepository'
 class TodoSprintRepository extends BaseRepository<TodoSprint> {
     constructor() {
-        super(TodoSprint.name)
+        super('TodoSprint')
     }
     findByTodoId(todoId: string) {
         return this.findAll()?.filter((sprint) => sprint.todoId == todoId)

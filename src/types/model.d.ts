@@ -46,7 +46,6 @@ export namespace Crawler {
     interface IHistory extends IModel {
         status: CRAWLER_STATUS | null
         round: number | null
-        error: Error | null
         message: string | null
         workerId: Crawler.IWorker['id']
         commands: Crawler.IWorker['commands']

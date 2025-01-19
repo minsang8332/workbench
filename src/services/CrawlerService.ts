@@ -1,14 +1,15 @@
 import _ from 'lodash'
 import path from 'path'
 import { dialog, BrowserWindow, Event, session, app } from 'electron'
-import History from '@/models/crawler/History'
 import HistoryRepository from '@/repositories/crawler/HistoryRepository'
-import windowUtil from '@/utils/window'
+import WorkerRepository from '@/repositories/crawler/WorkerRepository'
+import History from '@/models/crawler/History'
 import { ClickCommand, CursorCommand, RedirectCommand, WriteCommand } from '@/models/crawler/Command'
 import { IPCError } from '@/errors/ipc'
+import windowUtil from '@/utils/window'
+import logger from '@/logger'
 import { CRAWLER_COMMAND, CRAWLER_STATUS } from '@/constants/model'
 import type { Crawler } from '@/types/model'
-import WorkerRepository from '@/repositories/crawler/WorkerRepository'
 class CrawlerService {
     private _blocking = false
     private _headless = false
@@ -69,37 +70,39 @@ class CrawlerService {
         let downloads: string[] = []
         let selector = null
         try {
-            const { commands } = worker
-            history.setCommands(commands)
+            history.setCommands(worker.commands)
             worker = this.build(worker)
-            for (const command of worker.commands) {
+            for (let i = 0; i < worker.commands.length; i++) {
+                const command = worker.commands[i]
                 while (this._blocking) {
                     await new Promise((resolve) => setTimeout(resolve, 500))
                 }
                 if (command instanceof CursorCommand) {
-                    console.log('START_CURSOR')
+                    logger.debug('START_CURSOR')
                     selector = await this.cursor(command, window)
-                    console.log('END_CURSOR', selector)
+                    logger.debug('END_CURSOR ' + JSON.stringify(selector))
                 } else if (command instanceof RedirectCommand) {
                     await this.redirect(command, window)
                 } else if (command instanceof ClickCommand) {
                     command.selector = selector ? selector : command.selector
-                    console.log('START_CLICK', command.selector)
+                    logger.debug('START_CLICK ' + JSON.stringify(command.selector))
                     await this.click(command, window)
-                    console.log('END_CLICK')
+                    logger.debug('END_CLICK')
                     selector = null
                 } else if (command instanceof WriteCommand) {
                     command.selector = selector ? selector : command.selector
-                    console.log('START_WRITE', command.selector, command.text)
+                    logger.debug('START_WRITE ' + JSON.stringify(command.selector))
                     const writed = await this.write(command, window)
-                    console.log('END_WRITE', writed)
+                    logger.debug('END_WRITE ' + JSON.stringify(writed))
                     selector = null
                 }
-                round++
+                if (i < worker.commands.length - 1) {
+                    round++
+                }
             }
             history.setStatus(CRAWLER_STATUS.COMPLETE).setMessage('정상적으로 실행이 종료되었습니다.')
         } catch (error) {
-            history.setStatus(CRAWLER_STATUS.FAILED).setError(error)
+            history.setStatus(CRAWLER_STATUS.FAILED).setMessage(error)
         }
         history.setRound(round).setDownloads(downloads).setEndedAt(new Date())
         this.addHistory(history)
