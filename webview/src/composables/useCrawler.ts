@@ -49,6 +49,9 @@ export const useCrawler = (state: ICrawlerState) => {
                 $toast.error(new Error('자동화 세트를 불러올 수 없습니다.'))
             })
     }
+    const loadHistories = () => {
+        crawlerStore.loadHistories().catch((e) => $toast.error(e))
+    }
     const deleteWorker = (worker: Crawler.IWorker) => {
         crawlerStore
             .deleteWorker(worker.id)
@@ -272,6 +275,7 @@ export const useCrawler = (state: ICrawlerState) => {
     }
     return {
         loadWorker,
+        loadHistories,
         deleteWorker,
         onCreateRedirectCommand,
         onUpdateRedirectCommand,

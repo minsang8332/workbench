@@ -1,0 +1,66 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.data-table {
+    $table-header-height: 3rem;
+    position: relative;
+    border-radius: 0.25rem;
+    &__header {
+        flex: 0 0 5%;
+        width: 100%;
+        padding: 0.5rem 0;
+        select {
+            @include mixins.glass;
+            padding: 0.25rem;
+        }
+    }
+    &__content {
+        overflow-y: scroll;
+        flex: 1;
+        table {
+            @include mixins.glass;
+            position: relative;
+            table-layout: auto !important;
+            border-collapse: collapse;
+            width: 100%;
+            th,
+            td {
+                font-weight: 300;
+                text-align: left;
+                word-break: break-word;
+                padding: 0 0.5rem;
+                height: 2rem;
+            }
+            thead {
+                position: sticky;
+                top: 0;
+                background-color: variables.$dark-color;
+                border-radius: 0.25rem;
+                overflow: hidden;
+                th {
+                    color: #fff;
+                    cursor: pointer;
+                    &:hover {
+                        opacity: 0.8;
+                    }
+                }
+            }
+            tbody td {
+                &:hover {
+                    background-color: rgba(variables.$dark-color, 0.1);
+                }
+            }
+        }
+    }
+    &__actions {
+        flex: 0 0 5%;
+        padding: 1rem;
+        box-sizing: border-box;
+        .btn-pagination {
+            cursor: pointer;
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        }
+    }
+}

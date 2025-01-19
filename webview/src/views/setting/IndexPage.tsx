@@ -54,7 +54,7 @@ export default defineComponent({
                         <b class="text-title">{route.meta.title}</b>
                         <p class="text-desc">{route.meta.desc}</p>
                     </div>
-                    <div class="inner-page">
+                    <div class="flex-grow flex-shrink-0 basis-[85%]">
                         <router-view />
                     </div>
                 </div>

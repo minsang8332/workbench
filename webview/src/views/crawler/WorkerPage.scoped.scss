@@ -10,8 +10,8 @@
         flex: 1;
         padding: 1rem;
         .worker {
-            $card-height: 12rem;
-            $card-width: 9rem;
+            $card-height: 25vh;
+            $card-width: calc($card-height * 0.8);
             $card-count: 3;
             flex: 1;
             .text-title {

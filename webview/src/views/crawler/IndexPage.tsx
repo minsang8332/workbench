@@ -1,15 +1,25 @@
+import _ from 'lodash'
+import dayjs from 'dayjs'
 import { defineComponent, onBeforeMount } from 'vue'
-import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useAppStore } from '@/stores/app'
+import { useCrawlerStore } from '@/stores/crawler'
 import { crawlerState, useCrawler } from '@/composables/useCrawler'
+import { CRAWLER_STATUS } from '@/costants/model'
+import DataTable from '@/components/ui/DataTable'
 import './IndexPage.scoped.scss'
 export default defineComponent({
     name: 'CrawlerPage',
+    components: {
+        DataTable
+    },
     setup() {
         const router = useRouter()
         const route = useRoute()
         const appStore = useAppStore()
-        const { loadWorker } = useCrawler(crawlerState)
+        const { getHistories } = storeToRefs(useCrawlerStore())
+        const { loadWorker, loadHistories } = useCrawler(crawlerState)
         const onBack = () => {
             if (window.history && window.history.length > 1) {
                 router.back()
@@ -17,11 +27,9 @@ export default defineComponent({
             }
             router.replace({ name: 'crawler' }).catch((e) => e)
         }
-        onBeforeRouteUpdate(() => {
-            loadWorker()
-        })
         onBeforeMount(() => {
             loadWorker()
+            loadHistories()
         })
         return () => (
             <article class="crawler-page flex flex-col h-full">
@@ -58,9 +66,33 @@ export default defineComponent({
                     </div>
                 </div>
                 {route.name == 'crawler' ? (
-                    <div class="crawler-page__content flex flex-col gap-4">
-                        <b class="text-title">실행내역</b>
-                        <p class="text-desc">자동화 세트 실행 내역 목록입니다.</p>
+                    <div class="crawler-page__content flex flex-1 flex-col gap-4">
+                        <b class="text-title">실행 내역</b>
+                        <p class="text-desc">
+                            자동화 실행 내역 목록입니다. 좌측 메뉴에서 [자동화 생성] 하여 실행해
+                            주세요.
+                        </p>
+                        <data-table
+                            columns={[
+                                { field: 'id', label: 'ID' },
+                                { field: 'status', label: '상태' },
+                                { field: 'message', label: '메시지' },
+                                { field: 'endedAt', label: '종료시점' }
+                            ]}
+                            rows={getHistories.value.reduce((acc: any, history) => {
+                                acc.push({
+                                    id: history.id,
+                                    status: _.isNumber(history.status)
+                                        ? CRAWLER_STATUS[history.status]
+                                        : null,
+                                    message: history.message,
+                                    endedAt: dayjs(history.endedAt).isValid()
+                                        ? dayjs(history.endedAt).format('YYYY-MM-DD HH:mm:ss')
+                                        : null
+                                })
+                                return acc
+                            }, [])}
+                        />
                     </div>
                 ) : (
                     <div class="flex-1">

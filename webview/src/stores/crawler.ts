@@ -1,25 +1,37 @@
 import _ from 'lodash'
-import { reactive, computed, toRaw } from 'vue'
+import { reactive, computed, toRef } from 'vue'
 import { defineStore } from 'pinia'
 import type { Crawler } from '@/types/model'
 interface ICrawlerStoreState {
     workers: Crawler.IWorker[]
+    histories: Crawler.IHistory[]
 }
 export const useCrawlerStore = defineStore('crawler', () => {
     const state = reactive<ICrawlerStoreState>({
-        workers: []
+        workers: [],
+        histories: []
     })
     // Getters
     const getWorkers = computed(() => state.workers)
+    const getHistories = computed(() => state.histories)
     // Mutations
     const updateWorkers = (payload: Crawler.IWorker[] = []) => {
         state.workers = payload
+    }
+    const updateHistories = (payload: Crawler.IHistory[] = []) => {
+        state.histories = payload
     }
     // Actions
     const loadWorkers = async () => {
         updateWorkers()
         const response = await window.$native.crawler.loadWorkers()
         updateWorkers(response.data.workers)
+        return response
+    }
+    const loadHistories = async () => {
+        updateHistories()
+        const response = await window.$native.crawler.loadHistories()
+        updateHistories(response.data.histories)
         return response
     }
     const saveWorker = async (payload: Crawler.IWorker) => {
@@ -53,8 +65,10 @@ export const useCrawlerStore = defineStore('crawler', () => {
     return {
         state,
         getWorkers,
+        getHistories,
         updateWorkers,
         loadWorkers,
+        loadHistories,
         saveWorker,
         saveWorkerLabel,
         saveWorkerCommands,

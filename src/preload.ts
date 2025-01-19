@@ -117,6 +117,9 @@ contextBridge.exposeInMainWorld('$native', {
         loadWorkers(payload: IPCRequest.Crawler.ILoadWorkers) {
             return invoke(IPC_CRAWLER_CHANNEL.LOAD_WORKERS, payload)
         },
+        loadHistories(payload: IPCRequest.Crawler.ILoadHistories) {
+            return invoke(IPC_CRAWLER_CHANNEL.LOAD_HISTORIES, payload)
+        },
         saveWorker(payload: IPCRequest.Crawler.ISaveWorker) {
             return invoke(IPC_CRAWLER_CHANNEL.SAVE_WORKER, payload)
         },

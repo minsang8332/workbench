@@ -32,7 +32,7 @@ export const createWindow = ({
         width,
         minWidth: width,
         height,
-        minHeight: 360,
+        minHeight: 768,
         webPreferences: {
             contextIsolation: true,
             partition,

@@ -2,6 +2,7 @@
 @use '@/assets/css/abstracts/mixins';
 .crawler-page {
     $article-header: 3rem;
+    height: calc(100% - variables.$dock-menu-height);
     padding-bottom: variables.$page-layout-padding;
     gap: variables.$page-layout-padding;
     &__header {
@@ -39,8 +40,8 @@
     }
     &__content {
         @include mixins.glass;
-        flex: 1;
         padding: 1rem;
+        overflow: auto;
         .text-title {
             font-size: 1.25rem;
         }
