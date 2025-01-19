@@ -16,14 +16,14 @@
     },
     "build": {
         "appId": "com.minsang8332.workbench",
-        "productName": "업무 작업대",
+        "productName": "업무작업대",
         "artifactName": "workbench-setup-${version}.${ext}",
         "asar": true,
         "win": {
             "target": "nsis"
         },
         "nsis": {
-            "shortcutName": "업무 작업대 ${version}",
+            "shortcutName": "업무작업대 ${version}",
             "allowElevation": true,
             "deleteAppDataOnUninstall": true
         },

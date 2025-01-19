@@ -4,7 +4,6 @@ import {
     computed,
     defineComponent,
     Teleport,
-    onBeforeMount,
     onMounted,
     onUnmounted,
     type PropType

@@ -21,9 +21,9 @@ export const crawlerState = reactive(<ICrawlerState>{
     }
 })
 export const useCrawler = (state: ICrawlerState) => {
-    const $toast = inject('toast') as IToastPlugin
-    const route = useRoute()
     const router = useRouter()
+    const route = useRoute()
+    const $toast = inject('toast') as IToastPlugin
     const appStore = useAppStore()
     const crawlerStore = useCrawlerStore()
     const { getWorkers } = storeToRefs(crawlerStore)
@@ -33,16 +33,13 @@ export const useCrawler = (state: ICrawlerState) => {
             .then(() => {
                 const workers = unref(getWorkers)
                 if (!(workers && workers.length > 0)) {
-                    return
-                }
-                if (_.isEmpty(route.params.id)) {
-                    const id = _.first(workers)?.id
-                    router.push({ name: 'crawler-worker', params: { id } })
+                    router.replace({ name: 'crawler' })
                     return
                 }
                 const worker = workers.find((worker) => worker.id == route.params.id)
                 if (!(worker && worker.id)) {
                     crawlerState.commands = []
+                    router.replace({ name: 'crawler' })
                     return
                 }
                 crawlerState.commands = [...worker.commands]
@@ -51,6 +48,15 @@ export const useCrawler = (state: ICrawlerState) => {
                 console.error(e)
                 $toast.error(new Error('자동화 세트를 불러올 수 없습니다.'))
             })
+    }
+    const deleteWorker = (worker: Crawler.IWorker) => {
+        crawlerStore
+            .deleteWorker(worker.id)
+            .then(() => $toast.success(`${worker.label ?? '자동화'} 을/를 제거 했습니다`))
+            .catch(() =>
+                $toast.error(new Error(`${worker.label ?? '자동화'} 을/를 제거 할 수 없습니다`))
+            )
+            .finally(loadWorker)
     }
     const onToggleCommandForm = (modal: boolean, sortNo?: number) => {
         if (!_.isBoolean(modal)) {
@@ -266,6 +272,7 @@ export const useCrawler = (state: ICrawlerState) => {
     }
     return {
         loadWorker,
+        deleteWorker,
         onCreateRedirectCommand,
         onUpdateRedirectCommand,
         onCreateClickCommand,

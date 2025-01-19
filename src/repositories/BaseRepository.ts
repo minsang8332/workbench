@@ -6,8 +6,8 @@ abstract class BaseRepository<T extends IModel> {
     _store: ElectronStore
     _key: string
     constructor(key: string) {
-        this._store = new ElectronStore()
         this._key = key
+        this._store = new ElectronStore({ name: key })
         this.loadStore()
     }
     loadStore = (): IRepository<T> | null => {

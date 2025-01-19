@@ -1,10 +1,14 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
 .worker-container {
+    height: 100%;
+    width: 100%;
     background-color: rgba(#fff, 0.3);
     border-radius: 0.25rem;
-    cursor: grab;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    padding: 0.5rem !important;
+    padding-bottom: 0.75rem !important;
+    cursor: grab;
     &:active {
         user-select: none;
         cursor: grabbing;

@@ -60,19 +60,20 @@ class CrawlerService {
         }
         return worker
     }
-    async run(worker: Crawler.IWorker, window: BrowserWindow) {
+    async run(worker: Crawler.IWorker, window: BrowserWindow): Promise<Crawler.IHistory> {
+        let history = new History({
+            workerId: worker.id,
+            startedAt: new Date(),
+        })
         let round = 1
         let downloads: string[] = []
-        let startedAt = new Date()
-        let history = null
         let selector = null
         try {
+            const { commands } = worker
+            history.setCommands(commands)
             worker = this.build(worker)
-            console.log(worker.commands)
             for (const command of worker.commands) {
-                // console.log('START_BLOKING', this._blocking)
                 while (this._blocking) {
-                    // console.log('BLOCKING')
                     await new Promise((resolve) => setTimeout(resolve, 500))
                 }
                 if (command instanceof CursorCommand) {
@@ -94,33 +95,15 @@ class CrawlerService {
                     console.log('END_WRITE', writed)
                     selector = null
                 }
-                // console.log('END_BLOKING', this._blocking)
                 round++
             }
-            history = {
-                workerId: worker.id,
-                status: CRAWLER_STATUS.COMPLETE,
-                message: '정상적으로 실행이 종료되었습니다.',
-                downloads,
-                startedAt,
-                endedAt: new Date(),
-            }
+            history.setStatus(CRAWLER_STATUS.COMPLETE).setMessage('정상적으로 실행이 종료되었습니다.')
         } catch (error) {
-            history = {
-                workerId: worker.id,
-                status: CRAWLER_STATUS.FAILED,
-                error: error as Error,
-                errorRound: round,
-                downloads,
-                startedAt,
-                endedAt: new Date(),
-            }
+            history.setStatus(CRAWLER_STATUS.FAILED).setError(error)
         }
-        this.addHistory(new History(history))
-        return {
-            ...history,
-            commands: worker.commands,
-        }
+        history.setRound(round).setDownloads(downloads).setEndedAt(new Date())
+        this.addHistory(history)
+        return history
     }
     // 이동하기
     async redirect(command: RedirectCommand, window: BrowserWindow) {
@@ -304,7 +287,7 @@ class CrawlerService {
             parent,
             frame: true,
             resizable: true,
-            devTools: true,
+            devTools: !app.isPackaged,
         })
         const sess = session.fromPartition(partition)
         // 다운로드가 발생하면 모달은 생략하고 downloads 폴더에 내려받도록 함

@@ -1,6 +1,6 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
-.worker-drawer-menu {
+.crawler-drawer-menu {
     $search-field-height: calc(variables.$dock-menu-height / 2);
     @include mixins.glass;
     height: 100%;

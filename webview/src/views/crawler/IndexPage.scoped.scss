@@ -1,0 +1,51 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.crawler-page {
+    $article-header: 3rem;
+    padding-bottom: variables.$page-layout-padding;
+    gap: variables.$page-layout-padding;
+    &__header {
+        @include mixins.glass;
+        height: $article-header;
+        padding: 0 0.5rem;
+        i.mdi-robot {
+            color: variables.$crawler-color;
+            opacity: 0.5;
+        }
+        i.mdi-chevron-right {
+            font-size: 1.5rem;
+        }
+        button {
+            @include mixins.glass-animation;
+            @include mixins.tooltip;
+            height: 2.25rem;
+            &:has(b) {
+                padding: 0 0.25rem;
+            }
+            &.btn-drawer {
+                width: 2.25rem;
+                i {
+                    font-size: 1.5rem;
+                }
+            }
+            &.btn-back {
+                @include mixins.scale-animation;
+                width: 2.25rem;
+                i {
+                    font-size: 1.5rem;
+                }
+            }
+        }
+    }
+    &__content {
+        @include mixins.glass;
+        flex: 1;
+        padding: 1rem;
+        .text-title {
+            font-size: 1.25rem;
+        }
+        .text-desc {
+            font-size: 0.9rem;
+        }
+    }
+}

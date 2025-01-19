@@ -11,13 +11,14 @@ import {
 } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCrawlerStore } from '@/stores/crawler'
+import { useAppStore } from '@/stores/app'
+import { crawlerState, useCrawler } from '@/composables/useCrawler'
 import commonUtil from '@/utils/common'
 import type { Crawler } from '@/types/model'
 import ModalDialog from '@/components/ui/ModalDialog'
 import TextField from '@/components/form/TextField'
 import WorkerForm from '@/components/crawler/WorkerForm'
-import './WorkerDrawerMenu.scoped.scss'
-import { useAppStore } from '@/stores/app'
+import './CrawlerDrawerMenu.scoped.scss'
 interface IWorkerDrawerMenu {
     keyword: string
     workerForm: {
@@ -38,6 +39,7 @@ export default defineComponent({
         const router = useRouter()
         const appStore = useAppStore()
         const crawlerStore = useCrawlerStore()
+        const { loadWorker, deleteWorker } = useCrawler(crawlerState)
         const state = reactive<IWorkerDrawerMenu>({
             keyword: '',
             workerForm: {
@@ -69,7 +71,7 @@ export default defineComponent({
                     shortcut: 'R',
                     icon: 'mdi:mdi-refresh',
                     cb() {
-                        onRefresh()
+                        loadWorker()
                         appStore.toggleMenu(false)
                     }
                 }
@@ -93,7 +95,7 @@ export default defineComponent({
                         shortcut: 'D',
                         icon: 'mdi:mdi-trash-can-outline',
                         cb() {
-                            onDeleteWorker(worker)
+                            deleteWorker(worker)
                             appStore.toggleMenu(false)
                         }
                     }
@@ -104,11 +106,6 @@ export default defineComponent({
                 pageY: event.pageY,
                 items
             })
-        }
-        const onRefresh = () => {
-            crawlerStore
-                .loadWorkers()
-                .catch((e) => $toast.error(new Error('자동화 세트를 불러올 수 없습니다.')))
         }
         const onToggleForm = (modal: boolean, worker: Crawler.IWorker) => {
             if (!_.isBoolean(modal)) {
@@ -135,10 +132,10 @@ export default defineComponent({
                     $toast.success('자동화 라벨을 수정 했습니다')
                 })
                 .catch(() => $toast.error(new Error('자동화 라벨을 수정 할 수 없습니다')))
-                .finally(onRefresh)
+                .finally(loadWorker)
         }
         const onCancelForm = () => {
-            onRefresh()
+            loadWorker()
             state.workerForm.modal = false
         }
         const onCreateWorker = () => {
@@ -151,25 +148,16 @@ export default defineComponent({
                 .catch(() => $toast.error(new Error('자동화를 생성 할 수 없습니다')))
                 .finally(onCancelForm)
         }
-        const onDeleteWorker = (worker: Crawler.IWorker) => {
-            crawlerStore
-                .deleteWorker(worker.id)
-                .then(() => $toast.success(`${worker.label ?? '자동화'} 을/를 제거 했습니다`))
-                .catch(() =>
-                    $toast.error(new Error(`${worker.label ?? '자동화'} 을/를 제거 할 수 없습니다`))
-                )
-                .finally(onRefresh)
-        }
         const onRouteWorkerCard = (event: Event, worker: Crawler.IWorker) => {
             router.push({ name: 'crawler-worker', params: { id: worker.id } })
         }
         return () => (
-            <div class="worker-drawer-menu flex flex-col gap-2">
-                <div class="worker-drawer-menu__header">
+            <div class="crawler-drawer-menu flex flex-col gap-2">
+                <div class="crawler-drawer-menu__header">
                     <text-field v-model={state.keyword} placeholder="자동화 항목을 검색합니다." />
                 </div>
                 <div
-                    class="worker-drawer-menu__content"
+                    class="crawler-drawer-menu__content"
                     onMouseup={(event: MouseEvent) => onContextMenu(event)}
                 >
                     <ul class="worker-menu flex flex-col gap-2 w-full">
@@ -191,7 +179,7 @@ export default defineComponent({
                         ))}
                     </ul>
                 </div>
-                <div class="worker-drawer-menu__actions">
+                <div class="crawler-drawer-menu__actions">
                     <button type="button" class="btn-create" onClick={onCreateWorker}>
                         <b>자동화 생성</b>
                     </button>

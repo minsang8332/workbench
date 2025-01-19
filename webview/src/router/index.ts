@@ -81,7 +81,7 @@ const router = createRouter({
                     path: '/crawler',
                     components: {
                         default: () => import('@/views/crawler/IndexPage'),
-                        drawer: () => import('@/components/crawler/WorkerDrawerMenu')
+                        drawer: () => import('@/components/crawler/CrawlerDrawerMenu')
                     },
                     children: [
                         {
