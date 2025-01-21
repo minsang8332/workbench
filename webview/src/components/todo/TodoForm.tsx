@@ -11,8 +11,8 @@ interface ITodoFormState {
     inputTitle: string
     inputDescription: string
     inputStatus: number
-    inputStartedAt: Date | null
-    inputEndedAt: Date | null
+    inputStartedAt: Date | string | null
+    inputEndedAt: Date | string | null
     inputTitleRules: ((value: string) => string | boolean)[]
     inputEndedAtRules: ((value: Date) => string | boolean)[]
     sprints: ITodoSprint[]
@@ -42,11 +42,11 @@ export default defineComponent({
             default: 0
         },
         startedAt: {
-            type: Date as PropType<Date | null>,
+            type: [Date, String] as PropType<Date | string | null>,
             default: null
         },
         endedAt: {
-            type: Date as PropType<Date | null>,
+            type: [Date, String] as PropType<Date | string | null>,
             default: null
         },
         sprints: {
@@ -63,7 +63,7 @@ export default defineComponent({
             inputEndedAt: props.endedAt,
             inputTitleRules: [
                 (value: string): string | boolean => {
-                    return value && /^[^\s].*$/.test(value)
+                    return value && /^[^\s].*$/.test(value.trim())
                         ? true
                         : '최소 한 글자 이상은 입력해 주세요.'
                 }
@@ -99,7 +99,7 @@ export default defineComponent({
             event.preventDefault()
             emit('submit', {
                 id: props.id,
-                title: state.inputTitle,
+                title: _.trim(state.inputTitle),
                 description: state.inputDescription,
                 status: state.inputStatus,
                 startedAt: state.inputStartedAt,
@@ -118,25 +118,19 @@ export default defineComponent({
                 endedAt: null
             })
         }
-        const onUpdateSprint = ({
-            id,
-            title,
-            checked
-        }: {
-            id: ITodoSprint['id']
-            title: ITodoSprint['title']
-            checked: ITodoSprint['checked']
-        }) => {
-            state.sprints = toRaw(state.sprints).map((sprint) => {
-                if (sprint.id == id) {
-                    sprint.title = title
-                    sprint.checked = checked
-                }
-                return sprint
-            })
+        const onUpdateSprint = (
+            idx: number,
+            { id, title, checked }: Pick<ITodoSprint, 'id' | 'title' | 'checked'>
+        ) => {
+            if (state.sprints[idx]) {
+                const sprint = state.sprints[idx]
+                sprint.id = id
+                sprint.title = title
+                sprint.checked = checked
+                state.sprints.splice(idx, 1, sprint)
+            }
         }
-        const onDeleteSprint = (id: ITodoSprint['id']) => {
-            const idx = state.sprints.findIndex((sprint: ITodoSprint) => sprint.id == id)
+        const onDeleteSprint = (idx: number) => {
             state.sprints.splice(idx, 1)
         }
         return () => (
@@ -189,8 +183,10 @@ export default defineComponent({
                                     <todo-sprint-card
                                         {...sprint}
                                         key={i}
-                                        onUpdate={onUpdateSprint}
-                                        onDelete={onDeleteSprint}
+                                        onUpdate={(
+                                            payload: Pick<ITodoSprint, 'id' | 'title' | 'checked'>
+                                        ) => onUpdateSprint(i, payload)}
+                                        onDelete={() => onDeleteSprint(i)}
                                         class="!h-12"
                                     />
                                 ))}

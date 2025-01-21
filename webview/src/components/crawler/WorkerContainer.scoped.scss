@@ -2,13 +2,11 @@
 @use '@/assets/css/abstracts/mixins';
 .worker-container {
     height: 100%;
-    width: 100%;
     background-color: rgba(#fff, 0.3);
     border-radius: 0.25rem;
     overflow-x: auto;
     padding: 0.5rem !important;
     padding-bottom: 0.75rem !important;
-    cursor: grab;
     &:active {
         user-select: none;
         cursor: grabbing;

@@ -9,10 +9,10 @@ $dock-menu-height: calc(3.5rem - $page-layout-padding);
 $drawer-menu-width: 15rem;
 
 // 색상
+$dark-deep-color: #000;
 $dark-color: #1e2a3a;
 $gray-color: #c3c3c3;
 $gray-light-color: #ececec;
-$sky-blue-color: #5dc8e9ff;
 $primary-color: #008cff;
 $folder-color: #ffe9a2;
 $border-color: #e5e7eb;
@@ -23,5 +23,6 @@ $window-color: #f6f6f6;
 $diary-color: #8a2be2;
 $todo-color: $primary-color;
 $crawler-color: #28a745;
+$crawler-light-color: #1eff43;
 // 테마 색상
 $theme-color: $primary-color;

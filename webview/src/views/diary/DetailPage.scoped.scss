@@ -3,8 +3,8 @@
 .detail-page {
     $article-header: 3rem;
     $article-actions: 2.5rem;
-    height: calc(100% - variables.$dock-menu-height);
     position: relative;
+    height: calc(100% - variables.$dock-menu-height);
     padding-bottom: variables.$page-layout-padding;
     gap: variables.$page-layout-padding;
     &__header {
@@ -45,12 +45,11 @@
         textarea {
             backdrop-filter: unset;
             height: 100%;
-            font-family: 'D2Coding';
             padding: 0.5rem;
             resize: none;
             min-width: 20%;
             overflow: hidden;
-            background-color: rgba(#fff, 0.9);
+            background-color: rgba(#fff, 1);
             border-radius: 0.25rem;
         }
         .resizer {
@@ -70,16 +69,13 @@
         height: $article-actions;
         width: 100%;
         button.btn-submit {
-            @include mixins.scale-animation(1, 0.8);
+            @include mixins.scale-animation(0.95, 0.95, active);
             @include mixins.tooltip;
             border-radius: 0.25rem;
             background-color: rgba(variables.$diary-color, 0.75);
             i {
                 font-size: 2rem;
                 color: rgba(#fff, 0.8);
-            }
-            &:hover {
-                transform: scale(0.98);
             }
         }
     }

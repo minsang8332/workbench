@@ -2,6 +2,7 @@ import _ from 'lodash'
 import { computed, defineComponent, onBeforeMount, type PropType } from 'vue'
 import { onBeforeRouteUpdate } from 'vue-router'
 import { storeToRefs } from 'pinia'
+import { useApp } from '@/composables/useApp'
 import { useCrawlerStore } from '@/stores/crawler'
 import { crawlerState, useCrawler } from '@/composables/useCrawler'
 import type { Crawler } from '@/types/model'
@@ -29,6 +30,7 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const crawlerStore = useCrawlerStore()
+        const app = useApp()
         const { getWorkers } = storeToRefs(crawlerStore)
         const { loadWorker, runWorker, onCommandContextMenu, onDropInContent } =
             useCrawler(crawlerState)
@@ -39,7 +41,18 @@ export default defineComponent({
             }
             return worker.label
         })
-        const onRun = () => runWorker(props.id)
+        const validate = computed(
+            () =>
+                crawlerState.commands.length > 0 &&
+                crawlerState.commands.every((command) => command.validate === true)
+        )
+        const onRun = () => {
+            if (!validate.value) {
+                app.alert.error(new Error('컨테이너 카드가 유효한지 확인해 주세요 !'))
+                return
+            }
+            runWorker()
+        }
         onBeforeRouteUpdate(() => {
             loadWorker()
         })
@@ -69,7 +82,7 @@ export default defineComponent({
                     </div>
                 </div>
                 <div class="worker-page__actions flex justify-end items-center w-full gap-2">
-                    <button class="btn-run col-span-1" onClick={onRun}>
+                    <button class="btn-run col-span-1" onClick={onRun} disabled={!validate.value}>
                         실행하기
                     </button>
                 </div>

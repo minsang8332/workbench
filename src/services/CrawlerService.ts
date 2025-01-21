@@ -22,83 +22,103 @@ class CrawlerService {
     getWorker(id: Crawler.IWorker['id']) {
         return this._workerRepository.findOne(id)
     }
-    build(worker: Crawler.IWorker) {
-        if (_.isEmpty(worker)) {
-            throw new IPCError('자동화 세트가 유효하지 않습니다.')
-        }
-        for (let i = 0; i < worker.commands.length; i++) {
-            switch (worker.commands[i].name) {
+    // Plain 객체를 Class 객체로 구조화한다.
+    build(commands: Crawler.IWorker['commands']) {
+        let builder = []
+        for (let i = 0; i < commands.length; i++) {
+            switch (commands[i].name) {
                 case CRAWLER_COMMAND.REDIRECT: {
-                    const command = worker.commands[i] as Crawler.Command.IRedirect
-                    worker.commands[i] = new RedirectCommand(command.url, {
-                        timeout: command.timeout,
-                    })
+                    const command = commands[i] as Crawler.Command.IRedirect
+                    builder.push(
+                        new RedirectCommand(command.url, {
+                            timeout: command.timeout,
+                        })
+                    )
                     break
                 }
                 case CRAWLER_COMMAND.CLICK: {
-                    const command = worker.commands[i] as Crawler.Command.IClick
+                    const command = commands[i] as Crawler.Command.IClick
                     if (_.isEmpty(command.selector)) {
-                        worker.commands.splice(i, 0, new CursorCommand())
-                        i++
+                        builder.push(new CursorCommand())
                     }
-                    worker.commands[i] = new ClickCommand(command.selector, {
-                        timeout: command.timeout,
-                    })
+                    builder.push(
+                        new ClickCommand(command.selector, {
+                            timeout: command.timeout,
+                            pointer: i,
+                        })
+                    )
                     break
                 }
                 case CRAWLER_COMMAND.WRITE: {
-                    const command = worker.commands[i] as Crawler.Command.IWrite
+                    const command = commands[i] as Crawler.Command.IWrite
                     if (_.isEmpty(command.selector)) {
-                        worker.commands.splice(i, 0, new CursorCommand())
-                        i++
+                        builder.push(new CursorCommand())
                     }
-                    worker.commands[i] = new WriteCommand(command.selector, command.text, {
-                        timeout: command.timeout,
-                    })
+                    builder.push(
+                        new WriteCommand(command.selector, command.text, {
+                            timeout: command.timeout,
+                            pointer: i,
+                        })
+                    )
                     break
                 }
             }
         }
-        return worker
+        return builder
     }
     async run(worker: Crawler.IWorker, window: BrowserWindow): Promise<Crawler.IHistory> {
         let history = new History({
             workerId: worker.id,
             startedAt: new Date(),
         })
-        let round = 1
+        let round = 0
         let downloads: string[] = []
         let selector = null
         try {
-            history.setCommands(worker.commands)
-            worker = this.build(worker)
-            for (let i = 0; i < worker.commands.length; i++) {
-                const command = worker.commands[i]
+            const { label, commands } = worker
+            const builder = this.build(commands)
+            history.setTotalRound(builder.length).setLabel(label).setCommands(commands)
+            for (let i = 0; i < builder.length; i++) {
+                round++
                 while (this._blocking) {
                     await new Promise((resolve) => setTimeout(resolve, 500))
                 }
+                let command = builder[i]
                 if (command instanceof CursorCommand) {
-                    logger.debug('START_CURSOR')
                     selector = await this.cursor(command, window)
-                    logger.debug('END_CURSOR ' + JSON.stringify(selector))
-                } else if (command instanceof RedirectCommand) {
+                    continue
+                }
+                if (command instanceof RedirectCommand) {
                     await this.redirect(command, window)
-                } else if (command instanceof ClickCommand) {
-                    command.selector = selector ? selector : command.selector
-                    logger.debug('START_CLICK ' + JSON.stringify(command.selector))
+                    continue
+                }
+                if (command instanceof ClickCommand) {
+                    if (!_.isNull(selector)) {
+                        command.selector = selector
+                        if (_.isNumber(command.pointer) && commands[command.pointer]) {
+                            ;(commands[command.pointer] as Crawler.Command.IWrite).selector = command.selector
+                        }
+                        selector = null
+                    }
                     await this.click(command, window)
-                    logger.debug('END_CLICK')
-                    selector = null
-                } else if (command instanceof WriteCommand) {
-                    command.selector = selector ? selector : command.selector
-                    logger.debug('START_WRITE ' + JSON.stringify(command.selector))
-                    const writed = await this.write(command, window)
-                    logger.debug('END_WRITE ' + JSON.stringify(writed))
-                    selector = null
+                    continue
                 }
-                if (i < worker.commands.length - 1) {
-                    round++
+                if (command instanceof WriteCommand) {
+                    if (!_.isNull(selector)) {
+                        command.selector = selector
+                        if (_.isNumber(command.pointer) && commands[command.pointer]) {
+                            ;(commands[command.pointer] as Crawler.Command.IWrite).selector = command.selector
+                        }
+                        selector = null
+                    }
+                    await this.write(command, window)
+                    continue
                 }
+            }
+            // 만약 커서 명령이 포함되어 있다면 selector 를 업데이트 해주도록 한다.
+            if (builder.find((command) => command instanceof CursorCommand)) {
+                worker.commands = commands
+                this._workerRepository.update(worker)
             }
             history.setStatus(CRAWLER_STATUS.COMPLETE).setMessage('정상적으로 실행이 종료되었습니다.')
         } catch (error) {
@@ -110,7 +130,8 @@ class CrawlerService {
     }
     // 이동하기
     async redirect(command: RedirectCommand, window: BrowserWindow) {
-        return new Promise((resolve, reject) => {
+        logger.debug('START_REDIRECT ' + _.toString(command.url))
+        const promise = new Promise((resolve, reject) => {
             const timer = setTimeout(() => reject(new Error('Redirect 시간 초과')), command.timeout)
             const clear = () => {
                 clearTimeout(timer)
@@ -129,10 +150,13 @@ class CrawlerService {
             window.webContents.on('did-fail-load', onDidFailLoad)
             window.loadURL(command.url)
         })
+        logger.debug('END_REDIRECT')
+        return await promise
     }
     // 클릭하기
     async click(command: ClickCommand, window: BrowserWindow) {
-        return new Promise((resolve, reject) => {
+        logger.debug('START_CLICK ' + _.toString(command.selector))
+        const promise = new Promise((resolve, reject) => {
             // 팝업을 리다이렉션으로 변경
             window.webContents.setWindowOpenHandler(({ url }) => {
                 window.loadURL(url)
@@ -172,10 +196,13 @@ class CrawlerService {
                 .then(() => resolve(true))
                 .catch((e) => reject(e.message))
         })
+        logger.debug('END_CLICK')
+        return await promise
     }
     // 입력하기
     async write(command: WriteCommand, window: BrowserWindow) {
-        return new Promise((resolve, reject) => {
+        logger.debug('START_WRITE ' + _.toString(command.selector))
+        const isWrited = await new Promise((resolve, reject) => {
             window.webContents
                 .executeJavaScript(
                     `
@@ -209,9 +236,12 @@ class CrawlerService {
                 .then(() => resolve(true))
                 .catch((e) => reject(e.message))
         })
+        logger.debug('END_WRITE ' + _.toString(isWrited))
+        return isWrited
     }
     // 요소 선택하기
     async cursor(command: CursorCommand, window: BrowserWindow) {
+        logger.debug('START_CURSOR')
         window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
         await dialog.showMessageBox(window, {
             type: 'none',
@@ -278,6 +308,7 @@ class CrawlerService {
                 )
                 .then((selector) => resolve(selector))
         })
+        logger.debug('END_CURSOR ' + _.toString(selector))
         return selector
     }
     createWindow() {
@@ -301,7 +332,7 @@ class CrawlerService {
         // 화면 이동중에는 블로킹
         window.webContents.on('did-start-navigation', (event, url, isInPlace) => {
             if (isInPlace) {
-                console.log('DID_START_NAVI', url)
+                logger.debug('REDIRECT ' + _.toString(url))
                 this.setBlocking(true)
             }
         })

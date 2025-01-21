@@ -81,7 +81,7 @@ export default defineComponent({
                     ...items,
                     {
                         name: 'edit-label-worker',
-                        desc: '자동화 라벨 편집',
+                        desc: '라벨 편집',
                         shortcut: 'E',
                         icon: 'mdi:mdi-file-edit-outline',
                         cb() {
@@ -91,7 +91,7 @@ export default defineComponent({
                     },
                     {
                         name: 'delete-worker',
-                        desc: '자동화 삭제',
+                        desc: '삭제하기',
                         shortcut: 'D',
                         icon: 'mdi:mdi-trash-can-outline',
                         cb() {

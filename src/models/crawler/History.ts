@@ -5,9 +5,11 @@ class History implements Crawler.IHistory {
     id: Crawler.IHistory['id']
     status: Crawler.IHistory['status']
     round: Crawler.IHistory['round']
+    totalRound: Crawler.IHistory['totalRound']
     message: Crawler.IHistory['message']
     commands: Crawler.IHistory['commands']
     workerId: Crawler.IHistory['workerId']
+    label: Crawler.IHistory['label']
     downloads: Crawler.IHistory['downloads']
     startedAt: Crawler.IHistory['startedAt']
     endedAt: Crawler.IHistory['endedAt']
@@ -16,9 +18,11 @@ class History implements Crawler.IHistory {
     constructor({
         id = '',
         status = null,
-        round = null,
+        round = 0,
+        totalRound = 0,
         message = null,
         workerId = '',
+        label = '',
         commands = [],
         downloads = [],
         startedAt,
@@ -26,9 +30,11 @@ class History implements Crawler.IHistory {
     }: {
         id?: Crawler.IHistory['id']
         status?: CRAWLER_STATUS | null
-        round?: number | null
+        round?: number
+        totalRound?: number
         message?: string | null
         workerId: Crawler.IWorker['id']
+        label?: Crawler.IWorker['label']
         commands?: Crawler.IWorker['commands']
         downloads?: string[]
         startedAt: Date
@@ -37,8 +43,10 @@ class History implements Crawler.IHistory {
         this.id = id
         this.status = status
         this.round = round
+        this.totalRound = totalRound
         this.message = message
         this.workerId = workerId
+        this.label = label
         this.commands = commands
         this.downloads = downloads
         this.startedAt = startedAt
@@ -46,13 +54,16 @@ class History implements Crawler.IHistory {
         this.createdAt = new Date()
         this.updatedAt = null
     }
-
     setStatus(payload: CRAWLER_STATUS | null = null) {
         this.status = payload
         return this
     }
     setRound(payload: number) {
         this.round = payload
+        return this
+    }
+    setTotalRound(payload: number) {
+        this.totalRound = payload
         return this
     }
     setMessage(payload: unknown = '') {
@@ -65,6 +76,10 @@ class History implements Crawler.IHistory {
     }
     setCommands(payload: Crawler.IWorker['commands'] = []) {
         this.commands = payload
+        return this
+    }
+    setLabel(payload: Crawler.IWorker['label']) {
+        this.label = payload
         return this
     }
     setDownloads(payload: string[] = []) {

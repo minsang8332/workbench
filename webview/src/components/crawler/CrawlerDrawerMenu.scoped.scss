@@ -37,15 +37,16 @@
             p,
             span,
             i {
-                color: #fff;
                 font-size: 0.9rem !important;
+                color: #fff;
             }
             button {
                 @include mixins.glass-animation;
                 border-radius: 50%;
             }
             &--active {
-                background-color: rgba(variables.$crawler-color, 0.75);
+                background-color: rgba(variables.$crawler-color, 0.8);
+                border: 1px solid variables.$crawler-light-color;
             }
         }
     }

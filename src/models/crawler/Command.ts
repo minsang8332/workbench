@@ -28,17 +28,21 @@ export class RedirectCommand extends BaseCommand implements Crawler.Command.IRed
 export class ClickCommand extends BaseCommand implements Crawler.Command.IClick {
     selector: Crawler.Command.IClick['selector']
     timeout: Crawler.Command.IClick['timeout']
+    pointer?: number
     constructor(
         selector: string,
         {
             timeout = 5000,
+            pointer,
         }: {
             timeout?: number
+            pointer?: number
         } = {}
     ) {
         super(CRAWLER_COMMAND.CLICK)
         this.selector = selector
         this.timeout = timeout
+        this.pointer = pointer
     }
 }
 
@@ -46,19 +50,23 @@ export class WriteCommand extends BaseCommand implements Crawler.Command.IWrite 
     selector: Crawler.Command.IWrite['selector']
     text: Crawler.Command.IWrite['text']
     timeout: Crawler.Command.IWrite['timeout']
+    pointer?: number
     constructor(
         selector: string,
         text: string,
         {
             timeout = 5000,
+            pointer,
         }: {
             timeout?: number
+            pointer?: number
         } = {}
     ) {
         super(CRAWLER_COMMAND.WRITE)
         this.selector = selector
         this.text = text
         this.timeout = timeout
+        this.pointer = pointer
     }
 }
 

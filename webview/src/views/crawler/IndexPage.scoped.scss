@@ -3,18 +3,20 @@
 .crawler-page {
     $article-header: 3rem;
     height: calc(100% - variables.$dock-menu-height);
+    width: calc(100vw - variables.$page-layout-padding * 2);
     padding-bottom: variables.$page-layout-padding;
     gap: variables.$page-layout-padding;
+    position: relative;
     &__header {
         @include mixins.glass;
         height: $article-header;
         padding: 0 0.5rem;
-        i.mdi-robot {
-            color: variables.$crawler-color;
-            opacity: 0.5;
-        }
         i.mdi-chevron-right {
             font-size: 1.5rem;
+        }
+        i.mdi-robot {
+            color: variables.$crawler-color;
+            opacity: 1;
         }
         button {
             @include mixins.glass-animation;
@@ -48,5 +50,8 @@
         .text-desc {
             font-size: 0.9rem;
         }
+    }
+    &--drawer {
+        width: calc(100vw - variables.$drawer-menu-width - variables.$page-layout-padding * 3);
     }
 }

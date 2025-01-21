@@ -49,6 +49,7 @@ export namespace Crawler {
         error: Error | null
         message: string | null
         workerId: Crawler.IWorker['id']
+        label: Crawler.IWorker['label']
         commands: Crawler.IWorker['commands']
         downloads: string[]
         startedAt: Date
@@ -57,6 +58,7 @@ export namespace Crawler {
     namespace Command {
         interface IBase {
             name: CRAWLER_COMMAND
+            validate: boolean
         }
         interface IRedirect extends Crawler.Command.IBase {
             url: string

@@ -48,9 +48,9 @@ export default defineComponent({
             return <component is={component} {...crawlerState.commandForm.props} form />
         })
         const renderCommandCards = computed(() =>
-            crawlerState.commands.map((commnad, i) => {
+            crawlerState.commands.map((command, sortNo) => {
                 let component = null
-                switch (commnad.name) {
+                switch (command.name) {
                     case CRAWLER_COMMAND.REDIRECT:
                         component = RedirectCard
                         break
@@ -63,9 +63,10 @@ export default defineComponent({
                 return (
                     <component
                         is={component}
-                        {...commnad}
-                        sort-no={i}
-                        onMouseup={(e: MouseEvent) => onCommandContextMenu(e, i)}
+                        {...command}
+                        sort-no={sortNo}
+                        onMouseup={(e: MouseEvent) => onCommandContextMenu(e, sortNo)}
+                        onDblclick={(e: MouseEvent) => onToggleCommandForm(true, sortNo)}
                     />
                 )
             })

@@ -4,7 +4,7 @@
     &__content {
         &-item {
             @include mixins.glass-animation;
-            @include mixins.scale-animation;
+            @include mixins.scale-animation(0.92, 0.92);
             gap: 0.125rem;
             padding: 0.125rem;
             i {
@@ -20,13 +20,8 @@
                 line-height: 1;
             }
             &--active {
-                p,
-                i {
-                    color: variables.$diary-color;
-                }
-            }
-            &:active {
-                transform: scale(0.8);
+                background-color: rgba(#fff, 0.3);
+                border-radius: 0.25rem;
             }
         }
     }

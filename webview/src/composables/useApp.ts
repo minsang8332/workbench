@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { useAppStore } from '@/stores/app'
 import { inject } from 'vue'
 export const useApp = () => {
-    const $toast = inject('toast') as IToastPlugin
+    const alert = inject('toast') as IToastPlugin
     const appStore = useAppStore()
     const scss = (property: string) => {
         return getComputedStyle(document.body).getPropertyValue(property)
@@ -35,7 +35,7 @@ export const useApp = () => {
         return _.toNumber(remToNumber(width))
     }
     return {
-        $toast,
+        alert,
         scss,
         getLayoutWidth,
         getDrawerWidth

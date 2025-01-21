@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { reactive, computed, defineComponent, type PropType } from 'vue'
+import { watch, reactive, computed, defineComponent, type PropType, onMounted } from 'vue'
 import { crawlerState, useCrawler } from '@/composables/useCrawler'
 import TextField from '@/components/form/TextField'
 import type { Crawler } from '@/types/model'
@@ -15,7 +15,7 @@ export default defineComponent({
     components: {
         TextField
     },
-    emits: ['replace', 'splice'],
+    emits: ['replace', 'splice', 'validate'],
     props: {
         url: {
             type: String as PropType<Crawler.Command.IRedirect['url']>
@@ -31,9 +31,13 @@ export default defineComponent({
         form: {
             type: Boolean as PropType<boolean>,
             default: false
+        },
+        validate: {
+            type: Boolean as PropType<boolean>,
+            default: false
         }
     },
-    setup(props, { emit }) {
+    setup(props) {
         const {
             onToggleCommandForm,
             onDropOntoCard,
@@ -60,24 +64,36 @@ export default defineComponent({
                 }
             ]
         })
-        const validate = computed(() => {
-            return (
+        const validate = computed(
+            () =>
                 state.inputUrlRules.every((fn) => fn(state.inputUrl) === true) &&
                 state.inputTimeoutRules.every((fn) => fn(state.inputTimeout) === true)
-            )
-        })
-        const onSubmit = (event: Event) => {
-            event.preventDefault()
+        )
+        const onSubmit = (event?: Event) => {
+            if (event) {
+                event.preventDefault()
+            }
             if (validate.value === true && _.isNumber(props.sortNo)) {
-                onUpdateRedirectCommand(props.sortNo, state.inputUrl, state.inputTimeout)
+                onUpdateRedirectCommand(
+                    props.sortNo,
+                    state.inputUrl,
+                    state.inputTimeout,
+                    validate.value
+                )
+            }
+            if (event) {
                 onToggleCommandForm(false)
             }
         }
+        onMounted(() => {
+            onSubmit()
+        })
         return () => (
             <div
                 class={{
                     'base-card flex flex-col': true,
-                    'base-card--form': props.form
+                    'base-card--form': props.form,
+                    'base-card--validate': _.isNumber(props.sortNo) && props.validate === false
                 }}
                 draggable
                 onDragstart={(event) =>

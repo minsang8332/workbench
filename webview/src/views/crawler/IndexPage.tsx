@@ -30,7 +30,7 @@ export default defineComponent({
         const historyRows = computed(() => {
             let rows = getHistories.value.reduce((acc: any, history) => {
                 acc.push({
-                    id: history.id,
+                    label: history.label,
                     status: _.isNumber(history.status) ? CRAWLER_STATUS[history.status] : null,
                     round: history.round,
                     totalRound: history.commands.length,
@@ -49,7 +49,12 @@ export default defineComponent({
             loadHistories()
         })
         return () => (
-            <article class="crawler-page flex flex-col h-full">
+            <article
+                class={{
+                    'crawler-page flex flex-col h-full': true,
+                    'crawler-page--drawer': appStore.getDrawer
+                }}
+            >
                 <div class="crawler-page__header flex justify-between items-center">
                     <div class="flex items-center">
                         <button
@@ -94,10 +99,10 @@ export default defineComponent({
                         </p>
                         <data-table
                             columns={[
-                                { field: 'id', label: 'ID' },
-                                { field: 'status', label: '결과' },
+                                { field: 'label', label: '자동화명' },
+                                { field: 'status', label: '상태' },
                                 { field: 'round', label: '진행 회차' },
-                                { field: 'totalRound', label: '모든 회차' },
+                                { field: 'totalRound', label: '총 회차' },
                                 { field: 'message', label: '메시지' },
                                 { field: 'endedAt', label: '종료시점' }
                             ]}

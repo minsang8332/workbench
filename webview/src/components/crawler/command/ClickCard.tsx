@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { reactive, computed, defineComponent, type PropType } from 'vue'
+import { reactive, computed, defineComponent, type PropType, onMounted } from 'vue'
 import { crawlerState, useCrawler } from '@/composables/useCrawler'
 import TextField from '@/components/form/TextField'
 import type { Crawler } from '@/types/model'
@@ -31,6 +31,10 @@ export default defineComponent({
         form: {
             type: Boolean as PropType<boolean>,
             default: false
+        },
+        validate: {
+            type: Boolean as PropType<boolean>,
+            default: false
         }
     },
     setup(props, { emit }) {
@@ -53,18 +57,31 @@ export default defineComponent({
         const validate = computed(() => {
             return state.inputTimeoutRules.every((fn) => fn(state.inputTimeout) === true)
         })
-        const onSubmit = (event: Event) => {
-            event.preventDefault()
+        const onSubmit = (event?: Event) => {
+            if (event) {
+                event.preventDefault()
+            }
             if (validate.value === true && _.isNumber(props.sortNo)) {
-                onUpdateClickCommand(props.sortNo, state.inputSelector, state.inputTimeout)
+                onUpdateClickCommand(
+                    props.sortNo,
+                    state.inputSelector,
+                    state.inputTimeout,
+                    validate.value
+                )
+            }
+            if (event) {
                 onToggleCommandForm(false)
             }
         }
+        onMounted(() => {
+            onSubmit()
+        })
         return () => (
             <div
                 class={{
                     'base-card flex flex-col': true,
-                    'base-card--form': props.form
+                    'base-card--form': props.form,
+                    'base-card--validate': _.isNumber(props.sortNo) && props.validate === false
                 }}
                 draggable
                 onDragstart={(event) =>
@@ -112,7 +129,7 @@ export default defineComponent({
                                 <span class="text-white">{props.sortNo + 1}</span>
                             )}
                         </div>
-                        <div class="command-card__content flex flex-col justify-center items-center gap-1">
+                        <div class="base-card__content flex flex-col justify-center items-center gap-1">
                             <p class="text-white break-all">{props.selector}</p>
                         </div>
                     </>

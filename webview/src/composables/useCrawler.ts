@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { inject, unref, reactive } from 'vue'
+import { inject, unref, reactive, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { CRAWLER_COMMAND } from '@/costants/model'
 import { useAppStore } from '@/stores/app'
@@ -18,15 +18,19 @@ export const crawlerState = reactive(<ICrawlerState>{
     commandForm: {
         modal: false,
         props: null
-    }
+    },
+    validates: []
 })
 export const useCrawler = (state: ICrawlerState) => {
+    // State
     const router = useRouter()
     const route = useRoute()
     const $toast = inject('toast') as IToastPlugin
     const appStore = useAppStore()
     const crawlerStore = useCrawlerStore()
     const { getWorkers } = storeToRefs(crawlerStore)
+    // Getters
+    const workerId = computed(() => _.toString(route.params.id))
     // Actions
     const loadWorker = () => {
         crawlerStore
@@ -37,7 +41,7 @@ export const useCrawler = (state: ICrawlerState) => {
                     router.replace({ name: 'crawler' })
                     return
                 }
-                const worker = workers.find((worker) => worker.id == route.params.id)
+                const worker = workers.find((worker) => worker.id == workerId.value)
                 if (!(worker && worker.id)) {
                     crawlerState.commands = []
                     router.replace({ name: 'crawler' })
@@ -50,23 +54,23 @@ export const useCrawler = (state: ICrawlerState) => {
                 $toast.error(new Error('자동화 세트를 불러올 수 없습니다.'))
             })
     }
-    const runWorker = (id?: string) => {
-        if (!_.isEmpty(id)) {
-            crawlerStore
-                .saveWorkerCommands({
-                    id,
-                    commands: crawlerState.commands
-                })
-                .then(() =>
-                    crawlerStore
-                        .runWorker(id)
-                        .then((response) => $toast.success(response.message))
-                        .catch((e) => $toast.error(e))
-                        .finally(loadHistories)
-                        .finally(() => router.push({ name: 'crawler' }))
-                )
-                .catch((e) => $toast.error(e))
-        }
+    const saveWorker = () => {
+        return crawlerStore.saveWorkerCommands({
+            id: workerId.value,
+            commands: crawlerState.commands
+        })
+    }
+    const runWorker = () => {
+        saveWorker()
+            .then(() =>
+                crawlerStore
+                    .runWorker(workerId.value)
+                    .then((response) => $toast.success(response.message))
+                    .catch((e) => $toast.error(e))
+                    .finally(loadHistories)
+                    .finally(() => router.push({ name: 'crawler' }))
+            )
+            .catch((e) => $toast.error(e))
     }
     const loadHistories = () => {
         crawlerStore.loadHistories().catch((e) => $toast.error(e))
@@ -104,6 +108,18 @@ export const useCrawler = (state: ICrawlerState) => {
                 icon: 'mdi:mdi-refresh',
                 cb() {
                     loadWorker()
+                    appStore.toggleMenu(false)
+                }
+            },
+            {
+                name: 'save',
+                desc: '저장하기',
+                shortcut: 'R',
+                icon: 'mdi:mdi-refresh',
+                cb() {
+                    saveWorker()
+                        .then(() => $toast.success('정상적으로 저장되었습니다.'))
+                        .catch(() => $toast.error(new Error('저장 할 수 없습니다.')))
                     appStore.toggleMenu(false)
                 }
             }
@@ -170,7 +186,8 @@ export const useCrawler = (state: ICrawlerState) => {
                 JSON.stringify({
                     name: CRAWLER_COMMAND.REDIRECT,
                     url: '',
-                    timeout: 5000
+                    timeout: 5000,
+                    validate: false
                 })
             )
         }
@@ -178,12 +195,14 @@ export const useCrawler = (state: ICrawlerState) => {
     const onUpdateRedirectCommand = (
         sortNo: number,
         url: Crawler.Command.IRedirect['url'],
-        timeout: Crawler.Command.IRedirect['timeout']
+        timeout: Crawler.Command.IRedirect['timeout'],
+        validate: boolean
     ) => {
         state.commands[sortNo] = {
             name: CRAWLER_COMMAND.REDIRECT,
             url,
-            timeout: _.toNumber(timeout)
+            timeout: _.toNumber(timeout),
+            validate
         }
     }
     const onCreateClickCommand = (event: DragEvent) => {
@@ -194,7 +213,8 @@ export const useCrawler = (state: ICrawlerState) => {
                 JSON.stringify({
                     name: CRAWLER_COMMAND.CLICK,
                     selector: '',
-                    timeout: 5000
+                    timeout: 5000,
+                    validate: false
                 })
             )
         }
@@ -202,12 +222,14 @@ export const useCrawler = (state: ICrawlerState) => {
     const onUpdateClickCommand = (
         sortNo: number,
         selector: Crawler.Command.IClick['selector'],
-        timeout: Crawler.Command.IClick['timeout']
+        timeout: Crawler.Command.IClick['timeout'],
+        validate: boolean
     ) => {
         state.commands[sortNo] = {
             name: CRAWLER_COMMAND.CLICK,
             selector,
-            timeout: _.toNumber(timeout)
+            timeout: _.toNumber(timeout),
+            validate
         }
     }
     const onCreateWriteCommand = (event: DragEvent) => {
@@ -219,7 +241,8 @@ export const useCrawler = (state: ICrawlerState) => {
                     name: CRAWLER_COMMAND.WRITE,
                     selector: '',
                     text: '',
-                    timeout: 5000
+                    timeout: 5000,
+                    validate: false
                 })
             )
         }
@@ -228,13 +251,15 @@ export const useCrawler = (state: ICrawlerState) => {
         sortNo: number,
         selector: Crawler.Command.IWrite['selector'],
         text: Crawler.Command.IWrite['text'],
-        timeout: Crawler.Command.IWrite['timeout']
+        timeout: Crawler.Command.IWrite['timeout'],
+        validate: boolean
     ) => {
         state.commands[sortNo] = {
             name: CRAWLER_COMMAND.WRITE,
             selector,
             text,
-            timeout: _.toNumber(timeout)
+            timeout: _.toNumber(timeout),
+            validate
         }
     }
     const onMoveAnyCommand = (event: DragEvent, sortNo: number) => {
@@ -317,6 +342,7 @@ export const useCrawler = (state: ICrawlerState) => {
     }
     return {
         loadWorker,
+        saveWorker,
         runWorker,
         loadHistories,
         deleteWorker,

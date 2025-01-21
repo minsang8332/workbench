@@ -2,7 +2,6 @@
 @use '@/assets/css/abstracts/mixins';
 .worker-page {
     height: 100%;
-    max-width: calc(100vw - variables.$drawer-menu-width - variables.$page-layout-padding * 3);
     gap: variables.$page-layout-padding;
     &__content {
         @include mixins.glass;
@@ -57,35 +56,26 @@
     &__actions {
         @include mixins.glass;
         flex: 0 0 variables.$dock-menu-height;
-        padding: 0.5rem;
+        padding: 0.25rem 0.5rem;
         button {
             height: 100%;
             border-radius: 0.25rem;
-            &.btn-save {
-                @include mixins.neon-animation(variables.$crawler-color);
-                @include mixins.tooltip;
-                border: 1px solid #1eff43;
-                width: 2.25rem;
-                transition-property: transform, box-shadow;
-                transition-duration: 0.3s;
-                i {
-                    font-size: 1.75rem;
-                    color: #fff;
-                }
-                &:active {
-                    transform: scale(0.8, 0.8);
-                }
-            }
             &.btn-run {
                 @include mixins.neon-animation(variables.$crawler-color);
-                border: 1px solid #1eff43;
+                width: calc(2.25rem * 3 + 0.25rem * 5);
                 color: #fff;
-                width: calc(2.25rem * 2 + 0.5rem);
                 text-wrap: nowrap;
+                border: 2px solid variables.$crawler-light-color;
                 transition-property: transform, box-shadow;
                 transition-duration: 0.3s;
-                &:active {
-                    transform: scale(0.8, 0.8);
+                &:not(:disabled) {
+                    &:active {
+                        transform: scale(0.9, 0.9);
+                    }
+                }
+                &:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
                 }
             }
         }

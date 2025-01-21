@@ -2,12 +2,12 @@ import { defineComponent, reactive, type PropType } from 'vue'
 import TextField from '@/components/form/TextField'
 import type { ITodoSprint } from '@/types/model'
 import './TodoSprintCard.scoped.scss'
-enum TodoSprintCardMode {
+enum TODO_SPRINT_MODE {
     VIEW_MODE,
     EDIT_MODE
 }
 interface ITodoSprintCardState {
-    mode: TodoSprintCardMode
+    mode: TODO_SPRINT_MODE
     inputTitle: ITodoSprint['title']
     inputChecked: ITodoSprint['checked']
 }
@@ -34,30 +34,28 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         const state = reactive<ITodoSprintCardState>({
-            mode: TodoSprintCardMode.VIEW_MODE,
+            mode: TODO_SPRINT_MODE.VIEW_MODE,
             inputTitle: props.title,
             inputChecked: props.checked
         })
         const onBeforeUpdate = () => {
-            state.mode = TodoSprintCardMode.EDIT_MODE
+            state.mode = TODO_SPRINT_MODE.EDIT_MODE
         }
         const onUpdate = () => {
             emit('update', { id: props.id, title: state.inputTitle, checked: state.inputChecked })
-            state.mode = TodoSprintCardMode.VIEW_MODE
+            state.mode = TODO_SPRINT_MODE.VIEW_MODE
         }
         const onCheck = () => {
             state.inputChecked = !state.inputChecked
             onUpdate()
         }
-        const onDelete = () => {
-            emit('delete', props.id)
-        }
+        const onDelete = () => emit('delete')
         return () => (
             <div
                 class={{
                     'todo-sprint-card flex justify-between items-center': true,
                     'todo-sprint-card--checked': props.checked,
-                    'todo-sprint-card--updated': state.mode == TodoSprintCardMode.EDIT_MODE
+                    'todo-sprint-card--updated': state.mode == TODO_SPRINT_MODE.EDIT_MODE
                 }}
             >
                 <div class="flex items-center gap-2">
@@ -65,7 +63,7 @@ export default defineComponent({
                         <i class="mdi mdi-check" />
                         <span class="tooltip">체크하기</span>
                     </button>
-                    {state.mode == TodoSprintCardMode.VIEW_MODE ? (
+                    {state.mode == TODO_SPRINT_MODE.VIEW_MODE ? (
                         <span>{props.title}</span>
                     ) : (
                         <text-field
@@ -76,7 +74,7 @@ export default defineComponent({
                     )}
                 </div>
                 <div class="flex items-center gap-2">
-                    {state.mode == TodoSprintCardMode.VIEW_MODE ? (
+                    {state.mode == TODO_SPRINT_MODE.VIEW_MODE ? (
                         <button type="button" onClick={onBeforeUpdate}>
                             <i class="mdi mdi-pencil-outline" />
                             <span class="tooltip">수정</span>

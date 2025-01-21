@@ -101,11 +101,11 @@
         backdrop-filter: blur(2px);
     }
 }
-@mixin cubic($color, $height: 100%, $border-radius: 0.25rem) {
+@mixin cubic($color, $height: 100%, $opacity: 0.5) {
     width: $height;
     height: $height;
-    border-radius: $border-radius;
-    background-color: rgba($color, 0.5);
+    border-radius: 0.25rem;
+    background-color: rgba($color, $opacity);
     transition: 0.3s;
     i {
         font-size: ($height * 0.75);

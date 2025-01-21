@@ -10,7 +10,7 @@
         height: $article-header;
         padding: 0 0.5rem;
         button {
-            @include mixins.scale-animation;
+            @include mixins.glass-animation;
             @include mixins.tooltip;
             height: 2.25rem;
             width: 2.25rem;

@@ -15,8 +15,9 @@ export default defineComponent({
     emits: ['update:model-value', 'enter'],
     props: {
         modelValue: {
-            type: [String, Number] as PropType<string | number>,
-            default: undefined
+            type: [String, Number, Date, Array, null, undefined] as PropType<
+                string | number | readonly string[] | null | undefined
+            >
         },
         type: {
             type: String as PropType<TEXT_FIELD[keyof TEXT_FIELD]>,
