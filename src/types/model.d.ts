@@ -44,16 +44,22 @@ export namespace Crawler {
         )[]
     }
     interface IHistory extends IModel {
-        status: CRAWLER_STATUS | null
-        round: number
-        totalRound: number
-        message: string | null
         workerId: Crawler.IWorker['id']
         label: Crawler.IWorker['label']
         commands: Crawler.IWorker['commands']
+        status: CRAWLER_STATUS | null
+        round: number
+        totalRound: number
+        message: string
         downloads: string[]
         startedAt: Date
         endedAt: Date | null
+    }
+    interface ISchedule extends IModel {
+        workerId: Crawler.IWorker['id']
+        status: CRAWLER_STATUS
+        expression: string
+        firedAt: Date | null
     }
     namespace Command {
         interface IBase {

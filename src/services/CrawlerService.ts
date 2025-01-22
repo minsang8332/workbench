@@ -1,29 +1,33 @@
 import _ from 'lodash'
 import path from 'path'
+import scheduler, { Job } from 'node-schedule'
 import { dialog, BrowserWindow, Event, session, app } from 'electron'
 import HistoryRepository from '@/repositories/crawler/HistoryRepository'
 import WorkerRepository from '@/repositories/crawler/WorkerRepository'
-import History from '@/models/crawler/History'
+import ScheduleRepository from '@/repositories/crawler/ScheduleRepository'
 import { ClickCommand, CursorCommand, RedirectCommand, WriteCommand } from '@/models/crawler/Command'
+import History from '@/models/crawler/History'
+import { CRAWLER_COMMAND, CRAWLER_STATUS } from '@/constants/model'
 import { IPCError } from '@/errors/ipc'
 import windowUtil from '@/utils/window'
 import logger from '@/logger'
-import { CRAWLER_COMMAND, CRAWLER_STATUS } from '@/constants/model'
 import type { Crawler } from '@/types/model'
 class CrawlerService {
     private _blocking = false
-    private _headless = false
     private _workerRepository: WorkerRepository
     private _historyRepository: HistoryRepository
+    private _scheduleRepository: ScheduleRepository
+    private static _schedules: { [key: Crawler.ISchedule['id']]: Job } = {}
     constructor() {
         this._workerRepository = new WorkerRepository()
         this._historyRepository = new HistoryRepository()
+        this._scheduleRepository = new ScheduleRepository()
     }
     getWorker(id: Crawler.IWorker['id']) {
         return this._workerRepository.findOne(id)
     }
     // Plain 객체를 Class 객체로 구조화한다.
-    build(commands: Crawler.IWorker['commands']) {
+    build(commands: Crawler.IWorker['commands'], headless: boolean = false) {
         let builder = []
         for (let i = 0; i < commands.length; i++) {
             switch (commands[i].name) {
@@ -38,7 +42,7 @@ class CrawlerService {
                 }
                 case CRAWLER_COMMAND.CLICK: {
                     const command = commands[i] as Crawler.Command.IClick
-                    if (_.isEmpty(command.selector)) {
+                    if (_.isEmpty(command.selector) && headless === false) {
                         builder.push(new CursorCommand())
                     }
                     builder.push(
@@ -51,7 +55,7 @@ class CrawlerService {
                 }
                 case CRAWLER_COMMAND.WRITE: {
                     const command = commands[i] as Crawler.Command.IWrite
-                    if (_.isEmpty(command.selector)) {
+                    if (_.isEmpty(command.selector) && headless === false) {
                         builder.push(new CursorCommand())
                     }
                     builder.push(
@@ -66,18 +70,17 @@ class CrawlerService {
         }
         return builder
     }
-    async run(worker: Crawler.IWorker, window: BrowserWindow): Promise<Crawler.IHistory> {
+    async run(worker: Crawler.IWorker, window: BrowserWindow, headless: boolean = false): Promise<Crawler.IHistory> {
+        let round = 0
+        let selector = null
+        let downloads: string[] = []
         let history = new History({
             workerId: worker.id,
             startedAt: new Date(),
         })
-        let round = 0
-        let downloads: string[] = []
-        let selector = null
+        let builder = this.build(worker.commands, headless)
         try {
-            const { label, commands } = worker
-            const builder = this.build(commands)
-            history.setTotalRound(builder.length).setLabel(label).setCommands(commands)
+            history.setLabel(worker.label).setCommands(worker.commands).setTotalRound(builder.length)
             for (let i = 0; i < builder.length; i++) {
                 round++
                 while (this._blocking) {
@@ -95,8 +98,8 @@ class CrawlerService {
                 if (command instanceof ClickCommand) {
                     if (!_.isNull(selector)) {
                         command.selector = selector
-                        if (_.isNumber(command.pointer) && commands[command.pointer]) {
-                            ;(commands[command.pointer] as Crawler.Command.IWrite).selector = command.selector
+                        if (_.isNumber(command.pointer) && worker.commands[command.pointer]) {
+                            ;(worker.commands[command.pointer] as Crawler.Command.IWrite).selector = command.selector
                         }
                         selector = null
                     }
@@ -106,8 +109,8 @@ class CrawlerService {
                 if (command instanceof WriteCommand) {
                     if (!_.isNull(selector)) {
                         command.selector = selector
-                        if (_.isNumber(command.pointer) && commands[command.pointer]) {
-                            ;(commands[command.pointer] as Crawler.Command.IWrite).selector = command.selector
+                        if (_.isNumber(command.pointer) && worker.commands[command.pointer]) {
+                            ;(worker.commands[command.pointer] as Crawler.Command.IWrite).selector = command.selector
                         }
                         selector = null
                     }
@@ -115,14 +118,13 @@ class CrawlerService {
                     continue
                 }
             }
-            // 만약 커서 명령이 포함되어 있다면 selector 를 업데이트 해주도록 한다.
-            if (builder.find((command) => command instanceof CursorCommand)) {
-                worker.commands = commands
-                this._workerRepository.update(worker)
-            }
             history.setStatus(CRAWLER_STATUS.COMPLETE).setMessage('정상적으로 실행이 종료되었습니다.')
         } catch (error) {
             history.setStatus(CRAWLER_STATUS.FAILED).setMessage(error)
+        }
+        // 만약 커서 명령이 포함되어 있다면 selector 를 업데이트 해주도록 한다.
+        if (builder.find((command) => command instanceof CursorCommand)) {
+            this._workerRepository.update(worker)
         }
         history.setRound(round).setDownloads(downloads).setEndedAt(new Date())
         this.addHistory(history)
@@ -222,7 +224,7 @@ class CrawlerService {
                                     onClear()
                                     resolve(true)
                                 } else if (element.tagName) {
-                                    reject(new Error('입력할 수 없는 요소입니다: ' + element.tagName))
+                                    reject(new Error('입력할 수 없는 요소입니다 ' + element.tagName))
                                 }
                             }, 1000)
                             const timer = setTimeout(() => {
@@ -246,8 +248,8 @@ class CrawlerService {
         await dialog.showMessageBox(window, {
             type: 'none',
             buttons: ['확인'],
-            title: '자동화 가이드',
-            message: '마우스 커서를 이동하여 클릭해 주세요.',
+            title: '자동화 안내',
+            message: '마우스 커서로 대상을 클릭해 주세요.',
         })
         const selector: string = await new Promise((resolve, reject) => {
             window.webContents
@@ -290,24 +292,27 @@ class CrawlerService {
                             return path.join(' > ')
                         }
                         return new Promise((resolve) => {
-                            const onClickElement = (event) => {
+                            const onClickCursor = (event) => {
+                                event.preventDefault()
+                                event.stopImmediatePropagation()
                                 const element = event.target
                                 const selector = getSelector(element)
                                 element.classList.remove('web-crawler--mouseover')
                                 document.removeEventListener('mouseover', onMouseOver)
                                 document.removeEventListener('mouseout', onMouseOut)
-                                document.removeEventListener('click', onClickElement)
+                                document.removeEventListener('click', onClickCursor)
                                 resolve(selector)
                             }
                             document.addEventListener('mouseover', onMouseOver)
                             document.addEventListener('mouseout', onMouseOut)
-                            document.addEventListener('click', onClickElement)
+                            document.addEventListener('click', onClickCursor, true)
                         })
                     })()
                 `
                 )
                 .then((selector) => resolve(selector))
         })
+        window.setIgnoreMouseEvents(false)
         logger.debug('END_CURSOR ' + _.toString(selector))
         return selector
     }
@@ -356,13 +361,50 @@ class CrawlerService {
         this._blocking = payload
         return this
     }
-    setHeadless(payload: boolean = false) {
-        this._headless = payload
-        return this
-    }
     addHistory(history: History) {
         this._historyRepository.insert(history)
         return this
+    }
+    // 스케줄 실행하기
+    async consumeSchedule(scheduleId: Crawler.ISchedule['id'], firedAt: Date) {
+        this._scheduleRepository.updateStatus(scheduleId, CRAWLER_STATUS.RUNNING, firedAt)
+        const schedule = this._scheduleRepository.findOne(scheduleId)
+        if (schedule) {
+            const worker = this._workerRepository.findOne(schedule.workerId)
+            if (!worker) {
+                throw new IPCError(`Worker 가 유효하지 않습니다. (ID: ${schedule.workerId})`)
+            }
+            const window = this.createWindow()
+            // 스케줄링은 윈도우 화면이 닫힌 상태로 진행되기에 메모리 누수가 발생할 수 있다
+            // 타이머를 설정하여 초과하면 강제로 에러를 발생시키도록 함. provideScheduler 클로져가 유효하기에 로그가 남을 것
+            const detectTimeout = new Promise((_, reject) => setTimeout(() => reject(), 1000 * 60 * 5))
+            await Promise.all([this.run(worker, window, true), detectTimeout]).finally(window.close)
+        }
+        this._scheduleRepository.updateStatus(scheduleId, CRAWLER_STATUS.WAITING)
+    }
+    // 스케줄러 설정하기
+    async provideScheduler() {
+        const schedules = this._scheduleRepository.findByPrepare()
+        for (const schedule of schedules) {
+            let job = null
+            try {
+                job = scheduler.scheduleJob(schedule.expression, (firedAt) =>
+                    this.consumeSchedule(schedule.id, firedAt)
+                )
+                CrawlerService._schedules[schedule.id] = job
+                this._scheduleRepository.updateStatus(schedule.id, CRAWLER_STATUS.WAITING)
+            } catch (e) {
+                this._scheduleRepository.updateStatus(schedule.id, CRAWLER_STATUS.CANCELED)
+                logger.error(e)
+                if (job) {
+                    job.cancel()
+                }
+            }
+        }
+    }
+    // 스케줄러 중단
+    shutdownScheduler() {
+        return scheduler.gracefulShutdown()
     }
 }
 export default CrawlerService

@@ -33,7 +33,7 @@ export default defineComponent({
                     label: history.label,
                     status: _.isNumber(history.status) ? CRAWLER_STATUS[history.status] : null,
                     round: history.round,
-                    totalRound: history.commands.length,
+                    totalRound: history.totalRound,
                     message: history.message,
                     endedAt: dayjs(history.endedAt).isValid()
                         ? dayjs(history.endedAt).format('YYYY-MM-DD HH:mm:ss')

@@ -4,26 +4,30 @@
     @include mixins.scale-animation;
     height: 100%;
     backdrop-filter: unset;
-    background-color: rgba(#fff, 0.8);
+    background-color: variables.$dark-color;
     border: 2px solid variables.$border-color;
     border-radius: 0.25rem;
     padding: 0.5rem;
     cursor: pointer;
     &__header {
         flex: 0 0 50%;
+        * {
+            color: #fff;
+        }
         button.btn-close {
             @include mixins.scale-animation;
             border-radius: 0.25rem;
             padding: 0.1rem;
             i {
                 font-size: 1.2rem;
+                color: #fff;
             }
         }
     }
     &__actions {
         flex: 0 0 50%;
         .period {
-            background-color: rgba(variables.$gray-color, 0.9);
+            background-color: rgba(variables.$gray-color, 0.3);
             color: #fff;
             height: fit-content;
             width: fit-content;
@@ -32,7 +36,7 @@
             font-size: 0.9rem;
             text-wrap: nowrap;
             &--alive {
-                background-color: rgba(variables.$success-color, 0.8);
+                background-color: rgba(variables.$success-color, 0.5);
             }
         }
     }

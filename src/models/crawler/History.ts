@@ -3,13 +3,13 @@ import { CRAWLER_STATUS } from '@/constants/model'
 import type { Crawler } from '@/types/model'
 class History implements Crawler.IHistory {
     id: Crawler.IHistory['id']
+    workerId: Crawler.IHistory['workerId']
+    label: Crawler.IHistory['label']
+    commands: Crawler.IHistory['commands']
     status: Crawler.IHistory['status']
     round: Crawler.IHistory['round']
     totalRound: Crawler.IHistory['totalRound']
     message: Crawler.IHistory['message']
-    commands: Crawler.IHistory['commands']
-    workerId: Crawler.IHistory['workerId']
-    label: Crawler.IHistory['label']
     downloads: Crawler.IHistory['downloads']
     startedAt: Crawler.IHistory['startedAt']
     endedAt: Crawler.IHistory['endedAt']
@@ -17,42 +17,50 @@ class History implements Crawler.IHistory {
     updatedAt: Crawler.IHistory['updatedAt']
     constructor({
         id = '',
-        status = null,
-        round = 0,
-        totalRound = 0,
-        message = null,
         workerId = '',
         label = '',
         commands = [],
+        status = null,
+        round = 0,
+        totalRound = 0,
+        message = '',
         downloads = [],
         startedAt,
         endedAt = null,
     }: {
         id?: Crawler.IHistory['id']
-        status?: CRAWLER_STATUS | null
-        round?: number
-        totalRound?: number
-        message?: string | null
         workerId: Crawler.IWorker['id']
         label?: Crawler.IWorker['label']
         commands?: Crawler.IWorker['commands']
+        status?: CRAWLER_STATUS | null
+        round?: number
+        totalRound?: number
+        message?: string
         downloads?: string[]
         startedAt: Date
         endedAt?: Date | null
     }) {
         this.id = id
+        this.workerId = workerId
+        this.label = label
+        this.commands = commands
         this.status = status
         this.round = round
         this.totalRound = totalRound
         this.message = message
-        this.workerId = workerId
-        this.label = label
-        this.commands = commands
         this.downloads = downloads
         this.startedAt = startedAt
         this.endedAt = endedAt
         this.createdAt = new Date()
         this.updatedAt = null
+    }
+    setCommands(payload: Crawler.IWorker['commands'] = []) {
+        this.commands = payload
+        return this
+    }
+    setLabel(payload: Crawler.IWorker['label']) {
+        this.label = payload
+        return this
     }
     setStatus(payload: CRAWLER_STATUS | null = null) {
         this.status = payload
@@ -72,14 +80,6 @@ class History implements Crawler.IHistory {
         } else if (_.isError(payload)) {
             this.message = payload.message
         }
-        return this
-    }
-    setCommands(payload: Crawler.IWorker['commands'] = []) {
-        this.commands = payload
-        return this
-    }
-    setLabel(payload: Crawler.IWorker['label']) {
-        this.label = payload
         return this
     }
     setDownloads(payload: string[] = []) {

@@ -38,13 +38,7 @@ export default defineComponent({
         }
     },
     setup(props) {
-        const {
-            onToggleCommandForm,
-            onDropOntoCard,
-            onMoveAnyCommand,
-            onCreateRedirectCommand,
-            onUpdateRedirectCommand
-        } = useCrawler(crawlerState)
+        const { onToggleCommandForm, onUpdateRedirectCommand } = useCrawler(crawlerState)
         const state = reactive<IRedirectCardState>({
             inputUrl: props.url ?? '',
             inputUrlRules: [
@@ -95,14 +89,6 @@ export default defineComponent({
                     'base-card--form': props.form,
                     'base-card--validate': _.isNumber(props.sortNo) && props.validate === false
                 }}
-                draggable
-                onDragstart={(event) =>
-                    _.isNumber(props.sortNo)
-                        ? onMoveAnyCommand(event, props.sortNo)
-                        : onCreateRedirectCommand(event)
-                }
-                onDragover={(e) => e.preventDefault()}
-                onDrop={(e) => onDropOntoCard(e, props.sortNo)}
             >
                 {props.form ? (
                     <form onSubmit={onSubmit}>
