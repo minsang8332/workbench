@@ -25,8 +25,14 @@ export default defineComponent({
         WriteCard
     },
     setup(props) {
-        const { onDropInContainer, onCommandContextMenu, onToggleCommandForm } =
-            useCrawler(crawlerState)
+        const {
+            onDropInContainer,
+            onCommandContextMenu,
+            onToggleCommandForm,
+            onDropOntoCard,
+            onMoveAnyCommand,
+            onCreateWriteCommand
+        } = useCrawler(crawlerState)
         const scrolling = ref(false)
         const containerRef = ref<HTMLDivElement>()
         const scrollX = ref(0)
@@ -65,8 +71,16 @@ export default defineComponent({
                         is={component}
                         {...command}
                         sort-no={sortNo}
-                        onMouseup={(e: MouseEvent) => onCommandContextMenu(e, sortNo)}
-                        onDblclick={(e: MouseEvent) => onToggleCommandForm(true, sortNo)}
+                        draggable
+                        onDragover={(event: DragEvent) => event.preventDefault()}
+                        onDragstart={(event: DragEvent) =>
+                            _.isNumber(sortNo)
+                                ? onMoveAnyCommand(event, sortNo)
+                                : onCreateWriteCommand(event)
+                        }
+                        onDrop={(event: DragEvent) => onDropOntoCard(event, sortNo)}
+                        onMouseup={(event: MouseEvent) => onCommandContextMenu(event, sortNo)}
+                        onDblclick={(event: MouseEvent) => onToggleCommandForm(true, sortNo)}
                     />
                 )
             })

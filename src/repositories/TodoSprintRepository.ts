@@ -1,5 +1,5 @@
-import TodoSprint from '@/models/TodoSprint'
 import BaseRepository from './BaseRepository'
+import TodoSprint from '@/models/TodoSprint'
 class TodoSprintRepository extends BaseRepository<TodoSprint> {
     constructor() {
         super('TodoSprint')

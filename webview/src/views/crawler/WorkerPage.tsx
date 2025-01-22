@@ -32,8 +32,15 @@ export default defineComponent({
         const crawlerStore = useCrawlerStore()
         const app = useApp()
         const { getWorkers } = storeToRefs(crawlerStore)
-        const { loadWorker, runWorker, onCommandContextMenu, onDropInContent } =
-            useCrawler(crawlerState)
+        const {
+            loadWorker,
+            runWorker,
+            onCommandContextMenu,
+            onCreateWriteCommand,
+            onCreateClickCommand,
+            onCreateRedirectCommand,
+            onDropInContent
+        } = useCrawler(crawlerState)
         const printLabel = computed(() => {
             const worker = getWorkers.value.find((worker) => worker.id == props.id)
             if (!(worker && worker.id)) {
@@ -76,9 +83,24 @@ export default defineComponent({
                         <worker-container />
                     </div>
                     <div class="worker-panel">
-                        <write-card class="command-card" />
-                        <click-card class="command-card" />
-                        <redirect-card class="command-card" />
+                        <write-card
+                            class="command-card"
+                            draggable
+                            onDragover={(event: DragEvent) => event.preventDefault()}
+                            onDragstart={(event: DragEvent) => onCreateWriteCommand(event)}
+                        />
+                        <click-card
+                            class="command-card"
+                            draggable
+                            onDragover={(event: DragEvent) => event.preventDefault()}
+                            onDragstart={(event: DragEvent) => onCreateClickCommand(event)}
+                        />
+                        <redirect-card
+                            class="command-card"
+                            draggable
+                            onDragover={(event: DragEvent) => event.preventDefault()}
+                            onDragstart={(event: DragEvent) => onCreateRedirectCommand(event)}
+                        />
                     </div>
                 </div>
                 <div class="worker-page__actions flex justify-end items-center w-full gap-2">

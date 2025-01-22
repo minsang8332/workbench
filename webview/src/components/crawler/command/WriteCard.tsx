@@ -42,13 +42,7 @@ export default defineComponent({
         }
     },
     setup(props, { emit }) {
-        const {
-            onToggleCommandForm,
-            onDropOntoCard,
-            onMoveAnyCommand,
-            onCreateWriteCommand,
-            onUpdateWriteCommand
-        } = useCrawler(crawlerState)
+        const { onToggleCommandForm, onUpdateWriteCommand } = useCrawler(crawlerState)
         const state = reactive<IWriteCardState>({
             inputSelector: props.selector ?? '',
             inputText: props.text ?? '',
@@ -89,14 +83,6 @@ export default defineComponent({
                     'base-card--form': props.form,
                     'base-card--validate': _.isNumber(props.sortNo) && props.validate === false
                 }}
-                draggable
-                onDragstart={(event) =>
-                    _.isNumber(props.sortNo)
-                        ? onMoveAnyCommand(event, props.sortNo)
-                        : onCreateWriteCommand(event)
-                }
-                onDragover={(e) => e.preventDefault()}
-                onDrop={(e) => onDropOntoCard(e, props.sortNo)}
             >
                 {props.form ? (
                     <form onSubmit={onSubmit}>
