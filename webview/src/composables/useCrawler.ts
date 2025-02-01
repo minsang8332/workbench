@@ -1,21 +1,38 @@
 import _ from 'lodash'
-import { inject, unref, reactive, computed } from 'vue'
+import dayjs from 'dayjs'
+import { reactive, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { CRAWLER_COMMAND } from '@/costants/model'
 import { useAppStore } from '@/stores/app'
 import { useCrawlerStore } from '@/stores/crawler'
+import { useApp } from './useApp'
 import type { Crawler } from '@/types/model'
-import { storeToRefs } from 'pinia'
 interface ICrawlerState {
     commands: Crawler.IWorker['commands']
     commandForm: {
         modal: boolean
         props: (Crawler.Command.IBase & { sortNo: number }) | null
     }
+    workerForm: {
+        modal: boolean
+        props: Crawler.IWorker | null
+    }
+    scheduleForm: {
+        modal: boolean
+        props: Crawler.ISchedule | null
+    }
 }
 export const crawlerState = reactive(<ICrawlerState>{
     commands: [],
     commandForm: {
+        modal: false,
+        props: null
+    },
+    workerForm: {
+        modal: false,
+        props: null
+    },
+    scheduleForm: {
         modal: false,
         props: null
     },
@@ -25,18 +42,33 @@ export const useCrawler = (state: ICrawlerState) => {
     // State
     const router = useRouter()
     const route = useRoute()
-    const $toast = inject('toast') as IToastPlugin
     const appStore = useAppStore()
     const crawlerStore = useCrawlerStore()
-    const { getWorkers } = storeToRefs(crawlerStore)
+    const { alert } = useApp()
     // Getters
     const workerId = computed(() => _.toString(route.params.id))
     // Actions
-    const loadWorker = () => {
+    const onRun = () => {
+        crawlerStore
+            .saveWorkerCommands({
+                id: workerId.value,
+                commands: crawlerState.commands
+            })
+            .then(() =>
+                crawlerStore
+                    .runWorker(workerId.value)
+                    .then((response) => alert.success(response.message))
+                    .catch((e) => alert.error(e))
+                    .finally(onLoadHistories)
+                    .finally(() => router.push({ name: 'crawler' }))
+            )
+            .catch((e) => alert.error(e))
+    }
+    const onLoadWorker = () => {
         crawlerStore
             .loadWorkers()
             .then(() => {
-                const workers = unref(getWorkers)
+                const workers = crawlerStore.getWorkers
                 if (!(workers && workers.length > 0)) {
                     router.replace({ name: 'crawler' })
                     return
@@ -51,40 +83,60 @@ export const useCrawler = (state: ICrawlerState) => {
             })
             .catch((e) => {
                 console.error(e)
-                $toast.error(new Error('자동화 세트를 불러올 수 없습니다.'))
+                alert.error(new Error('자동화 세트를 불러올 수 없습니다.'))
             })
     }
-    const saveWorker = () => {
-        return crawlerStore.saveWorkerCommands({
-            id: workerId.value,
-            commands: crawlerState.commands
-        })
+    const onLoadHistories = () => {
+        crawlerStore.loadHistories().catch((e) => alert.error(e))
     }
-    const runWorker = () => {
-        saveWorker()
-            .then(() =>
-                crawlerStore
-                    .runWorker(workerId.value)
-                    .then((response) => $toast.success(response.message))
-                    .catch((e) => $toast.error(e))
-                    .finally(loadHistories)
-                    .finally(() => router.push({ name: 'crawler' }))
-            )
-            .catch((e) => $toast.error(e))
+    const onCreateWorker = () => {
+        crawlerStore
+            .saveWorker({
+                label: `자동화 세트 ${dayjs().format('HHmm')}`,
+                commands: []
+            })
+            .then(() => alert.success('자동화를 생성 했습니다'))
+            .catch(() => alert.error(new Error('자동화를 생성 할 수 없습니다')))
+            .finally(onLoadWorker)
     }
-    const loadHistories = () => {
-        crawlerStore.loadHistories().catch((e) => $toast.error(e))
+    const onUpdateWorkerLabel = ({
+        id,
+        label
+    }: {
+        id: Crawler.IWorker['id']
+        label: Crawler.IWorker['label']
+    }) => {
+        crawlerStore
+            .saveWorkerLabel({ id, label })
+            .then(() => {
+                state.workerForm.modal = false
+                alert.success('자동화 라벨을 수정 했습니다')
+            })
+            .catch(() => alert.error(new Error('자동화 라벨을 수정 할 수 없습니다')))
+            .finally(() => (state.workerForm.modal = false))
     }
-    const deleteWorker = (worker: Crawler.IWorker) => {
+    const onDeleteWorker = (worker: Crawler.IWorker) => {
         crawlerStore
             .deleteWorker(worker.id)
-            .then(() => $toast.success(`${worker.label ?? '자동화'} 을/를 제거 했습니다`))
+            .then(() => alert.success(`${worker.label ?? '자동화'} 을/를 제거 했습니다`))
             .catch(() =>
-                $toast.error(new Error(`${worker.label ?? '자동화'} 을/를 제거 할 수 없습니다`))
+                alert.error(new Error(`${worker.label ?? '자동화'} 을/를 제거 할 수 없습니다`))
             )
-            .finally(loadWorker)
+            .finally(onLoadWorker)
     }
-    const onToggleCommandForm = (modal: boolean, sortNo?: number) => {
+    // Form
+    const onWorkerForm = (modal: boolean, worker: Crawler.IWorker) => {
+        if (!_.isBoolean(modal)) {
+            return
+        }
+        if (modal && worker) {
+            state.workerForm.props = worker
+        } else {
+            state.workerForm.props = null
+        }
+        state.workerForm.modal = modal
+    }
+    const onCommandForm = (modal: boolean, sortNo?: number) => {
         if (!_.isBoolean(modal)) {
             return
         }
@@ -94,6 +146,75 @@ export const useCrawler = (state: ICrawlerState) => {
             state.commandForm.props = null
         }
         state.commandForm.modal = modal
+    }
+    const onScheduleForm = (modal: boolean /* schedule: Crawler.ISchedule */) => {
+        if (!_.isBoolean(modal)) {
+            return
+        }
+        if (modal /* && schedule */) {
+        } else {
+            state.scheduleForm.props = null
+        }
+        state.scheduleForm.modal = modal
+    }
+    // ContextMenu
+    const onWorkerContextMenu = (event: MouseEvent, worker?: Crawler.IWorker) => {
+        event.stopPropagation()
+        if (event.button != 2) {
+            return
+        }
+        let items = [
+            {
+                name: 'refresh',
+                desc: '새로고침',
+                shortcut: 'R',
+                icon: 'mdi:mdi-refresh',
+                cb() {
+                    onLoadWorker()
+                    appStore.toggleMenu(false)
+                }
+            }
+        ]
+        if (worker) {
+            items = [
+                ...items,
+                {
+                    name: 'edit-label-worker',
+                    desc: '스케줄링',
+                    shortcut: 'E',
+                    icon: 'mdi:mdi-file-edit-outline',
+                    cb() {
+                        onScheduleForm(true)
+                        appStore.toggleMenu(false)
+                    }
+                },
+                {
+                    name: 'edit-label-worker',
+                    desc: '이름 바꾸기',
+                    shortcut: 'E',
+                    icon: 'mdi:mdi-file-edit-outline',
+                    cb() {
+                        onWorkerForm(true, worker)
+                        appStore.toggleMenu(false)
+                    }
+                },
+                {
+                    name: 'delete-worker',
+                    desc: '삭제하기',
+                    shortcut: 'D',
+                    icon: 'mdi:mdi-trash-can-outline',
+                    cb() {
+                        onDeleteWorker(worker)
+                        appStore.toggleMenu(false)
+                    }
+                }
+            ]
+        }
+        appStore.toggleMenu(true, {
+            pageX: event.pageX,
+            pageY: event.pageY,
+            items
+        })
     }
     const onCommandContextMenu = (event: MouseEvent, sortNo?: number) => {
         event.stopPropagation()
@@ -107,7 +228,7 @@ export const useCrawler = (state: ICrawlerState) => {
                 shortcut: 'R',
                 icon: 'mdi:mdi-refresh',
                 cb() {
-                    loadWorker()
+                    onLoadWorker()
                     appStore.toggleMenu(false)
                 }
             },
@@ -117,9 +238,13 @@ export const useCrawler = (state: ICrawlerState) => {
                 shortcut: 'R',
                 icon: 'mdi:mdi-refresh',
                 cb() {
-                    saveWorker()
-                        .then(() => $toast.success('정상적으로 저장되었습니다.'))
-                        .catch(() => $toast.error(new Error('저장 할 수 없습니다.')))
+                    crawlerStore
+                        .saveWorkerCommands({
+                            id: workerId.value,
+                            commands: crawlerState.commands
+                        })
+                        .then(() => alert.success('정상적으로 저장되었습니다.'))
+                        .catch(() => alert.error(new Error('저장 할 수 없습니다.')))
                     appStore.toggleMenu(false)
                 }
             }
@@ -133,7 +258,7 @@ export const useCrawler = (state: ICrawlerState) => {
                     shortcut: 'E',
                     icon: 'mdi:mdi-file-edit-outline',
                     cb() {
-                        onToggleCommandForm(true, sortNo)
+                        onCommandForm(true, sortNo)
                         appStore.toggleMenu(false)
                     }
                 },
@@ -167,7 +292,7 @@ export const useCrawler = (state: ICrawlerState) => {
                 shortcut: 'R',
                 icon: 'mdi:mdi-refresh',
                 cb() {
-                    loadHistories()
+                    onLoadHistories()
                     appStore.toggleMenu(false)
                 }
             }
@@ -178,6 +303,7 @@ export const useCrawler = (state: ICrawlerState) => {
             items
         })
     }
+    // Card
     const onCreateRedirectCommand = (event: DragEvent) => {
         event.stopPropagation()
         if (event.dataTransfer) {
@@ -341,20 +467,23 @@ export const useCrawler = (state: ICrawlerState) => {
         state.commands.splice(sortNo + 1, 0, command)
     }
     return {
-        loadWorker,
-        saveWorker,
-        runWorker,
-        loadHistories,
-        deleteWorker,
+        onRun,
+        onLoadWorker,
+        onLoadHistories,
+        onCreateWorker,
+        onUpdateWorkerLabel,
+        onDeleteWorker,
+        onWorkerForm,
+        onCommandForm,
+        onWorkerContextMenu,
+        onCommandContextMenu,
+        onHistoryContextMenu,
         onCreateRedirectCommand,
         onUpdateRedirectCommand,
         onCreateClickCommand,
         onUpdateClickCommand,
         onCreateWriteCommand,
         onUpdateWriteCommand,
-        onCommandContextMenu,
-        onHistoryContextMenu,
-        onToggleCommandForm,
         onMoveAnyCommand,
         onDropInContainer,
         onDropOntoCard,

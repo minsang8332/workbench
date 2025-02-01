@@ -42,7 +42,7 @@ export default defineComponent({
         }
     },
     setup(props, { emit }) {
-        const { onToggleCommandForm, onUpdateWriteCommand } = useCrawler(crawlerState)
+        const { onCommandForm, onUpdateWriteCommand } = useCrawler(crawlerState)
         const state = reactive<IWriteCardState>({
             inputSelector: props.selector ?? '',
             inputText: props.text ?? '',
@@ -70,7 +70,7 @@ export default defineComponent({
                 )
             }
             if (event) {
-                onToggleCommandForm(false)
+                onCommandForm(false)
             }
         }
         onMounted(() => {
@@ -109,7 +109,7 @@ export default defineComponent({
                             <button
                                 type="button"
                                 class="btn-cancel"
-                                onClick={(e) => onToggleCommandForm(false)}
+                                onClick={(e) => onCommandForm(false)}
                             >
                                 취소
                             </button>

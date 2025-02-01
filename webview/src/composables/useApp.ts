@@ -1,8 +1,9 @@
 import _ from 'lodash'
 import { useAppStore } from '@/stores/app'
 import { inject } from 'vue'
+import type { IToastifyPlugin } from '@/types/plugin'
 export const useApp = () => {
-    const alert = inject('toast') as IToastPlugin
+    const alert = inject('toastify') as IToastifyPlugin
     const appStore = useAppStore()
     const scss = (property: string) => {
         return getComputedStyle(document.body).getPropertyValue(property)

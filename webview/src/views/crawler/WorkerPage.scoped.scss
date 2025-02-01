@@ -21,6 +21,15 @@
             }
             &-container {
                 height: calc($card-height * 1.1);
+                background-color: rgba(#fff, 0.3);
+                border-radius: 0.25rem;
+                overflow-x: auto;
+                padding: 0.5rem !important;
+                padding-bottom: 0.75rem !important;
+                &:active {
+                    user-select: none;
+                    cursor: grabbing;
+                }
                 .base-card {
                     flex: 0 0 $card-width;
                 }

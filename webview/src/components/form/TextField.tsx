@@ -61,11 +61,11 @@ export default defineComponent({
         }
         const onInput = (event?: Event) => {
             if (!(event && event.target)) {
-                return false
+                return
             }
             const target = event.target as HTMLInputElement
             if (!_.isString(target.value)) {
-                return false
+                return
             }
             emit('update:model-value', target.value)
         }

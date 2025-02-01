@@ -3,19 +3,20 @@ import { computed, defineComponent, ref, watch, inject, unref } from 'vue'
 import type { PropType } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDiaryStore } from '@/stores/diary'
+import { useApp } from '@/composables/useApp'
 import { useDiary } from '@/composables/useDiary'
-import DiaryTextField from '@/components/diary/DiaryTextField'
 import type { IDiary } from '@/types/model'
+import DiaryNameField from '@/components/diary/DiaryNameField'
 import './DiaryTree.scoped.scss'
-export interface IDiaryFile extends IDiary {
+export interface IDiaryTree extends IDiary {
     title: string
     parent: string
-    items: IDiaryFile[]
+    items: IDiaryTree[]
 }
 export default defineComponent({
     name: 'DiaryTree',
     components: {
-        DiaryTextField
+        DiaryNameField
     },
     props: {
         title: {
@@ -27,7 +28,7 @@ export default defineComponent({
             default: ''
         },
         items: {
-            type: Array as PropType<IDiaryFile[]>,
+            type: Array as PropType<IDiaryTree[]>,
             default: () => []
         },
         isDir: {
@@ -44,24 +45,14 @@ export default defineComponent({
         }
     },
     setup(props) {
-        const $toast = inject('toast') as IToastPlugin
         const router = useRouter()
         const route = useRoute()
         const diaryStore = useDiaryStore()
-        const { renameRef, updateRename, openContextMenu } = useDiary()
+        const { alert } = useApp()
+        const { isRenameRef, onRename, onContextMenu } = useDiary()
         const slideRef = ref<boolean>(true)
-        const printTitle = computed(() => {
-            return props.depth == 0 ? `전체 (${diaryStore.cntDiaries})` : props.title
-        })
-        const isDir = computed(() => {
-            return props.depth == 0 ? true : props.isDir
-        })
         const getItems = computed(() => {
-            let items = props.items
-            if (props.depth == 0) {
-                items = diaryStore.treeDiaries as IDiaryFile[]
-            }
-            return items.sort((a, b) => (b.isDir ? 1 : 0) - (a.isDir ? 1 : 0))
+            return props.items.sort((a, b) => (b.isDir ? 1 : 0) - (a.isDir ? 1 : 0))
         })
         const onDblClick = () => {
             if (!props.path) {
@@ -70,7 +61,7 @@ export default defineComponent({
             if (props.isDir) {
                 return
             }
-            router.replace({ name: 'diary-detail', params: { path: props.path } }).catch((e) => e)
+            router.replace({ name: 'diary-editor', params: { path: props.path } }).catch((e) => e)
         }
         const onPrevent = (event: DragEvent) => {
             event.preventDefault()
@@ -99,18 +90,18 @@ export default defineComponent({
                 if (route.params.path == frompath) {
                     return router
                         .replace({
-                            name: 'diary-detail',
+                            name: 'diary-editor',
                             params: { path: filename }
                         })
                         .catch((e) => e)
                 }
                 await diaryStore.loadDiaries()
             } catch (e) {
-                $toast.error(e as Error)
+                alert.error(e as Error)
             }
         }
         const onMouseup = (event: MouseEvent) =>
-            openContextMenu(event, {
+            onContextMenu(event, {
                 path: props.path,
                 interceptItems(items) {
                     if (props.depth == 0) {
@@ -122,7 +113,6 @@ export default defineComponent({
                     return items
                 }
             })
-
         watch(
             () => props.items,
             (oldValue, newValue) => {
@@ -143,14 +133,13 @@ export default defineComponent({
                         onDblclick={onDblClick}
                         onClick={() => (slideRef.value = !slideRef.value)}
                         onMouseup={onMouseup}
-                        // v-ripple={!isRenaming.value}
                     >
                         <div
                             class={{
                                 'diary-tree__content-item flex items-center text-truncate': true,
                                 'diary-tree__content-item--active': route.params.path == props.path
                             }}
-                            draggable={!renameRef.value}
+                            draggable={!isRenameRef.value}
                             onDragenter={onPrevent}
                             onDragover={onPrevent}
                             onDragstart={onDragstart}
@@ -165,21 +154,22 @@ export default defineComponent({
                                     }
                                     style={{
                                         visibility:
-                                            isDir.value == true && props.depth == i
-                                                ? 'visible'
-                                                : 'hidden'
+                                            props.isDir && props.depth == i ? 'visible' : 'hidden'
                                     }}
                                 />
                             ))}
-                            {isDir.value == true ? (
+                            {props.isDir ? (
                                 <i class="mdi mdi-folder" />
                             ) : (
                                 <i class="mdi mdi-file-document-outline" />
                             )}
-                            {renameRef.value ? (
-                                <diary-text-field path={props.path} onUpdate={updateRename} />
+                            {isRenameRef.value ? (
+                                <diary-name-field
+                                    value={props.path}
+                                    onChange={(filename: string) => onRename(props.path, filename)}
+                                />
                             ) : (
-                                <p class="text-title">{printTitle.value}</p>
+                                <p class="text-title">{props.title}</p>
                             )}
                         </div>
                     </div>

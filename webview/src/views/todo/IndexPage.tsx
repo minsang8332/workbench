@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { defineComponent, computed, ref, unref, inject, onMounted, Teleport, reactive } from 'vue'
+import { defineComponent, computed, ref, unref, onMounted, Teleport, reactive } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useTodoStore } from '@/stores/todo'
 import { useApp } from '@/composables/useApp'
@@ -33,10 +33,9 @@ export default defineComponent({
         TodoForm
     },
     setup() {
-        const $toast = inject('toast') as IToastPlugin
         const appStore = useAppStore()
         const todoStore = useTodoStore()
-        const { scss } = useApp()
+        const { alert, scss } = useApp()
         const state = reactive<ITodoPageState>({
             keyword: '',
             cards: [
@@ -127,25 +126,16 @@ export default defineComponent({
                     todoStore
                         .deleteTodo(id)
                         .then(() => {
-                            $toast.success('정상적으로 제거되었습니다.')
+                            alert.success('정상적으로 제거되었습니다.')
                             appStore.toggleModal(false)
                         })
-                        .catch((e) => $toast.error(e))
+                        .catch((e) => alert.error(e))
                         .finally(() => todoStore.loadTodos().catch((e) => e))
                 }
             })
         }
         // 메뉴창 열기
-        const onContextMenu = (
-            event: MouseEvent,
-            {
-                type = 'container',
-                payload = null
-            }: {
-                type?: 'container' | 'card'
-                payload: any
-            }
-        ) => {
+        const onContextMenu = (event: MouseEvent, todo?: ITodo) => {
             event.stopPropagation()
             if (event.button != 2) {
                 return
@@ -166,33 +156,29 @@ export default defineComponent({
                     name: 'add-todo',
                     desc: '카드생성',
                     shortcut: 'N',
-                    icon: 'mdi:mdi-file-edit-outline',
-                    color: scss('--dark-color'),
                     cb() {
                         onToggleForm(true)
                         appStore.toggleMenu(false)
                     }
                 }
             ]
-            if (type == 'card') {
+            if (todo) {
                 items = [
                     ...items,
                     {
                         name: 'edit-todo',
                         desc: '카드편집',
                         shortcut: 'E',
-                        icon: 'mdi:mdi-file-edit-outline',
-                        color: scss('--dark-color'),
-                        cb() {}
+                        cb() {
+                            onToggleForm(true, todo)
+                        }
                     },
                     {
                         name: 'remove-todo',
                         desc: '카드삭제',
                         shortcut: 'D',
-                        icon: 'mdi:mdi-trash-can-outline',
-                        color: scss('--dark-color'),
                         cb() {
-                            onBeforeDelete(payload)
+                            onBeforeDelete({ id: todo.id!, title: todo.title })
                             appStore.toggleMenu(false)
                         }
                     }
@@ -217,9 +203,9 @@ export default defineComponent({
                     throw new Error('해야 할 일을 작성 할 수 없습니다.')
                 }
                 state.todoForm.modal = false
-                $toast.success('정상적으로 반영되었습니다.')
+                alert.success('정상적으로 반영되었습니다.')
             } catch (e) {
-                $toast.error(e as Error)
+                alert.error(e as Error)
             } finally {
                 onRefresh()
             }
@@ -271,9 +257,7 @@ export default defineComponent({
                     {filterTodosByStatus.value.map((todos: any) => (
                         <div
                             class="todo-page__content-item"
-                            onMouseup={(event: MouseEvent) =>
-                                onContextMenu(event, { payload: todos })
-                            }
+                            onMouseup={(event: MouseEvent) => onContextMenu(event)}
                             onDragenter={onPrevent}
                             onDragover={onPrevent}
                             onDrop={(event: DragEvent) => onDrop(event, todos.value)}
@@ -289,10 +273,7 @@ export default defineComponent({
                                         class="todo-card"
                                         onClick={() => onToggleForm(true, todo)}
                                         onMouseup={(event: MouseEvent) =>
-                                            onContextMenu(event, {
-                                                type: 'card',
-                                                payload: todo
-                                            })
+                                            onContextMenu(event, todo)
                                         }
                                         onDelete={onBeforeDelete}
                                         draggable

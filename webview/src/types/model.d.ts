@@ -55,6 +55,12 @@ export namespace Crawler {
         startedAt: Date
         endedAt: Date | null
     }
+    interface ISchedule extends IModel {
+        workerId: Crawler.IWorker['id']
+        status: CRAWLER_STATUS
+        expression: string
+        firedAt: Date | null
+    }
     namespace Command {
         interface IBase {
             name: CRAWLER_COMMAND

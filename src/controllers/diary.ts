@@ -7,7 +7,6 @@ import { IPCError } from '@/errors/ipc'
 import { IPC_DIARY_CHANNEL } from '@/constants/ipc'
 import type { IDiary } from '@/types/model'
 import type { IPCRequest, IPCResponse } from '@/types/ipc'
-const allowedExts = ['.md', '.txt']
 const rootDir = path.resolve(path.resolve(app.getPath('appData'), app.getName()), 'diary')
 const isSubdir = async (parent: string, child: string) => {
     parent = path.resolve(parent)
@@ -35,10 +34,6 @@ controller(IPC_DIARY_CHANNEL.LOAD, async (request: IPCRequest.Diary.ILoad, respo
             isDir = true
             const files = fs.readdirSync(destDir)
             await Promise.all(files.map((file) => search(path.join(destDir, file))))
-        } else {
-            if (!allowedExts.includes(path.extname(destDir))) {
-                return
-            }
         }
         diaries.push({
             path: sliceRootDir(rootDir, destDir),
@@ -79,10 +74,6 @@ controller(IPC_DIARY_CHANNEL.WRITE, async (request: IPCRequest.Diary.IWrite, res
     let ext = request.ext
     if (!_.isString(ext)) {
         ext = '.txt'
-    }
-    ext = /^\.(\w)+/.test(ext) ? ext : `.${ext}`
-    if (!_.includes(allowedExts, ext)) {
-        throw new IPCError(`작성 가능한 확장자는 다음과 같습니다. (${allowedExts.join(',')})`)
     }
     // 파일명이 없으면 신규 파일로 간주
     let filename = request.filename
@@ -177,10 +168,6 @@ controller(IPC_DIARY_CHANNEL.RENAME, async (request: IPCRequest.Diary.IRename, r
     }
     const fromParsed = path.parse(filepath)
     const destParsed = path.parse(request.filename)
-    // 파일이면 확장자 확인하여 예외처리
-    if (fs.lstatSync(filepath).isFile() && _.includes(allowedExts, destParsed.ext) == false) {
-        throw new IPCError(`작성 가능한 확장자는 다음과 같습니다. (${allowedExts.join(',')})`)
-    }
     // 새로운 경로를 생성
     const renameDir = path.format({
         dir: fromParsed.dir,

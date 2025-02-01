@@ -19,6 +19,12 @@
                 font-family: 'Pretendard SemiBold';
                 line-height: 1;
             }
+            input.diary-name-field {
+                font-size: 0.9rem;
+                font-family: 'Pretendard SemiBold';
+                line-height: 1;
+                width: 100%;
+            }
             &--active {
                 background-color: rgba(#fff, 0.3);
                 border-radius: 0.25rem;

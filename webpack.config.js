@@ -7,10 +7,10 @@ const ElectronReloadPlugin = require('webpack-electron-reload')({
 })
 module.exports = (env) => {
     const config = dotenv.config({
-        path: env.production ? '.env.production' : '.env.development',
+        path: '.env',
     })
     const commonWebpack = {
-        mode: process.env.NODE_ENV,
+        mode: env.production ? 'production' : 'development',
         module: {
             rules: [
                 {

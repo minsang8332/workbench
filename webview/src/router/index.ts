@@ -21,7 +21,7 @@ const router = createRouter({
                     }
                 },
                 {
-                    name: 'diary-detail',
+                    name: 'diary-editor',
                     path: 'diary/:path',
                     components: {
                         default: () => import('@/views/diary/DetailPage'),
@@ -81,7 +81,7 @@ const router = createRouter({
                     path: '/crawler',
                     components: {
                         default: () => import('@/views/crawler/IndexPage'),
-                        drawer: () => import('@/components/crawler/CrawlerDrawerMenu')
+                        drawer: () => import('@/components/crawler/WorkerDrawerMenu')
                     },
                     children: [
                         {

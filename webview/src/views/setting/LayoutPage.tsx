@@ -1,13 +1,14 @@
 import { defineComponent, onBeforeMount, inject } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useSettingStore } from '@/stores/setting'
+import { useApp } from '@/composables/useApp'
 import './LayoutPage.scoped.scss'
 export default defineComponent({
     name: 'LayoutPage',
     setup() {
-        const $toast = inject('toast') as IToastPlugin
         const appStore = useAppStore()
         const settingStore = useSettingStore()
+        const { alert } = useApp()
         const onLoad = () =>
             appStore.blocking(() => settingStore.loadOverlayVideos()).catch((e) => e)
         const onUpdateOverlayVideo = () => {
@@ -16,9 +17,9 @@ export default defineComponent({
                 .then(
                     (response) =>
                         response.result &&
-                        $toast.success('배경화면 (오버레이) 경로가 변경되었습니다.')
+                        alert.success('배경화면 (오버레이) 경로가 변경되었습니다.')
                 )
-                .catch((e) => $toast.error(e))
+                .catch((e) => alert.error(e))
                 .finally(onLoad)
         }
         onBeforeMount(() => {

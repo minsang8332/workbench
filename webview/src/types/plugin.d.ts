@@ -1,5 +1,5 @@
 declare module '*.module.scss'
-interface IToastPlugin {
+export interface IToastifyPlugin {
     show: (Options) => Toastify
     alert: (message: string, options?: { icon: string; style: [CSSRule] }) => Toastify
     success: (message: string, options?: { icon: string; style: [CSSRule] }) => Toastify

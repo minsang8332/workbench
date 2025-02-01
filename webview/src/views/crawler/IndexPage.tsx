@@ -19,7 +19,7 @@ export default defineComponent({
         const route = useRoute()
         const appStore = useAppStore()
         const { getHistories } = storeToRefs(useCrawlerStore())
-        const { loadWorker, loadHistories, onHistoryContextMenu } = useCrawler(crawlerState)
+        const { onLoadWorker, onLoadHistories, onHistoryContextMenu } = useCrawler(crawlerState)
         const onBack = () => {
             if (window.history && window.history.length > 1) {
                 router.back()
@@ -45,8 +45,8 @@ export default defineComponent({
             return rows
         })
         onBeforeMount(() => {
-            loadWorker()
-            loadHistories()
+            onLoadWorker()
+            onLoadHistories()
         })
         return () => (
             <article

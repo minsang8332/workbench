@@ -1,4 +1,4 @@
-import { defineComponent, reactive, type PropType } from 'vue'
+import { defineComponent, reactive, Teleport, type PropType } from 'vue'
 import TextField from '@/components/form/TextField'
 import type { ITodoSprint } from '@/types/model'
 import './TodoSprintCard.scoped.scss'
@@ -77,17 +77,17 @@ export default defineComponent({
                     {state.mode == TODO_SPRINT_MODE.VIEW_MODE ? (
                         <button type="button" onClick={onBeforeUpdate}>
                             <i class="mdi mdi-pencil-outline" />
-                            <span class="tooltip">수정</span>
+                            <span class="tooltip">수정하기</span>
                         </button>
                     ) : (
                         <button type="button" onClick={onUpdate}>
                             <i class="mdi mdi-pencil-outline" />
-                            <span class="tooltip">저장</span>
+                            <span class="tooltip">저장하기</span>
                         </button>
                     )}
                     <button type="button" onClick={onDelete}>
                         <i class="mdi mdi-delete" />
-                        <span class="tooltip">삭제</span>
+                        <span class="tooltip">삭제하기</span>
                     </button>
                 </div>
             </div>

@@ -367,23 +367,24 @@ class CrawlerService {
     }
     // 스케줄 실행하기
     async consumeSchedule(scheduleId: Crawler.ISchedule['id'], firedAt: Date) {
-        this._scheduleRepository.updateStatus(scheduleId, CRAWLER_STATUS.RUNNING, firedAt)
         const schedule = this._scheduleRepository.findOne(scheduleId)
-        if (schedule) {
-            const worker = this._workerRepository.findOne(schedule.workerId)
-            if (!worker) {
-                throw new IPCError(`Worker 가 유효하지 않습니다. (ID: ${schedule.workerId})`)
-            }
-            const window = this.createWindow()
-            // 스케줄링은 윈도우 화면이 닫힌 상태로 진행되기에 메모리 누수가 발생할 수 있다
-            // 타이머를 설정하여 초과하면 강제로 에러를 발생시키도록 함. provideScheduler 클로져가 유효하기에 로그가 남을 것
-            const detectTimeout = new Promise((_, reject) => setTimeout(() => reject(), 1000 * 60 * 5))
-            await Promise.all([this.run(worker, window, true), detectTimeout]).finally(window.close)
+        if (_.isEmpty(schedule)) {
+            return
         }
+        this._scheduleRepository.updateStatus(scheduleId, CRAWLER_STATUS.RUNNING, firedAt)
+        const worker = this._workerRepository.findOne(schedule.workerId)
+        if (!worker) {
+            throw new IPCError(`Worker 가 유효하지 않습니다. (ID: ${schedule.workerId})`)
+        }
+        const window = this.createWindow()
+        // 스케줄링은 윈도우 화면이 닫힌 상태로 진행되기에 메모리 누수가 발생할 수 있다
+        // 타이머를 설정하여 초과하면 강제로 에러를 발생시키도록 함. provideScheduler 클로져가 유효하기에 로그가 남을 것
+        const detectTimeout = new Promise((_, reject) => setTimeout(() => reject(), 1000 * 60 * 5))
+        await Promise.all([this.run(worker, window, true), detectTimeout]).finally(window.close)
         this._scheduleRepository.updateStatus(scheduleId, CRAWLER_STATUS.WAITING)
     }
     // 스케줄러 설정하기
-    async provideScheduler() {
+    async provideSchedules() {
         const schedules = this._scheduleRepository.findByPrepare()
         for (const schedule of schedules) {
             let job = null

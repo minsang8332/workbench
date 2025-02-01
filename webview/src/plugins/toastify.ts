@@ -82,7 +82,7 @@ export default {
                 })
             }
         }
-        app.provide('toast', {
+        app.provide('toastify', {
             show,
             alert,
             success,

@@ -18,8 +18,6 @@ _업무 능률 향상을 위한 다목적 기능을 담은 Mac 및 Window 어플
 
 > node 16.20.1^ 18.20.2^
 
-💡**.env** 환경 변수 파일이 있어야 실행 및 설치 가능함
-
 ```
 // 패키지 설치
 npm run setup
@@ -30,7 +28,7 @@ npm run serve
 // 윈도우 어플리케이션 빌드
 npm run build
 
-// 윈도우 어플리케이션 배포 (환경변수 GH_TOKEN 필요)
+// 윈도우 어플리케이션 배포 (전역 환경변수 GH_TOKEN 값이 있어야 함)
 npm run deploy
 
 // electron 전용 아이콘들로 일괄 생성

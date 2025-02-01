@@ -1,21 +1,42 @@
 import _ from 'lodash'
-import { ref, unref, inject } from 'vue'
+import { ref } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useDiaryStore } from '@/stores/diary'
 import { useApp } from '@/composables/useApp'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 export const useDiary = () => {
-    const $toast = inject('toast') as IToastPlugin
     const router = useRouter()
+    const route = useRoute()
     const appStore = useAppStore()
     const diaryStore = useDiaryStore()
-    const app = useApp()
-    const renameRef = ref<boolean>(false)
-    const updateRename = (filename = false) => {
-        renameRef.value = filename
+    const { alert } = useApp()
+    const isRenameRef = ref<boolean>(false)
+    // Actions
+    const onRename = async (filepath: string, filename: string) => {
+        isRenameRef.value = false
+        // 기존 파일명이 변경할 파일과 일치한다면
+        if (filename == _.last(filepath.split('/'))) {
+            return
+        }
+        diaryStore
+            .renameDiary({
+                filepath,
+                filename
+            })
+            .then((path) => {
+                if (route.name == 'diary-editor') {
+                    router
+                        .replace({
+                            name: 'diary-editor',
+                            params: { path }
+                        })
+                        .catch((e) => e)
+                }
+                alert.success(`${filename} (으/로) 변경되었습니다.`)
+            })
+            .finally(diaryStore.loadDiaries)
     }
-    // 메뉴창 열기
-    const openContextMenu = (
+    const onContextMenu = (
         event: MouseEvent,
         {
             path = '/',
@@ -33,8 +54,6 @@ export const useDiary = () => {
                 name: 'refresh',
                 desc: '새로고침',
                 shortcut: 'R',
-                icon: 'mdi:mdi-refresh',
-                color: app.scss('--dark-color'),
                 cb() {
                     diaryStore
                         .loadDiaries()
@@ -46,16 +65,14 @@ export const useDiary = () => {
                 name: 'add-folder',
                 desc: '새 폴더',
                 shortcut: 'N',
-                icon: 'mdi:mdi-folder',
-                color: app.scss('--folder-color'),
                 cb() {
                     diaryStore
                         .mkdirDiary({
                             dirpath: path
                         })
-                        .then((dirname) => $toast.success(`${dirname} 생성 되었습니다.`))
+                        .then((dirname) => alert.success(`${dirname} 생성 되었습니다.`))
                         .then(() => diaryStore.loadDiaries())
-                        .catch((e) => $toast.error(e))
+                        .catch((e) => alert.error(e))
                         .finally(() => appStore.toggleMenu(false))
                 }
             },
@@ -63,16 +80,14 @@ export const useDiary = () => {
                 name: 'add',
                 desc: '새 문서',
                 shortcut: 'N',
-                icon: 'mdi:mdi-file-document-outline',
-                color: app.scss('--dark-color'),
                 cb() {
                     diaryStore
                         .saveDiary({
                             filepath: path
                         })
-                        .then((filename) => $toast.success(`${filename} 생성 되었습니다.`))
+                        .then((filename) => alert.success(`${filename} 생성 되었습니다.`))
                         .then(() => diaryStore.loadDiaries())
-                        .catch((e) => $toast.error(e))
+                        .catch((e) => alert.error(e))
                         .finally(() => appStore.toggleMenu(false))
                 }
             },
@@ -80,15 +95,13 @@ export const useDiary = () => {
                 name: 'update-name',
                 desc: '이름 바꾸기',
                 shortcut: 'M',
-                icon: 'mdi:mdi-pencil-box-outline',
-                color: app.scss('--dark-color'),
                 cb() {
                     if (diaryStore.isPreventRoute) {
-                        return $toast.error(
+                        return alert.error(
                             new Error('문서에 변경사항이 있습니다. 저장 한 후 다시 시도해 주세요.')
                         )
                     }
-                    renameRef.value = true
+                    isRenameRef.value = true
                     appStore.toggleMenu(false)
                 }
             },
@@ -96,20 +109,18 @@ export const useDiary = () => {
                 name: 'remove',
                 desc: '삭제',
                 shortcut: 'D',
-                icon: 'mdi:mdi-trash-can-outline',
-                color: app.scss('--dark-color'),
                 cb() {
                     diaryStore
                         .rmDiary({ filepath: path })
                         .then((filename) => {
-                            $toast.success(`${filename} 삭제되었습니다.`)
+                            alert.success(`${filename} 삭제되었습니다.`)
                             router
                                 .replace({ name: 'diary' })
                                 .catch((e) => e)
                                 .finally(() => appStore.toggleMenu(false))
                         })
                         .then(() => diaryStore.loadDiaries())
-                        .catch((e) => $toast.error(e))
+                        .catch((e) => alert.error(e))
                 }
             }
         ]
@@ -123,8 +134,8 @@ export const useDiary = () => {
         })
     }
     return {
-        renameRef,
-        updateRename,
-        openContextMenu
+        isRenameRef,
+        onRename,
+        onContextMenu
     }
 }

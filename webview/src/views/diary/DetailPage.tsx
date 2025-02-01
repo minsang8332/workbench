@@ -47,11 +47,10 @@ export default defineComponent({
             tabSize: 4,
             preventRoute: false
         })
-        const $toast = inject('toast') as IToastPlugin
         const router = useRouter()
         const appStore = useAppStore()
         const diaryStore = useDiaryStore()
-        const { getDrawerWidth, getLayoutWidth } = useApp()
+        const { alert, getDrawerWidth, getLayoutWidth } = useApp()
         const pageRef = ref<HTMLElement>()
         const printFilePath = computed(() => {
             let path: string | string[] = props.path
@@ -140,7 +139,7 @@ export default defineComponent({
                     state.text = text
                 })
                 .catch((e) => {
-                    $toast.error(e)
+                    alert.error(e)
                     onReset()
                 })
         }
@@ -150,8 +149,8 @@ export default defineComponent({
             const ext = _.last(base?.split('.'))
             diaryStore
                 .saveDiary({ filepath: props.path, filename, ext, text: state.editorText })
-                .then(() => $toast.success(`${base} 파일에 작성되었습니다.`))
-                .catch((e) => $toast.error(e))
+                .then(() => alert.success(`${base} 파일에 작성되었습니다.`))
+                .catch((e) => alert.error(e))
                 .finally(onLoad)
         }
         const onPreventRoute = async (

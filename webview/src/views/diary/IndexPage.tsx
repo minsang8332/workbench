@@ -22,7 +22,7 @@ export default defineComponent({
         const onDiaryCard = (diary: IDiary) => {
             router
                 .push({
-                    name: 'diary-detail',
+                    name: 'diary-editor',
                     params: {
                         path: diary.path
                     }

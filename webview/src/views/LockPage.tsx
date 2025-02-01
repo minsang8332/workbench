@@ -2,6 +2,7 @@ import { defineComponent, inject, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useSettingStore } from '@/stores/setting'
+import { useApp } from '@/composables/useApp'
 import PasscodeForm from '@/components/setting/PasscodeForm'
 export default defineComponent({
     name: 'LockPage',
@@ -9,10 +10,10 @@ export default defineComponent({
         PasscodeForm
     },
     setup() {
-        const $toast = inject('toast') as IToastPlugin
         const router = useRouter()
         const appStore = useAppStore()
         const settingStore = useSettingStore()
+        const { alert } = useApp()
         const onLoad = () =>
             appStore
                 .blocking(() => settingStore.loadPasscode())
@@ -23,7 +24,7 @@ export default defineComponent({
                 })
                 .catch((e) => {
                     e.message = '패스코드 설정 정보를 불러올 수 없습니다.'
-                    $toast.error(e)
+                    alert.error(e)
                 })
         const onVerifyPasscode = async (passcode: string) => {
             try {
@@ -35,7 +36,7 @@ export default defineComponent({
                 }
                 router.replace({ name: 'authorized' }).catch((e) => e)
             } catch (e) {
-                $toast.error(e as Error)
+                alert.error(e as Error)
             }
         }
         onBeforeMount(() => {

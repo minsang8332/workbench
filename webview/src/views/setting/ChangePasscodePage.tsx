@@ -2,6 +2,7 @@ import { reactive, computed, defineComponent, onBeforeMount, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useSettingStore } from '@/stores/setting'
+import { useApp } from '@/composables/useApp'
 import PasscodeForm from '@/components/setting/PasscodeForm'
 import SwitchField from '@/components/form/SwitchField'
 interface IChangePasscodePageState {
@@ -14,10 +15,10 @@ export default defineComponent({
         PasscodeForm
     },
     setup() {
-        const $toast = inject('toast') as IToastPlugin
         const router = useRouter()
         const appStore = useAppStore()
         const settingStore = useSettingStore()
+        const { alert } = useApp()
         const state = reactive<IChangePasscodePageState>({
             verified: false
         })
@@ -43,7 +44,7 @@ export default defineComponent({
                 .blocking(() => settingStore.loadPasscode())
                 .catch((e) => {
                     e.message = '패스코드 설정 정보를 불러올 수 없습니다.'
-                    $toast.error(e)
+                    alert.error(e)
                     router.replace({ name: 'change-passcode' })
                 })
         const onVerifyPasscode = async (passcode: string) => {
@@ -56,7 +57,7 @@ export default defineComponent({
                 }
                 state.verified = true
             } catch (e) {
-                $toast.error(e as Error)
+                alert.error(e as Error)
             }
         }
         const onChangePasscode = async (passcode: string) => {
@@ -65,13 +66,13 @@ export default defineComponent({
                     settingStore.changePasscode(passcode)
                 )
                 if (!(response && response.result)) {
-                    $toast.error(new Error(response.message))
+                    alert.error(new Error(response.message))
                     return
                 }
-                $toast.success('정상적으로 패스코드를 변경했습니다.')
+                alert.success('정상적으로 패스코드를 변경했습니다.')
                 router.push({ name: 'setting-passcode' })
             } catch (e) {
-                $toast.error(e as Error)
+                alert.error(e as Error)
             }
         }
         onBeforeMount(() => {

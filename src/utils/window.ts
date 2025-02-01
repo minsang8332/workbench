@@ -68,7 +68,9 @@ export const createMainWindow = () => {
         e.preventDefault()
     })
     mainWindow.webContents.on('will-navigate', (e) => e.preventDefault())
-    mainWindow.loadURL(app.isPackaged ? `${PROTOCOL.MAIN_WINDOW!}://./index.html` : process.env.APP_URL!)
+    mainWindow.loadURL(
+        app.isPackaged ? `${PROTOCOL.MAIN_WINDOW!}://./index.html` : `http://localhost:${process.env.WEBVIEW_PORT}`
+    )
 }
 export const getMainWindow = () => {
     return mainWindow

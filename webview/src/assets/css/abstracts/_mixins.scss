@@ -51,7 +51,7 @@
     position: relative;
     .tooltip {
         @include glass(variables.$dark-color);
-        position: absolute;
+        position: fixed;
         z-index: 50000;
         bottom: 125%;
         left: 50%;
@@ -59,7 +59,6 @@
         min-width: fit-content;
         border-radius: 0.5rem;
         visibility: hidden;
-        opacity: 0;
         transform: translateX(-50%);
         font-size: 0.9rem;
         text-align: center;
@@ -79,7 +78,6 @@
     }
     &:hover .tooltip {
         visibility: visible;
-        opacity: 1;
     }
     & .tooltip-bottom {
         top: 100%;

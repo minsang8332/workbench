@@ -2,6 +2,7 @@ import { defineComponent, onBeforeMount, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useSettingStore } from '@/stores/setting'
+import { useApp } from '@/composables/useApp'
 import SwitchField from '@/components/form/SwitchField'
 import './PasscodePage.scoped.scss'
 export default defineComponent({
@@ -10,30 +11,30 @@ export default defineComponent({
         SwitchField
     },
     setup() {
-        const $toast = inject('toast') as IToastPlugin
         const router = useRouter()
         const appStore = useAppStore()
         const settingStore = useSettingStore()
+        const { alert } = useApp()
         const onLoad = () =>
             appStore
                 .blocking(() => settingStore.loadPasscode())
                 .catch((e) => {
                     e.message = '패스코드 설정 정보를 불러올 수 없습니다.'
-                    $toast.error(e)
+                    alert.error(e)
                 })
         const onUpdateActivePasscode = () => {
             appStore
                 .blocking(() => settingStore.activatePasscode(!settingStore.getActivePasscode))
                 .then((response) => {
                     if (!response.result) {
-                        $toast.error(new Error(response.message))
+                        alert.error(new Error(response.message))
                         return
                     }
-                    $toast.success(
+                    alert.success(
                         `잠금 ${response.data.active ? '활성화' : '비활성화'} 되었습니다.`
                     )
                 })
-                .catch((e) => $toast.error(e))
+                .catch((e) => alert.error(e))
                 .finally(onLoad)
         }
         onBeforeMount(() => {
