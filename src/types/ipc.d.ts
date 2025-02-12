@@ -1,4 +1,4 @@
-import { TODO_STATUS } from '@/constants/model'
+import { CRAWLER_STATUS, TODO_STATUS } from '@/constants/model'
 import { Crawler as CrawlerModel } from '@/types/model'
 export namespace IPCRequest {
     namespace App {
@@ -83,6 +83,9 @@ export namespace IPCRequest {
     // 웹 자동화
     namespace Crawler {
         interface ILoadWorkers {}
+        interface ILoadSchedule {
+            workerId: string
+        }
         interface ISaveWorker {
             id?: string
             label: string
@@ -96,14 +99,23 @@ export namespace IPCRequest {
             id: string
             commands: CrawlerModel.Command.IBase[]
         }
+        interface ISaveSchedule {
+            id?: string
+            workerId: string
+            active: boolean
+            status: CRAWLER_STATUS
+            expression: string
+        }
         interface IDeleteWorker {
+            id: string
+        }
+        interface IDeleteSchedule {
             id: string
         }
         interface IRunWorker {
             id: string
         }
         interface ILoadHistories {}
-        interface IScrapingSelector {}
     }
 }
 export namespace IPCResponse {

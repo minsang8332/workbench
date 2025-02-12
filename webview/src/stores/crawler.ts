@@ -28,6 +28,10 @@ export const useCrawlerStore = defineStore('crawler', () => {
         updateWorkers(response.data.workers)
         return response
     }
+    const loadSchedule = async (payload: Crawler.IWorker['id']) => {
+        const response = await window.$native.crawler.loadSchedule(payload)
+        return response
+    }
     const loadHistories = async () => {
         updateHistories()
         const response = await window.$native.crawler.loadHistories()
@@ -56,6 +60,14 @@ export const useCrawlerStore = defineStore('crawler', () => {
         commands = JSON.parse(JSON.stringify(commands))
         return await window.$native.crawler.saveWorkerCommands({ id, commands })
     }
+    const saveSchedule = async (payload: {
+        id?: Crawler.ISchedule['id']
+        workerId: Crawler.ISchedule['workerId']
+        active: Crawler.ISchedule['active']
+        expression: Crawler.ISchedule['expression']
+    }) => {
+        return await window.$native.crawler.saveSchedule(payload)
+    }
     const deleteWorker = async (id: Crawler.IWorker['id']) => {
         return await window.$native.crawler.deleteWorker({ id })
     }
@@ -68,10 +80,12 @@ export const useCrawlerStore = defineStore('crawler', () => {
         getHistories,
         updateWorkers,
         loadWorkers,
+        loadSchedule,
         loadHistories,
         saveWorker,
         saveWorkerLabel,
         saveWorkerCommands,
+        saveSchedule,
         deleteWorker,
         runWorker
     }

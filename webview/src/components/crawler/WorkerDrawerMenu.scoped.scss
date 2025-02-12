@@ -43,6 +43,12 @@
             button {
                 @include mixins.glass-animation;
                 border-radius: 50%;
+                &.btn-schedule {
+                    @include mixins.tooltip;
+                    i {
+                        font-size: 1.25rem !important;
+                    }
+                }
             }
             &--active {
                 background-color: rgba(variables.$crawler-color, 0.8);

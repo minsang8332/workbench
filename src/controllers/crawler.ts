@@ -2,15 +2,17 @@ import _ from 'lodash'
 import { controller } from '@/utils/ipc'
 import WorkerRepository from '@/repositories/crawler/WorkerRepository'
 import HistoryRepository from '@/repositories/crawler/HistoryRepository'
+import ScheduleRepository from '@/repositories/crawler/ScheduleRepository'
 import CrawlerService from '@/services/CrawlerService'
 import { IPCError } from '@/errors/ipc'
 import Worker from '@/models/crawler/Worker'
+import Schedule from '@/models/crawler/Schedule'
 import { IPC_CRAWLER_CHANNEL } from '@/constants/ipc'
 import { CRAWLER_STATUS } from '@/constants/model'
 import type { IPCRequest, IPCResponse } from '@/types/ipc'
 import type { Crawler } from '@/types/model'
 new CrawlerService().provideSchedules()
-// 웹 자동화 목록
+// 자동화 목록
 controller(
     IPC_CRAWLER_CHANNEL.LOAD_WORKERS,
     async (request: IPCRequest.Crawler.ILoadWorkers, response: IPCResponse.IBase) => {
@@ -19,8 +21,7 @@ controller(
         return response
     }
 )
-
-// 웹 자동화 생성 및 편집
+// 자동화 생성 및 편집
 controller(IPC_CRAWLER_CHANNEL.SAVE_WORKER, (request: IPCRequest.Crawler.ISaveWorker, response: IPCResponse.IBase) => {
     const workerRepository = new WorkerRepository()
     const worker = new Worker({
@@ -32,8 +33,7 @@ controller(IPC_CRAWLER_CHANNEL.SAVE_WORKER, (request: IPCRequest.Crawler.ISaveWo
     response.data.id = id
     return response
 })
-
-// 웹 자동화 라벨 편집
+// 자동화 라벨 편집
 controller(
     IPC_CRAWLER_CHANNEL.SAVE_WORKER_LABEL,
     (request: IPCRequest.Crawler.ISaveWorkerLabel, response: IPCResponse.IBase) => {
@@ -52,8 +52,7 @@ controller(
         return response
     }
 )
-
-// 웹 자동화 명령배열 저장
+// 자동화 명령배열 저장
 controller(
     IPC_CRAWLER_CHANNEL.SAVE_WORKER_COMMANDS,
     (request: IPCRequest.Crawler.ISaveWorkerCommands, response: IPCResponse.IBase) => {
@@ -72,8 +71,24 @@ controller(
         return response
     }
 )
-
-// 웹 자동화 명령 배열 실행
+// 자동화 스케줄링 등록 및 편집
+controller(
+    IPC_CRAWLER_CHANNEL.SAVE_SCHEDULE,
+    (request: IPCRequest.Crawler.ISaveSchedule, response: IPCResponse.IBase) => {
+        const scheduleRepository = new ScheduleRepository()
+        const schedule = new Schedule({
+            id: request.id,
+            workerId: request.workerId,
+            active: request.active,
+            expression: request.expression,
+        })
+        const id = request.id ? scheduleRepository.update(schedule) : scheduleRepository.insert(schedule)
+        response.data.id = id
+        response.message = '정상적으로 반영되었습니다.'
+        return response
+    }
+)
+// 자동화 명령 배열 실행
 controller(
     IPC_CRAWLER_CHANNEL.RUN_WORKER,
     async (request: IPCRequest.Crawler.IRunWorker, response: IPCResponse.IBase) => {
@@ -104,8 +119,7 @@ controller(
         return response
     }
 )
-
-// 웹 자동화 제거
+// 자동화 제거
 controller(
     IPC_CRAWLER_CHANNEL.DELETE_WORKER,
     (request: IPCRequest.Crawler.IDeleteWorker, response: IPCResponse.IBase) => {
@@ -114,8 +128,7 @@ controller(
         return response
     }
 )
-
-// 웹 자동화 히스토리 내역
+// 자동화 히스토리 내역
 controller(
     IPC_CRAWLER_CHANNEL.LOAD_HISTORIES,
     async (request: IPCRequest.Crawler.ILoadHistories, response: IPCResponse.IBase) => {

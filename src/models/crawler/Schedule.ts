@@ -19,10 +19,10 @@ class Schedule implements Crawler.ISchedule {
     }: {
         id?: string
         workerId: string
-        status: CRAWLER_STATUS
+        status?: CRAWLER_STATUS
         active: boolean
         expression: string
-        firedAt: Date | null
+        firedAt?: Date | null
     }) {
         this.id = id
         this.workerId = workerId

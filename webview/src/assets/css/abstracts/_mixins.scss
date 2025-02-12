@@ -51,14 +51,14 @@
     position: relative;
     .tooltip {
         @include glass(variables.$dark-color);
-        position: fixed;
+        position: absolute;
         z-index: 50000;
-        bottom: 125%;
+        bottom: calc(100% + 0.5rem);
         left: 50%;
-        padding: 0.5rem 0.5rem;
+        padding: 0.5rem;
         min-width: fit-content;
-        border-radius: 0.5rem;
         visibility: hidden;
+        border-radius: 0.5rem;
         transform: translateX(-50%);
         font-size: 0.9rem;
         text-align: center;

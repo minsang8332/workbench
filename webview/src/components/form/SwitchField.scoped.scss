@@ -9,7 +9,7 @@
         position: relative;
         height: $height;
         width: $width;
-        background-color: rgba(variables.$window-color, 0.3);
+        background-color: #eee;
         box-shadow: 0 0 0 1px rgba(#c3c3c3, 0.5);
         border-radius: calc($height / 2);
         transition: transform 0.3s;

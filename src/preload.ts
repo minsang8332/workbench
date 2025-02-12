@@ -117,6 +117,9 @@ contextBridge.exposeInMainWorld('$native', {
         loadWorkers(payload: IPCRequest.Crawler.ILoadWorkers) {
             return invoke(IPC_CRAWLER_CHANNEL.LOAD_WORKERS, payload)
         },
+        loadSchedule(payload: IPCRequest.Crawler.ILoadSchedule) {
+            return invoke(IPC_CRAWLER_CHANNEL.LOAD_SCHEDULE, payload)
+        },
         loadHistories(payload: IPCRequest.Crawler.ILoadHistories) {
             return invoke(IPC_CRAWLER_CHANNEL.LOAD_HISTORIES, payload)
         },
@@ -128,6 +131,9 @@ contextBridge.exposeInMainWorld('$native', {
         },
         saveWorkerLabel(payload: IPCRequest.Crawler.ISaveWorkerLabel) {
             return invoke(IPC_CRAWLER_CHANNEL.SAVE_WORKER_LABEL, payload)
+        },
+        saveSchedule(payload: IPCRequest.Crawler.ISaveSchedule) {
+            return invoke(IPC_CRAWLER_CHANNEL.SAVE_SCHEDULE, payload)
         },
         deleteWorker(payload: IPCRequest.Crawler.IDeleteWorker) {
             return invoke(IPC_CRAWLER_CHANNEL.DELETE_WORKER, payload)

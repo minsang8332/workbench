@@ -117,14 +117,17 @@ export const useCrawler = (state: ICrawlerState) => {
             .catch(() => alert.error(new Error('자동화 라벨을 수정 할 수 없습니다')))
             .finally(() => (state.workerForm.modal = false))
     }
-    // TODO API 바인딩
     const onUpdateSchedule = (payload: {
-        id: Crawler.ISchedule['id']
+        id?: Crawler.ISchedule['id']
         workerId: Crawler.ISchedule['workerId']
         active: Crawler.ISchedule['active']
         expression: Crawler.ISchedule['expression']
     }) => {
-        console.log(payload)
+        crawlerStore
+            .saveSchedule(payload)
+            .then((response) => alert.success(response.message))
+            .then(() => onToggleScheduleForm(false))
+            .catch((e) => alert.error(e))
     }
     const onDeleteWorker = (worker: Crawler.IWorker) => {
         crawlerStore
@@ -158,23 +161,15 @@ export const useCrawler = (state: ICrawlerState) => {
         }
         state.commandForm.modal = modal
     }
-    const onToggleScheduleForm = (
-        modal: boolean,
-        schedule?: Crawler.ISchedule,
-        workerLabel?: Crawler.IWorker['label']
-    ) => {
+    const onToggleScheduleForm = (modal: boolean, worker?: Crawler.IWorker) => {
         if (!_.isBoolean(modal)) {
             return
         }
-        // 워커 라벨이 있는 경우 모달 제목으로 세팅해 준다.
-        if (workerLabel) {
-            state.scheduleForm.title = workerLabel
+        if (modal && worker) {
+            state.scheduleForm.title = worker.label
+            // state.scheduleForm.props =
         } else {
             state.scheduleForm.title = null
-        }
-        if (modal && schedule) {
-            state.scheduleForm.props = schedule
-        } else {
             state.scheduleForm.props = null
         }
         state.scheduleForm.modal = modal
@@ -206,14 +201,7 @@ export const useCrawler = (state: ICrawlerState) => {
                     shortcut: 'E',
                     icon: 'mdi:mdi-file-edit-outline',
                     cb() {
-                        const selectedWorker = crawlerStore.getWorkers.find(
-                            (w) => w.id == worker.id
-                        )
-                        if (selectedWorker) {
-                            onToggleScheduleForm(true, undefined, selectedWorker.label)
-                        } else {
-                            onToggleScheduleForm(true, undefined)
-                        }
+                        onToggleScheduleForm(true, worker)
                         appStore.toggleMenu(false)
                     }
                 },

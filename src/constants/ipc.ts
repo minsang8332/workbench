@@ -31,10 +31,13 @@ export enum IPC_TODO_CHANNEL {
 }
 export enum IPC_CRAWLER_CHANNEL {
     LOAD_WORKERS = 'crawler:load-workers',
+    LOAD_SCHEDULE = 'crawler:load-schedule',
     SAVE_WORKER = 'crawler:save-worker',
     SAVE_WORKER_LABEL = 'crawler:save-worker-label',
     SAVE_WORKER_COMMANDS = 'crawler:save-worker-commands',
+    SAVE_SCHEDULE = 'crawler:save-schedule',
     DELETE_WORKER = 'crawler:delete-worker',
+    DELETE_SCHEDULE = 'crawler:delete-schedule',
     RUN_WORKER = 'crawler:run-worker',
     LOAD_HISTORIES = 'crawler:load-histories',
 }

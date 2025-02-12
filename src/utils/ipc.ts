@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { ipcMain } from 'electron'
 import { IPCError } from '@/errors/ipc'
 import logger from '@/logger'

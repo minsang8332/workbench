@@ -61,10 +61,11 @@ export default defineComponent({
                 >
                     <ul class="worker-menu flex flex-col gap-2 w-full">
                         {filterItems.value.map((worker) => (
-                            <li class="worker-menu__item flex justify-start items-center">
+                            <li class="worker-menu__item">
                                 <div
                                     class={{
-                                        'worker-card box-shadow': true,
+                                        'worker-card flex flex-col justify-between box-shadow':
+                                            true,
                                         'worker-card--active': route.params.id == worker.id
                                     }}
                                     onClick={(event: Event) => onClickItem(event, worker)}
@@ -74,6 +75,16 @@ export default defineComponent({
                                 >
                                     <div class="flex justify-between items-center">
                                         <p>{worker.label}</p>
+                                    </div>
+                                    <div class="flex justify-end items-center">
+                                        <button
+                                            type="button"
+                                            class="btn-schedule"
+                                            onDblclick={(e) => onToggleScheduleForm(true, worker)}
+                                        >
+                                            <i class="mdi mdi-calendar-clock" />
+                                            <span class="tooltip">스케줄링</span>
+                                        </button>
                                     </div>
                                 </div>
                             </li>
