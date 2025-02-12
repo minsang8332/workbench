@@ -55,7 +55,7 @@ export default defineComponent({
                         placeholder="라벨을 입력해 주세요"
                     />
                 </div>
-                <div class="worker-form__actions flex justify-center items-center gap-6">
+                <div class="worker-form__actions flex justify-center items-center gap-4">
                     <button type="button" class="btn-cancel" onClick={onCancel}>
                         취소
                     </button>

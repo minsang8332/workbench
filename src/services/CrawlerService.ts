@@ -371,6 +371,10 @@ class CrawlerService {
         if (_.isEmpty(schedule)) {
             return
         }
+        // 비활성화 상태가 되면 스케줄링을 스킵
+        if (!schedule.active) {
+            return
+        }
         this._scheduleRepository.updateStatus(scheduleId, CRAWLER_STATUS.RUNNING, firedAt)
         const worker = this._workerRepository.findOne(schedule.workerId)
         if (!worker) {

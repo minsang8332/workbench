@@ -18,6 +18,7 @@ interface ICrawlerState {
         props: Crawler.IWorker | null
     }
     scheduleForm: {
+        title: string | null
         modal: boolean
         props: Crawler.ISchedule | null
     }
@@ -33,6 +34,7 @@ export const crawlerState = reactive(<ICrawlerState>{
         props: null
     },
     scheduleForm: {
+        title: null,
         modal: false,
         props: null
     },
@@ -115,6 +117,15 @@ export const useCrawler = (state: ICrawlerState) => {
             .catch(() => alert.error(new Error('자동화 라벨을 수정 할 수 없습니다')))
             .finally(() => (state.workerForm.modal = false))
     }
+    // TODO API 바인딩
+    const onUpdateSchedule = (payload: {
+        id: Crawler.ISchedule['id']
+        workerId: Crawler.ISchedule['workerId']
+        active: Crawler.ISchedule['active']
+        expression: Crawler.ISchedule['expression']
+    }) => {
+        console.log(payload)
+    }
     const onDeleteWorker = (worker: Crawler.IWorker) => {
         crawlerStore
             .deleteWorker(worker.id)
@@ -125,7 +136,7 @@ export const useCrawler = (state: ICrawlerState) => {
             .finally(onLoadWorker)
     }
     // Form
-    const onWorkerForm = (modal: boolean, worker: Crawler.IWorker) => {
+    const onToggleWorkerForm = (modal: boolean, worker: Crawler.IWorker) => {
         if (!_.isBoolean(modal)) {
             return
         }
@@ -136,7 +147,7 @@ export const useCrawler = (state: ICrawlerState) => {
         }
         state.workerForm.modal = modal
     }
-    const onCommandForm = (modal: boolean, sortNo?: number) => {
+    const onToggleCommandForm = (modal: boolean, sortNo?: number) => {
         if (!_.isBoolean(modal)) {
             return
         }
@@ -147,11 +158,22 @@ export const useCrawler = (state: ICrawlerState) => {
         }
         state.commandForm.modal = modal
     }
-    const onScheduleForm = (modal: boolean /* schedule: Crawler.ISchedule */) => {
+    const onToggleScheduleForm = (
+        modal: boolean,
+        schedule?: Crawler.ISchedule,
+        workerLabel?: Crawler.IWorker['label']
+    ) => {
         if (!_.isBoolean(modal)) {
             return
         }
-        if (modal /* && schedule */) {
+        // 워커 라벨이 있는 경우 모달 제목으로 세팅해 준다.
+        if (workerLabel) {
+            state.scheduleForm.title = workerLabel
+        } else {
+            state.scheduleForm.title = null
+        }
+        if (modal && schedule) {
+            state.scheduleForm.props = schedule
         } else {
             state.scheduleForm.props = null
         }
@@ -184,7 +206,14 @@ export const useCrawler = (state: ICrawlerState) => {
                     shortcut: 'E',
                     icon: 'mdi:mdi-file-edit-outline',
                     cb() {
-                        onScheduleForm(true)
+                        const selectedWorker = crawlerStore.getWorkers.find(
+                            (w) => w.id == worker.id
+                        )
+                        if (selectedWorker) {
+                            onToggleScheduleForm(true, undefined, selectedWorker.label)
+                        } else {
+                            onToggleScheduleForm(true, undefined)
+                        }
                         appStore.toggleMenu(false)
                     }
                 },
@@ -194,7 +223,7 @@ export const useCrawler = (state: ICrawlerState) => {
                     shortcut: 'E',
                     icon: 'mdi:mdi-file-edit-outline',
                     cb() {
-                        onWorkerForm(true, worker)
+                        onToggleWorkerForm(true, worker)
                         appStore.toggleMenu(false)
                     }
                 },
@@ -258,7 +287,7 @@ export const useCrawler = (state: ICrawlerState) => {
                     shortcut: 'E',
                     icon: 'mdi:mdi-file-edit-outline',
                     cb() {
-                        onCommandForm(true, sortNo)
+                        onToggleCommandForm(true, sortNo)
                         appStore.toggleMenu(false)
                     }
                 },
@@ -472,9 +501,11 @@ export const useCrawler = (state: ICrawlerState) => {
         onLoadHistories,
         onCreateWorker,
         onUpdateWorkerLabel,
+        onUpdateSchedule,
         onDeleteWorker,
-        onWorkerForm,
-        onCommandForm,
+        onToggleWorkerForm,
+        onToggleScheduleForm,
+        onToggleCommandForm,
         onWorkerContextMenu,
         onCommandContextMenu,
         onHistoryContextMenu,

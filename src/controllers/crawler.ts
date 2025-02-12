@@ -9,6 +9,7 @@ import { IPC_CRAWLER_CHANNEL } from '@/constants/ipc'
 import { CRAWLER_STATUS } from '@/constants/model'
 import type { IPCRequest, IPCResponse } from '@/types/ipc'
 import type { Crawler } from '@/types/model'
+new CrawlerService().provideSchedules()
 // 웹 자동화 목록
 controller(
     IPC_CRAWLER_CHANNEL.LOAD_WORKERS,

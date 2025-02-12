@@ -1,0 +1,37 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.select-field {
+    ul {
+        background-color: variables.$dark-color;
+        max-height: 25vh;
+        width: 15vw;
+        border-radius: 0.25rem;
+        padding: 0.5rem 0;
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        right: 0;
+        z-index: 10000;
+        overflow-y: scroll;
+        box-shadow: 2px 2px 4px 2px rgba(#000, 0.5);
+        li {
+            @include mixins.glass-animation;
+            padding: 0.25rem 0.5rem;
+            span,
+            button {
+                color: #fff;
+            }
+            span {
+                font-size: 0.9rem;
+            }
+        }
+    }
+    &__button {
+        @include mixins.scale-animation;
+        background-color: variables.$gray-light-color;
+        box-shadow: 0 0 0 1px rgba(#c3c3c3, 0.5);
+        border-radius: 0.25rem;
+        padding: 0.25rem 1rem;
+        font-size: 0.9rem;
+        width: 15vw;
+    }
+}

@@ -58,6 +58,7 @@ export namespace Crawler {
     interface ISchedule extends IModel {
         workerId: Crawler.IWorker['id']
         status: CRAWLER_STATUS
+        active: boolean
         expression: string
         firedAt: Date | null
     }

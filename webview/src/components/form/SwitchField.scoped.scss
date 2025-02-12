@@ -1,6 +1,7 @@
 @use '@/assets/css/abstracts/variables';
 @use '@/assets/css/abstracts/mixins';
 .switch-field {
+    display: flex;
     $height: 2rem;
     $width: $height * 2;
     &__input {
@@ -9,12 +10,13 @@
         height: $height;
         width: $width;
         background-color: rgba(variables.$window-color, 0.3);
+        box-shadow: 0 0 0 1px rgba(#c3c3c3, 0.5);
         border-radius: calc($height / 2);
-        box-shadow: 0 0 0.25rem rgba(variables.$dark-color, 0.3);
         transition: transform 0.3s;
         cursor: pointer;
         &:checked {
-            background-color: rgba(variables.$primary-color, 0.8);
+            box-shadow: none;
+            background-color: rgba(variables.$theme-color, 0.8);
         }
         &:before {
             position: absolute;
@@ -32,7 +34,7 @@
             box-shadow: 0 0 0 0.5rem rgba(#000, 0.15);
         }
         &:checked:hover::before {
-            box-shadow: 0 0 0 0.5rem rgba(variables.$window-color, 0.15);
+            box-shadow: 0 0 0 0.5rem rgba(variables.$theme-color, 0.15);
         }
         &:checked:before {
             transform: translateX(100%);

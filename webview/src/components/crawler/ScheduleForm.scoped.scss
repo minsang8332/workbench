@@ -1,0 +1,49 @@
+@use '@/assets/css/abstracts/variables';
+@use '@/assets/css/abstracts/mixins';
+.schedule-form {
+    width: 100%;
+    padding: 0 1rem;
+    &__content {
+        .schedule-field {
+            height: 1.5rem;
+        }
+        .schedule-tabs {
+            position: relative;
+            display: flex;
+            background-color: variables.$gray-light-color;
+            border-radius: 0.25rem;
+            box-shadow: 0 0 0 1px rgba(#c3c3c3, 0.5);
+            padding: 0.2rem;
+            button {
+                flex: 1;
+                height: 1.5rem;
+                &.activate {
+                    background-color: #fff;
+                    border-radius: 0.25rem;
+                }
+            }
+        }
+    }
+    &__actions {
+        min-height: 4.5rem;
+        width: 100%;
+        button {
+            @include mixins.scale-animation;
+            border-radius: 0.25rem;
+            height: 2.5rem;
+            width: 50%;
+            &.btn-cancel {
+                background-color: variables.$gray-light-color;
+            }
+            &.btn-submit {
+                background-color: variables.$dark-color;
+                color: #fff;
+                &:disabled {
+                    transform: unset;
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+            }
+        }
+    }
+}

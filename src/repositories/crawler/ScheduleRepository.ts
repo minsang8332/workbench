@@ -7,7 +7,7 @@ class ScheduleRepository extends BaseRepository<Schedule> {
         super('Schedule')
     }
     findByPrepare() {
-        return this.findAll().filter((schedule) => schedule.status === CRAWLER_STATUS.PREPARE)
+        return this.findAll().filter((schedule) => schedule.active && schedule.status === CRAWLER_STATUS.PREPARE)
     }
     updateStatus(id: Crawler.ISchedule['id'], status: CRAWLER_STATUS, firedAt: Crawler.ISchedule['firedAt'] = null) {
         const schedule = this.findOne(id)

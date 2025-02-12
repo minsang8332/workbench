@@ -37,7 +37,7 @@ export default defineComponent({
         const {
             onRun,
             onLoadWorker,
-            onCommandForm,
+            onToggleCommandForm,
             onCommandContextMenu,
             onCreateWriteCommand,
             onCreateClickCommand,
@@ -108,7 +108,7 @@ export default defineComponent({
                         }
                         onDrop={(event: DragEvent) => onDropOntoCard(event, sortNo)}
                         onMouseup={(event: MouseEvent) => onCommandContextMenu(event, sortNo)}
-                        onDblclick={(event: MouseEvent) => onCommandForm(true, sortNo)}
+                        onDblclick={(event: MouseEvent) => onToggleCommandForm(true, sortNo)}
                     />
                 )
             })
@@ -194,7 +194,7 @@ export default defineComponent({
                             <Teleport to="body">
                                 <modal-dialog
                                     modelValue={crawlerState.commandForm.modal}
-                                    onUpdate:modelValue={onCommandForm}
+                                    onUpdate:modelValue={onToggleCommandForm}
                                     persistent
                                     hide-actions
                                 >

@@ -25,8 +25,14 @@ export default defineComponent({
         const route = useRoute()
         const router = useRouter()
         const crawlerStore = useCrawlerStore()
-        const { onCreateWorker, onUpdateWorkerLabel, onWorkerForm, onWorkerContextMenu } =
-            useCrawler(crawlerState)
+        const {
+            onCreateWorker,
+            onUpdateSchedule,
+            onUpdateWorkerLabel,
+            onToggleWorkerForm,
+            onToggleScheduleForm,
+            onWorkerContextMenu
+        } = useCrawler(crawlerState)
         const state = reactive<IWorkerDrawerMenu>({
             keyword: ''
         })
@@ -83,7 +89,7 @@ export default defineComponent({
                     <modal-dialog
                         title="라벨 편집"
                         modelValue={crawlerState.workerForm.modal}
-                        onUpdate:modelValue={onWorkerForm}
+                        onUpdate:modelValue={onToggleWorkerForm}
                         persistent
                         hide-actions
                     >
@@ -94,11 +100,17 @@ export default defineComponent({
                         />
                     </modal-dialog>
                     <modal-dialog
+                        title={crawlerState.scheduleForm.title}
                         modelValue={crawlerState.scheduleForm.modal}
+                        onUpdate:modelValue={onToggleScheduleForm}
                         persistent
                         hide-actions
                     >
-                        <schedule-form {...crawlerState.scheduleForm.props} />
+                        <schedule-form
+                            {...crawlerState.scheduleForm.props}
+                            onSubmit={onUpdateSchedule}
+                            onCancel={() => (crawlerState.scheduleForm.modal = false)}
+                        />
                     </modal-dialog>
                 </Teleport>
             </div>

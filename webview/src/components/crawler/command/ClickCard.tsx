@@ -38,7 +38,7 @@ export default defineComponent({
         }
     },
     setup(props, { emit }) {
-        const { onCommandForm, onUpdateClickCommand } = useCrawler(crawlerState)
+        const { onToggleCommandForm, onUpdateClickCommand } = useCrawler(crawlerState)
         const state = reactive<IClickCardState>({
             inputSelector: props.selector ?? '',
             inputTimeout: props.timeout ?? 5000,
@@ -64,7 +64,7 @@ export default defineComponent({
                 )
             }
             if (event) {
-                onCommandForm(false)
+                onToggleCommandForm(false)
             }
         }
         onMounted(() => {
@@ -98,7 +98,7 @@ export default defineComponent({
                             <button
                                 type="button"
                                 class="btn-cancel"
-                                onClick={(e) => onCommandForm(false)}
+                                onClick={(e) => onToggleCommandForm(false)}
                             >
                                 취소
                             </button>
