@@ -70,11 +70,13 @@ export default defineComponent({
             emit('update:model-value', target.value)
         }
         const onInputDatePicker = (date: Date) => {
-            const dayjsDate = dayjs(date)
-            if (!(dayjsDate && dayjsDate.isValid())) {
-                return false
+            if (date == null) {
+                emit('update:model-value', date)
             }
-            emit('update:model-value', date)
+            const dayjsDate = dayjs(date)
+            if (dayjsDate && dayjsDate.isValid()) {
+                emit('update:model-value', date)
+            }
         }
         const onFormat = (date: Date) => {
             return dayjs(date).format('YYYY.MM.DD')
@@ -88,8 +90,8 @@ export default defineComponent({
                         model-value={props.modelValue}
                         placeholder={props.placeholder}
                         enable-time-picker={false}
-                        locale="ko-KR"
                         format={onFormat}
+                        locale="ko-KR"
                         auto-apply
                         teleport
                         onUpdate:model-value={onInputDatePicker}

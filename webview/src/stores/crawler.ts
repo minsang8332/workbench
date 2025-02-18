@@ -29,7 +29,7 @@ export const useCrawlerStore = defineStore('crawler', () => {
         return response
     }
     const loadSchedule = async (payload: Crawler.IWorker['id']) => {
-        const response = await window.$native.crawler.loadSchedule(payload)
+        const response = await window.$native.crawler.loadSchedule({ workerId: payload })
         return response
     }
     const loadHistories = async () => {

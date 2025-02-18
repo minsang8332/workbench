@@ -55,7 +55,7 @@ class TodoService {
         inserts.forEach((sprint) =>
             this._todoSprintRepository.insert(
                 new TodoSprint({
-                    todoId: sprint.todoId,
+                    todoId,
                     title: sprint.title,
                     checked: sprint.checked,
                     startedAt: sprint.startedAt,

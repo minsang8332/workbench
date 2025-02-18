@@ -11,7 +11,8 @@ import { IPC_CRAWLER_CHANNEL } from '@/constants/ipc'
 import { CRAWLER_STATUS } from '@/constants/model'
 import type { IPCRequest, IPCResponse } from '@/types/ipc'
 import type { Crawler } from '@/types/model'
-new CrawlerService().provideSchedules()
+const crawlerService = new CrawlerService()
+crawlerService.provideSchedules()
 // 자동화 목록
 controller(
     IPC_CRAWLER_CHANNEL.LOAD_WORKERS,
@@ -71,6 +72,16 @@ controller(
         return response
     }
 )
+// 자동화 스케줄링 가져오기
+controller(
+    IPC_CRAWLER_CHANNEL.LOAD_SCHEDULE,
+    (request: IPCRequest.Crawler.ILoadSchedule, response: IPCResponse.IBase) => {
+        const scheduleRepository = new ScheduleRepository()
+        const schedule = scheduleRepository.findByWorker(request.workerId)
+        response.data.schedule = schedule
+        return response
+    }
+)
 // 자동화 스케줄링 등록 및 편집
 controller(
     IPC_CRAWLER_CHANNEL.SAVE_SCHEDULE,
@@ -83,6 +94,8 @@ controller(
             expression: request.expression,
         })
         const id = request.id ? scheduleRepository.update(schedule) : scheduleRepository.insert(schedule)
+        crawlerService.shutdownScheduler()
+        crawlerService.provideSchedules()
         response.data.id = id
         response.message = '정상적으로 반영되었습니다.'
         return response
@@ -92,7 +105,6 @@ controller(
 controller(
     IPC_CRAWLER_CHANNEL.RUN_WORKER,
     async (request: IPCRequest.Crawler.IRunWorker, response: IPCResponse.IBase) => {
-        const crawlerService = new CrawlerService()
         const worker = crawlerService.getWorker(request.id)
         if (_.isEmpty(worker)) {
             throw new IPCError(`유효하지 않은 자동화 세트 ID 입니다. (id: ${request.id})`)
@@ -125,6 +137,8 @@ controller(
     (request: IPCRequest.Crawler.IDeleteWorker, response: IPCResponse.IBase) => {
         const workerRepository = new WorkerRepository()
         response.result = workerRepository.delete(request.id)
+        crawlerService.shutdownScheduler()
+        crawlerService.provideSchedules()
         return response
     }
 )

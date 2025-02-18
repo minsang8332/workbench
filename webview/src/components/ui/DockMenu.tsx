@@ -1,17 +1,12 @@
 import { defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
-import { useSettingStore } from '@/stores/setting'
 import './DockMenu.scoped.scss'
 export default defineComponent({
     name: 'DockMenu',
     setup() {
         const appStore = useAppStore()
-        const settingStore = useSettingStore()
         const router = useRouter()
-        const onLock = () => {
-            router.push({ name: 'lock' }).catch((e) => e)
-        }
         const onExit = () => {
             appStore.toggleModal(true, {
                 message: '어플리케이션을 종료 하시겠습니까 ?',
@@ -49,16 +44,6 @@ export default defineComponent({
                     </button>
                 </div>
                 <div class="dock-menu__right flex justify-center items-center gap-2 h-full">
-                    {settingStore.getActivePasscode && (
-                        <button
-                            type="button"
-                            class="btn-lock flex justify-center items-center"
-                            onClick={onLock}
-                        >
-                            <i class="mdi mdi-lock" />
-                            <span class="tooltip">잠금</span>
-                        </button>
-                    )}
                     <button
                         type="button"
                         class="btn-setting flex justify-center items-center"

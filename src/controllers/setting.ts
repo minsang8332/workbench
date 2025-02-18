@@ -104,18 +104,16 @@ controller(
             throw new IPCError('패스코드 활성화 여부가 입력되지 않았습니다.')
         }
         const passcodePath = path.join(app.getPath('userData'), '.passcode')
+        if (!fs.existsSync(passcodePath)) {
+            const passcode: IPasscode = { text: '', active: false }
+            fs.writeFileSync(passcodePath, JSON.stringify(passcode))
+        }
+        const json = fs.readFileSync(passcodePath, 'utf-8')
+        const passcode = JSON.parse(json)
+        if (_.isEmpty(passcode.text)) {
+            throw new IPCError('패스코드를 변경해 주세요.')
+        }
         try {
-            if (!fs.existsSync(passcodePath)) {
-                const passcode: IPasscode = { text: '', active: false }
-                fs.writeFileSync(passcodePath, JSON.stringify(passcode))
-                return response
-            }
-            const json = fs.readFileSync(passcodePath, 'utf-8')
-            const passcode = JSON.parse(json)
-            if (_.isEmpty(passcode.text)) {
-                response.message = '패스코드를 생성해 주세요.'
-                return response
-            }
             passcode.active = request.active
             fs.writeFileSync(passcodePath, JSON.stringify(passcode))
             response.data.active = passcode.active
@@ -132,15 +130,14 @@ controller(
     async (request: IPCRequest.App.ILoadOverlayVideos, response: IPCResponse.IBase) => {
         const overlayVideoPath = path.join(app.getPath('userData'), '.overlay-video')
         if (!fs.existsSync(overlayVideoPath)) {
-            return response
+            throw new IPCError('오버레이 경로 파일을 찾을 수 없습니다.')
+        }
+        const json = fs.readFileSync(overlayVideoPath, 'utf-8')
+        const overlayVideo: IOverlayVideo = JSON.parse(json)
+        if (!fs.existsSync(overlayVideo.dirname)) {
+            throw new IPCError('오버레이 경로가 아직 설정되지 않았습니다.')
         }
         try {
-            const json = fs.readFileSync(overlayVideoPath, 'utf-8')
-            const overlayVideo: IOverlayVideo = JSON.parse(json)
-            if (!fs.existsSync(overlayVideo.dirname)) {
-                response.message = '배경화면 (오버레이) 경로가 아직 설정되지 않았습니다.'
-                return response
-            }
             const videos = fs
                 .readdirSync(overlayVideo.dirname)
                 .filter((file) => commonUtil.isVideoFile(file))

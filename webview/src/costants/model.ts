@@ -13,6 +13,7 @@ export enum CRAWLER_COMMAND {
 export enum CRAWLER_STATUS {
     PREPARE, // 대기
     WAITING, // 중지
+    CANCELED, // 취소
     RUNNING, // 실행
     COMPLETE, // 완료
     FAILED // 실패

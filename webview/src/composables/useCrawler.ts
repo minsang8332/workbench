@@ -161,13 +161,14 @@ export const useCrawler = (state: ICrawlerState) => {
         }
         state.commandForm.modal = modal
     }
-    const onToggleScheduleForm = (modal: boolean, worker?: Crawler.IWorker) => {
+    const onToggleScheduleForm = async (modal: boolean, worker?: Crawler.IWorker) => {
         if (!_.isBoolean(modal)) {
             return
         }
         if (modal && worker) {
+            const response = await crawlerStore.loadSchedule(worker.id)
             state.scheduleForm.title = worker.label
-            // state.scheduleForm.props =
+            state.scheduleForm.props = _.merge({ workerId: worker.id }, response.data.schedule)
         } else {
             state.scheduleForm.title = null
             state.scheduleForm.props = null

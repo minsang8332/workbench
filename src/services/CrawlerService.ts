@@ -409,6 +409,7 @@ class CrawlerService {
     }
     // 스케줄러 중단
     shutdownScheduler() {
+        CrawlerService._schedules = {}
         return scheduler.gracefulShutdown()
     }
 }
