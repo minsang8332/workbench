@@ -50,6 +50,15 @@
         .text-desc {
             font-size: 0.9rem;
         }
+        button {
+            @include mixins.glass-animation;
+            @include mixins.scale-animation;
+            height: 2.25rem;
+            width: 2.25rem;
+            i {
+                height: 1.5rem;
+            }
+        }
     }
     &--drawer {
         width: calc(100vw - variables.$drawer-menu-width - variables.$page-layout-padding * 3);

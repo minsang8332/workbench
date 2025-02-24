@@ -50,8 +50,6 @@
                 font-size: 0.9rem;
             }
             thead {
-                position: sticky;
-                top: 0;
                 th {
                     cursor: pointer;
                     @include mixins.glass-animation;

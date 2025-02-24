@@ -1,8 +1,8 @@
 import _ from 'lodash'
 import fs from 'fs-extra'
+import path from 'path'
 import crypto from 'crypto'
 import mime from 'mime-types'
-const getRandomHex = (bytes: number = 20): string => crypto.randomBytes(bytes).toString('hex')
 const encryptAES = (text: string, secret: string, iv: string) => {
     const cipher = crypto.createCipheriv('aes-256-cbc', secret, iv)
     let encrypted = cipher.update(text, 'utf8', 'hex')
@@ -15,6 +15,10 @@ const decryptAES = (text: string, secret: string, iv: string) => {
     decrypted += decipher.final('utf8')
     return decrypted
 }
+const hideRootDir = (rootDir: string, destDir: string) => {
+    return destDir.replace(rootDir, '').replace(/\\/g, '/')
+}
+const getRandomHex = (bytes: number = 20): string => crypto.randomBytes(bytes).toString('hex')
 const isVideoFile = (filePath: string) => {
     const mimeType = mime.lookup(filePath)
     if (_.isString(mimeType)) {
@@ -29,10 +33,23 @@ const isAvailablePath = async (filePath: string) => {
         )
     )
 }
+const isSubDir = async (parent: string, child: string) => {
+    parent = path.resolve(parent)
+    child = path.resolve(child)
+    if (parent === child) {
+        return true
+    }
+    if (path.relative(await fs.promises.realpath(parent), await fs.promises.realpath(child))) {
+        return true
+    }
+    return false
+}
 export default {
     encryptAES,
     decryptAES,
     getRandomHex,
-    isVideoFile,
+    hideRootDir,
     isAvailablePath,
+    isVideoFile,
+    isSubDir,
 }

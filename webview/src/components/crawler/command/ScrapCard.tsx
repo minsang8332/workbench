@@ -4,28 +4,24 @@ import { crawlerState, useCrawler } from '@/composables/useCrawler'
 import TextField from '@/components/form/TextField'
 import type { Crawler } from '@/types/model'
 import './BaseCard.scoped.scss'
-interface IWriteCardState {
+interface IScrapCardState {
     inputSelector: string
-    inputText: string
     inputTimeout: number
     inputTimeoutRules: ((value: number) => string | boolean)[]
 }
 export default defineComponent({
-    name: 'WriteCard',
+    name: 'ScrapCard',
     components: {
         TextField
     },
     emits: ['replace', 'splice'],
     props: {
         selector: {
-            type: String as PropType<Crawler.Command.IWrite['selector']>,
+            type: String as PropType<Crawler.Command.IScrap['selector']>,
             default: ''
         },
-        text: {
-            type: String as PropType<Crawler.Command.IWrite['text']>
-        },
         timeout: {
-            type: Number as PropType<Crawler.Command.IWrite['timeout']>,
+            type: Number as PropType<Crawler.Command.IScrap['timeout']>,
             default: 5000
         },
         sortNo: {
@@ -42,10 +38,9 @@ export default defineComponent({
         }
     },
     setup(props, { emit }) {
-        const { onToggleCommandForm, onUpdateWriteCommand } = useCrawler(crawlerState)
-        const state = reactive<IWriteCardState>({
+        const { onToggleCommandForm, onUpdateScrapCommand } = useCrawler(crawlerState)
+        const state = reactive<IScrapCardState>({
             inputSelector: props.selector ?? '',
-            inputText: props.text ?? '',
             inputTimeout: props.timeout ?? 5000,
             inputTimeoutRules: [
                 (value: number): string | boolean => {
@@ -61,10 +56,9 @@ export default defineComponent({
                 event.preventDefault()
             }
             if (validate.value === true && _.isNumber(props.sortNo)) {
-                onUpdateWriteCommand(
+                onUpdateScrapCommand(
                     props.sortNo,
                     state.inputSelector,
-                    state.inputText,
                     state.inputTimeout,
                     validate.value
                 )
@@ -93,11 +87,6 @@ export default defineComponent({
                                 placeholder="값이 없는 경우 브라우저 화면에서 선택하도록 합니다."
                             />
                             <text-field
-                                v-model={state.inputText}
-                                label="문자열"
-                                placeholder="스크래핑 대상에 입력할 문구를 입력해 주세요."
-                            />
-                            <text-field
                                 v-model={state.inputTimeout}
                                 rules={state.inputTimeoutRules}
                                 type="number"
@@ -121,13 +110,13 @@ export default defineComponent({
                 ) : (
                     <>
                         <div class="base-card__header flex justify-between items-center gap-1 ">
-                            <span class="text-white">입력하기</span>
+                            <span class="text-white">스크랩 하기</span>
                             {_.isNumber(props.sortNo) && (
                                 <span class="text-white">{props.sortNo + 1}</span>
                             )}
                         </div>
                         <div class="base-card__content flex flex-col justify-center items-center gap-1">
-                            <p class="text-white break-all">{props.text}</p>
+                            <p class="text-white break-all">{props.selector}</p>
                         </div>
                     </>
                 )}

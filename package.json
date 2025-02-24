@@ -1,6 +1,6 @@
 {
     "name": "workbench",
-    "description": "업무 능률 향상을 위한 다목적 기능을 담은 Mac 및 Window 어플리케이션",
+    "description": "업무자동화 Mac 및 Window 어플리케이션",
     "version": "1.2.0",
     "main": "build/bundle.js",
     "scripts": {

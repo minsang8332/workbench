@@ -43,10 +43,7 @@ export default defineComponent({
             inputUrl: props.url ?? '',
             inputUrlRules: [
                 (value: string): string | boolean => {
-                    return value &&
-                        /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}(\/[a-zA-Z0-9-._~:?#&=+%,;]*)?$/.test(
-                            value
-                        )
+                    return value && /^(http|https):\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/.test(value)
                         ? true
                         : 'URL이 유효하지 않습니다.'
                 }

@@ -5,7 +5,7 @@ import { dialog, BrowserWindow, Event, session, app } from 'electron'
 import HistoryRepository from '@/repositories/crawler/HistoryRepository'
 import WorkerRepository from '@/repositories/crawler/WorkerRepository'
 import ScheduleRepository from '@/repositories/crawler/ScheduleRepository'
-import { ClickCommand, CursorCommand, RedirectCommand, WriteCommand } from '@/models/crawler/Command'
+import { ClickCommand, CursorCommand, RedirectCommand, WriteCommand, ScrapCommand } from '@/models/crawler/Command'
 import History from '@/models/crawler/History'
 import { CRAWLER_COMMAND, CRAWLER_STATUS } from '@/constants/model'
 import { IPCError } from '@/errors/ipc'
@@ -66,14 +66,27 @@ class CrawlerService {
                     )
                     break
                 }
+                case CRAWLER_COMMAND.SCRAP: {
+                    const command = commands[i] as Crawler.Command.IScrap
+                    if (_.isEmpty(command.selector) && headless === false) {
+                        builder.push(new CursorCommand())
+                    }
+                    builder.push(
+                        new ScrapCommand(command.selector, {
+                            timeout: command.timeout,
+                            pointer: i,
+                        })
+                    )
+                    break
+                }
             }
         }
         return builder
     }
     async run(worker: Crawler.IWorker, window: BrowserWindow, headless: boolean = false): Promise<Crawler.IHistory> {
+        // window.webContents.openDevTools()
         let round = 0
         let selector = null
-        let downloads: string[] = []
         let history = new History({
             workerId: worker.id,
             startedAt: new Date(),
@@ -82,6 +95,7 @@ class CrawlerService {
         try {
             history.setLabel(worker.label).setCommands(worker.commands).setTotalRound(builder.length)
             for (let i = 0; i < builder.length; i++) {
+                window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
                 round++
                 while (this._blocking) {
                     await new Promise((resolve) => setTimeout(resolve, 500))
@@ -103,6 +117,10 @@ class CrawlerService {
                         }
                         selector = null
                     }
+                    window.webContents.setWindowOpenHandler(({ url }) => {
+                        window.loadURL(url)
+                        return { action: 'deny' }
+                    })
                     await this.click(command, window)
                     continue
                 }
@@ -117,6 +135,19 @@ class CrawlerService {
                     await this.write(command, window)
                     continue
                 }
+                if (command instanceof ScrapCommand) {
+                    if (!_.isNull(selector)) {
+                        command.selector = selector
+                        if (_.isNumber(command.pointer) && worker.commands[command.pointer]) {
+                            ;(worker.commands[command.pointer] as Crawler.Command.IScrap).selector = command.selector
+                        }
+                        selector = null
+                    }
+                    let textContent = await this.scrap(command, window)
+                    if (textContent && _.isString(textContent)) {
+                        history.results.push(textContent)
+                    }
+                }
             }
             history.setStatus(CRAWLER_STATUS.COMPLETE).setMessage('정상적으로 실행이 종료되었습니다.')
         } catch (error) {
@@ -126,7 +157,7 @@ class CrawlerService {
         if (builder.find((command) => command instanceof CursorCommand)) {
             this._workerRepository.update(worker)
         }
-        history.setRound(round).setDownloads(downloads).setEndedAt(new Date())
+        history.setRound(round).setEndedAt(new Date())
         this.addHistory(history)
         return history
     }
@@ -138,18 +169,12 @@ class CrawlerService {
             const clear = () => {
                 clearTimeout(timer)
                 window.webContents.removeListener('did-finish-load', onDidFinishLoad)
-                window.webContents.removeListener('did-fail-load', onDidFailLoad)
             }
             const onDidFinishLoad = () => {
                 clear()
                 resolve(true)
             }
-            const onDidFailLoad = (event: Event, errorCode: number, errorDescription: string) => {
-                clear()
-                reject(new Error(errorDescription))
-            }
             window.webContents.on('did-finish-load', onDidFinishLoad)
-            window.webContents.on('did-fail-load', onDidFailLoad)
             window.loadURL(command.url)
         })
         logger.debug('END_REDIRECT')
@@ -158,14 +183,11 @@ class CrawlerService {
     // 클릭하기
     async click(command: ClickCommand, window: BrowserWindow) {
         logger.debug('START_CLICK ' + _.toString(command.selector))
-        const promise = new Promise((resolve, reject) => {
-            // 팝업을 리다이렉션으로 변경
-            window.webContents.setWindowOpenHandler(({ url }) => {
-                window.loadURL(url)
-                return { action: 'deny' }
-            })
-            window.webContents.once('did-finish-load', () => resolve(true))
-            window.webContents.once('did-fail-load', () => resolve(true))
+        window.webContents.setWindowOpenHandler(({ url }) => {
+            window.loadURL(url)
+            return { action: 'deny' }
+        })
+        const promise = await new Promise((resolve, reject) => {
             window.webContents
                 .executeJavaScript(
                     `
@@ -183,13 +205,13 @@ class CrawlerService {
                                     element.click()
                                     onClear()
                                     resolve(true)
-                                } else if (element.tagName) {
-                                    reject(new Error('클릭할 수 없는 요소입니다: ' + element.tagName))
+                                } else if (element && element.tagName) {
+                                    reject(new Error('클릭할 수 없는 요소입니다: '))
                                 }
                             }, 1000)
                             const timer = setTimeout(() => {
                                 onClear()
-                                reject(new Error('입력 요소를 찾을 수 없습니다.'))
+                                reject(new Error('${command.selector} 을/를 클릭 할 수 없습니다.'))
                             }, ${command.timeout})
                         })
                     })()
@@ -198,13 +220,13 @@ class CrawlerService {
                 .then(() => resolve(true))
                 .catch((e) => reject(e.message))
         })
-        logger.debug('END_CLICK')
+        logger.debug(`END_CLICK ${promise}`)
         return await promise
     }
     // 입력하기
     async write(command: WriteCommand, window: BrowserWindow) {
         logger.debug('START_WRITE ' + _.toString(command.selector))
-        const isWrited = await new Promise((resolve, reject) => {
+        const promise = new Promise((resolve, reject) => {
             window.webContents
                 .executeJavaScript(
                     `
@@ -238,20 +260,59 @@ class CrawlerService {
                 .then(() => resolve(true))
                 .catch((e) => reject(e.message))
         })
-        logger.debug('END_WRITE ' + _.toString(isWrited))
-        return isWrited
+        logger.debug('END_WRITE')
+        return await promise
+    }
+    // 스크랩하기
+    async scrap(command: ClickCommand, window: BrowserWindow) {
+        logger.debug('START_SCRAP ' + _.toString(command.selector))
+        const textContent = await new Promise((resolve, reject) => {
+            window.webContents
+                .executeJavaScript(
+                    `
+                    (() => {
+                        return new Promise((resolve, reject) => {
+                            const onClear = () => {
+                                clearTimeout(timer)
+                                clearInterval(intval)
+                                window.removeEventListener('beforeunload', onClear)
+                            }
+                            window.addEventListener('beforeunload', onClear)
+                            const intval = setInterval(() => {
+                                const element = document.querySelector('${command.selector}')
+                                if (element) {
+                                    onClear()
+                                    resolve(element.textContent)
+                                } else if (element.tagName) {
+                                    reject(new Error('스크랩할 수 없는 요소입니다: ' + element.tagName))
+                                }
+                            }, 1000)
+                            const timer = setTimeout(() => {
+                                onClear()
+                                reject(new Error('스크랩 요소를 찾을 수 없습니다.'))
+                            }, ${command.timeout})
+                        })
+                    })()
+                `
+                )
+                .then((result) => {
+                    resolve(result)
+                })
+                .catch((e) => reject(e.message))
+        })
+        logger.debug('END_SCRAP')
+        return textContent
     }
     // 요소 선택하기
     async cursor(command: CursorCommand, window: BrowserWindow) {
         logger.debug('START_CURSOR')
-        window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
         await dialog.showMessageBox(window, {
             type: 'none',
             buttons: ['확인'],
             title: '자동화 안내',
             message: '마우스 커서로 대상을 클릭해 주세요.',
         })
-        const selector: string = await new Promise((resolve, reject) => {
+        let selector: string = await new Promise((resolve, reject) => {
             window.webContents
                 .executeJavaScript(
                     `
@@ -260,60 +321,62 @@ class CrawlerService {
                         style.classList.add('web-crawler-style')
                         style.innerHTML = '.web-crawler--mouseover { border: 2px dotted red !important; }'
                         document.head.appendChild(style)
-                        const onMouseOver = (event) => {
+                        const onMouseover = (event) => {
                             const element = event.target
                             element.classList.add('web-crawler--mouseover')
                         }
-                        const onMouseOut = (event) => {
+                        const onMouseout = (event) => {
                             const element = event.target
                             element.classList.remove('web-crawler--mouseover')
                         }
-                        const getSelector = (el) => {
-                            let path = []
-                            while (el.nodeType === 1) {
-                                let selector = el.tagName.toLowerCase()
-                                if (el.id) {
-                                    selector = '#' + el.id
-                                    path.unshift(selector)
-                                    break
-                                } else {
-                                    let sibling = el
-                                    let nthChild = 1
-                                    while (sibling = sibling.previousElementSibling) {
-                                        if (sibling.tagName === el.tagName) {
-                                            nthChild++
-                                        }
-                                    }
-                                    selector += ':nth-of-type(' + nthChild + ')'
-                                }
-                                path.unshift(selector)
-                                el = el.parentElement
-                            }
-                            return path.join(' > ')
-                        }
-                        return new Promise((resolve) => {
-                            const onClickCursor = (event) => {
+                        return new Promise((resolve, reject) => {
+                            const onClick = (event) => {
                                 event.preventDefault()
                                 event.stopImmediatePropagation()
-                                const element = event.target
-                                const selector = getSelector(element)
-                                element.classList.remove('web-crawler--mouseover')
-                                document.removeEventListener('mouseover', onMouseOver)
-                                document.removeEventListener('mouseout', onMouseOut)
-                                document.removeEventListener('click', onClickCursor)
-                                resolve(selector)
+                                let path = []
+                                try {                                    
+                                    let element = event.target
+                                    element.classList.remove('web-crawler--mouseover')
+                                    while (element && element.nodeType === 1) {
+                                        let selector = element.tagName.toLowerCase()
+                                        if (element.id) {
+                                            selector = '#' + element.id
+                                            path.unshift(selector)
+                                            break
+                                        } else {
+                                            let sibling = element
+                                            let nthChild = 1
+                                            while (sibling = sibling.previousElementSibling) {
+                                                if (sibling.tagName === element.tagName) {
+                                                    nthChild++
+                                                }
+                                            }
+                                            selector += ':nth-of-type(' + nthChild + ')'
+                                        }
+                                        path.unshift(selector)
+                                        element = element.parentElement
+                                    }
+                                    const selector = path.join(' > ')
+                                    resolve(selector)
+                                } catch (e) {
+                                    reject(e.stack)
+                                }
+                                document.removeEventListener('mouseover', onMouseover)
+                                document.removeEventListener('mouseout', onMouseout)
+                                document.removeEventListener('click', onClick)
                             }
-                            document.addEventListener('mouseover', onMouseOver)
-                            document.addEventListener('mouseout', onMouseOut)
-                            document.addEventListener('click', onClickCursor, true)
+                            document.addEventListener('mouseover', onMouseover)
+                            document.addEventListener('mouseout', onMouseout)
+                            document.addEventListener('click', onClick)
                         })
                     })()
                 `
                 )
                 .then((selector) => resolve(selector))
+                .catch((e) => reject(e))
         })
-        window.setIgnoreMouseEvents(false)
-        logger.debug('END_CURSOR ' + _.toString(selector))
+        selector = _.toString(selector).replace(/[\.]/, '\\\\.')
+        logger.debug('END_CURSOR ' + selector)
         return selector
     }
     createWindow() {

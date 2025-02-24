@@ -13,6 +13,7 @@ export interface IDataTableRow {
 }
 export default defineComponent({
     name: 'DataTable',
+    emits: ['click'],
     components: {
         TextField
     },
@@ -34,7 +35,7 @@ export default defineComponent({
             default: () => [10]
         }
     },
-    setup(props) {
+    setup(props, { emit }) {
         const searchQuery = ref<string>('')
         const sortKey = ref<string | ''>('')
         const sortOrder = ref<1 | -1>(1)
@@ -111,7 +112,7 @@ export default defineComponent({
                         </thead>
                         <tbody>
                             {paginatedRows.value.map((row, i) => (
-                                <tr key={`row-${i}`}>
+                                <tr key={`row-${i}`} onClick={() => emit('click', row)}>
                                     {props.columns.map((column) => (
                                         <td>{row[column.field]}</td>
                                     ))}

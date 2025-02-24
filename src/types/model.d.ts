@@ -51,7 +51,7 @@ export namespace Crawler {
         round: number
         totalRound: number
         message: string
-        downloads: string[]
+        results: string[]
         startedAt: Date
         endedAt: Date | null
     }
@@ -80,5 +80,9 @@ export namespace Crawler {
             timeout: number
         }
         interface ICursor extends Crawler.Command.IBase {}
+        interface IScrap extends Crawler.Commnad.IBase {
+            selector: string
+            timeout: number
+        }
     }
 }

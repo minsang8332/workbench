@@ -1,25 +1,31 @@
 import _ from 'lodash'
 import dayjs from 'dayjs'
-import { computed, defineComponent, onBeforeMount } from 'vue'
+import { computed, defineComponent, onBeforeMount, Teleport } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAppStore } from '@/stores/app'
 import { useCrawlerStore } from '@/stores/crawler'
 import { crawlerState, useCrawler } from '@/composables/useCrawler'
 import { CRAWLER_STATUS } from '@/costants/model'
+import type { Crawler } from '@/types/model'
 import DataTable from '@/components/ui/DataTable'
+import ModalDialog from '@/components/ui/ModalDialog'
+import HistoryForm from '@/components/crawler/HistoryForm'
 import './IndexPage.scoped.scss'
 export default defineComponent({
     name: 'CrawlerPage',
     components: {
-        DataTable
+        DataTable,
+        ModalDialog,
+        HistoryForm
     },
     setup() {
         const router = useRouter()
         const route = useRoute()
         const appStore = useAppStore()
         const { getHistories } = storeToRefs(useCrawlerStore())
-        const { onLoadWorker, onLoadHistories, onHistoryContextMenu } = useCrawler(crawlerState)
+        const { onLoadWorker, onLoadHistories, onToggleHistoryForm, onHistoryContextMenu } =
+            useCrawler(crawlerState)
         const onBack = () => {
             if (window.history && window.history.length > 1) {
                 router.back()
@@ -30,11 +36,10 @@ export default defineComponent({
         const historyRows = computed(() => {
             let rows = getHistories.value.reduce((acc: any, history) => {
                 acc.push({
-                    label: history.label,
+                    ...history,
                     status: _.isNumber(history.status) ? CRAWLER_STATUS[history.status] : null,
-                    round: history.round,
-                    totalRound: history.totalRound,
                     message: history.message,
+                    cntResults: history?.results?.length,
                     endedAt: dayjs(history.endedAt).isValid()
                         ? dayjs(history.endedAt).format('YYYY-MM-DD HH:mm:ss')
                         : null
@@ -93,10 +98,15 @@ export default defineComponent({
                         onMouseup={(e) => onHistoryContextMenu(e)}
                     >
                         <b class="text-title">실행 내역</b>
-                        <p class="text-desc">
-                            자동화 실행 내역 목록입니다. 좌측 메뉴에서 [자동화 생성] 하여 실행해
-                            주세요.
-                        </p>
+                        <div class="flex justify-between items-center gap-1">
+                            <p class="text-desc">
+                                자동화 실행 내역 목록입니다. 좌측 메뉴에서 [자동화 생성] 하여 실행해
+                                주세요.
+                            </p>
+                            <button type="button" class="btn-refresh" onClick={onLoadHistories}>
+                                <i class="mdi mdi-reload"></i>
+                            </button>
+                        </div>
                         <data-table
                             columns={[
                                 { field: 'label', label: '자동화명' },
@@ -104,10 +114,26 @@ export default defineComponent({
                                 { field: 'round', label: '진행 회차' },
                                 { field: 'totalRound', label: '총 회차' },
                                 { field: 'message', label: '메시지' },
+                                { field: 'cntResults', label: '스크랩 데이터' },
                                 { field: 'endedAt', label: '종료시점' }
                             ]}
                             rows={historyRows.value}
+                            onClick={(history: Crawler.IHistory) =>
+                                onToggleHistoryForm(true, history)
+                            }
                         />
+                        <Teleport to="body">
+                            <modal-dialog
+                                modelValue={crawlerState.historyForm.modal}
+                                onUpdate:modelValue={onToggleHistoryForm}
+                                persistent
+                                hide-actions
+                                width="70vw"
+                                height="90vh"
+                            >
+                                <history-form {...crawlerState.historyForm.props} />
+                            </modal-dialog>
+                        </Teleport>
                     </div>
                 ) : (
                     <div class="flex-1">

@@ -9,6 +9,7 @@ export enum CRAWLER_COMMAND {
     CLICK = 'click',
     WRITE = 'write',
     CURSOR = 'cursor',
+    SCRAP = 'scrap',
 }
 export enum CRAWLER_STATUS {
     PREPARE, // 대기

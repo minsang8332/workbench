@@ -12,6 +12,7 @@ import WorkerForm from '@/components/crawler/WorkerForm'
 import RedirectCard from '@/components/crawler/command/RedirectCard'
 import ClickCard from '@/components/crawler/command/ClickCard'
 import WriteCard from '@/components/crawler/command/WriteCard'
+import ScrapCard from '@/components/crawler/command/ScrapCard'
 import './WorkerPage.scoped.scss'
 export default defineComponent({
     name: 'WorkerPage',
@@ -20,7 +21,8 @@ export default defineComponent({
         WorkerForm,
         RedirectCard,
         ClickCard,
-        WriteCard
+        WriteCard,
+        ScrapCard
     },
     props: {
         id: {
@@ -39,9 +41,10 @@ export default defineComponent({
             onLoadWorker,
             onToggleCommandForm,
             onCommandContextMenu,
-            onCreateWriteCommand,
             onCreateClickCommand,
             onCreateRedirectCommand,
+            onCreateWriteCommand,
+            onCreateScrapCommand,
             onDropInContent,
             onDropInContainer,
             onDropOntoCard,
@@ -77,6 +80,10 @@ export default defineComponent({
                         break
                     case CRAWLER_COMMAND.WRITE:
                         component = WriteCard
+                        break
+                    case CRAWLER_COMMAND.SCRAP:
+                        component = ScrapCard
+                        break
                 }
             }
             return <component is={component} {...crawlerState.commandForm.props} form />
@@ -93,6 +100,10 @@ export default defineComponent({
                         break
                     case CRAWLER_COMMAND.WRITE:
                         component = WriteCard
+                        break
+                    case CRAWLER_COMMAND.SCRAP:
+                        component = ScrapCard
+                        break
                 }
                 return (
                     <component
@@ -204,11 +215,11 @@ export default defineComponent({
                         </div>
                     </div>
                     <div class="worker-panel">
-                        <write-card
+                        <redirect-card
                             class="command-card"
                             draggable
                             onDragover={(event: DragEvent) => event.preventDefault()}
-                            onDragstart={(event: DragEvent) => onCreateWriteCommand(event)}
+                            onDragstart={(event: DragEvent) => onCreateRedirectCommand(event)}
                         />
                         <click-card
                             class="command-card"
@@ -216,11 +227,17 @@ export default defineComponent({
                             onDragover={(event: DragEvent) => event.preventDefault()}
                             onDragstart={(event: DragEvent) => onCreateClickCommand(event)}
                         />
-                        <redirect-card
+                        <write-card
                             class="command-card"
                             draggable
                             onDragover={(event: DragEvent) => event.preventDefault()}
-                            onDragstart={(event: DragEvent) => onCreateRedirectCommand(event)}
+                            onDragstart={(event: DragEvent) => onCreateWriteCommand(event)}
+                        />
+                        <scrap-card
+                            class="command-card"
+                            draggable
+                            onDragover={(event: DragEvent) => event.preventDefault()}
+                            onDragstart={(event: DragEvent) => onCreateScrapCommand(event)}
                         />
                     </div>
                 </div>

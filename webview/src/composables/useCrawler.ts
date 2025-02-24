@@ -22,6 +22,11 @@ interface ICrawlerState {
         modal: boolean
         props: Crawler.ISchedule | null
     }
+    historyForm: {
+        title: string | null
+        modal: boolean
+        props: Crawler.IHistory | null
+    }
 }
 export const crawlerState = reactive(<ICrawlerState>{
     commands: [],
@@ -34,6 +39,11 @@ export const crawlerState = reactive(<ICrawlerState>{
         props: null
     },
     scheduleForm: {
+        title: null,
+        modal: false,
+        props: null
+    },
+    historyForm: {
         title: null,
         modal: false,
         props: null
@@ -111,6 +121,7 @@ export const useCrawler = (state: ICrawlerState) => {
         crawlerStore
             .saveWorkerLabel({ id, label })
             .then(() => {
+                onLoadWorker()
                 state.workerForm.modal = false
                 alert.success('자동화 라벨을 수정 했습니다')
             })
@@ -174,6 +185,19 @@ export const useCrawler = (state: ICrawlerState) => {
             state.scheduleForm.props = null
         }
         state.scheduleForm.modal = modal
+    }
+    const onToggleHistoryForm = async (modal: boolean, history?: Crawler.IHistory) => {
+        if (!_.isBoolean(modal)) {
+            return
+        }
+        if (modal && history) {
+            state.historyForm.title = history.id + '. ' + history.label
+            state.historyForm.props = history
+        } else {
+            state.historyForm.title = null
+            state.historyForm.props = null
+        }
+        state.historyForm.modal = modal
     }
     // ContextMenu
     const onWorkerContextMenu = (event: MouseEvent, worker?: Crawler.IWorker) => {
@@ -376,6 +400,33 @@ export const useCrawler = (state: ICrawlerState) => {
             validate
         }
     }
+    const onCreateScrapCommand = (event: DragEvent) => {
+        event.stopPropagation()
+        if (event.dataTransfer) {
+            event.dataTransfer.setData(
+                'create',
+                JSON.stringify({
+                    name: CRAWLER_COMMAND.SCRAP,
+                    selector: '',
+                    timeout: 5000,
+                    validate: false
+                })
+            )
+        }
+    }
+    const onUpdateScrapCommand = (
+        sortNo: number,
+        selector: Crawler.Command.IScrap['selector'],
+        timeout: Crawler.Command.IScrap['timeout'],
+        validate: boolean
+    ) => {
+        state.commands[sortNo] = {
+            name: CRAWLER_COMMAND.SCRAP,
+            selector,
+            timeout: _.toNumber(timeout),
+            validate
+        }
+    }
     const onCreateWriteCommand = (event: DragEvent) => {
         event.stopPropagation()
         if (event.dataTransfer) {
@@ -495,6 +546,7 @@ export const useCrawler = (state: ICrawlerState) => {
         onToggleWorkerForm,
         onToggleScheduleForm,
         onToggleCommandForm,
+        onToggleHistoryForm,
         onWorkerContextMenu,
         onCommandContextMenu,
         onHistoryContextMenu,
@@ -504,6 +556,8 @@ export const useCrawler = (state: ICrawlerState) => {
         onUpdateClickCommand,
         onCreateWriteCommand,
         onUpdateWriteCommand,
+        onCreateScrapCommand,
+        onUpdateScrapCommand,
         onMoveAnyCommand,
         onDropInContainer,
         onDropOntoCard,

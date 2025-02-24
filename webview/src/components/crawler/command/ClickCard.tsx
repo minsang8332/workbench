@@ -21,7 +21,7 @@ export default defineComponent({
             default: ''
         },
         timeout: {
-            type: Number as PropType<Crawler.Command.IRedirect['timeout']>,
+            type: Number as PropType<Crawler.Command.IClick['timeout']>,
             default: 5000
         },
         sortNo: {
@@ -83,7 +83,7 @@ export default defineComponent({
                         <div class="base-card__content flex flex-col justify-center items-center gap-1">
                             <text-field
                                 v-model={state.inputSelector}
-                                label="스크래핑 대상"
+                                label="선택대상"
                                 placeholder="값이 없는 경우 브라우저 화면에서 선택하도록 합니다."
                             />
                             <text-field
@@ -109,7 +109,7 @@ export default defineComponent({
                     </form>
                 ) : (
                     <>
-                        <div class="base-card__header flex justify-between items-center gap-1 ">
+                        <div class="base-card__header flex justify-between items-center gap-1">
                             <span class="text-white">클릭하기</span>
                             {_.isNumber(props.sortNo) && (
                                 <span class="text-white">{props.sortNo + 1}</span>

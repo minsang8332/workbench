@@ -20,6 +20,7 @@
 * {
     outline: none;
     background-color: transparent;
+    user-select: none;
 }
 html {
     font-size: 16px;
@@ -38,6 +39,7 @@ code {
 input,
 textarea {
     border: none;
+    user-select: auto;
 }
 p {
     margin: 0 !important;

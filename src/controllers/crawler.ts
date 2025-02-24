@@ -113,7 +113,6 @@ controller(
         const runner = new Promise((resolve, reject) => {
             const timeout = 2000
             window.show()
-            window.webContents.openDevTools()
             crawlerService
                 .run(worker, window)
                 .then((history) => setTimeout(() => resolve(history), timeout))

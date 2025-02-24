@@ -13,6 +13,7 @@ export const createWindow = ({
     frame = false,
     resizable = false,
     devTools = false,
+    webSecurity = true,
 }: {
     partition?: string
     parent?: BrowserWindow
@@ -22,6 +23,7 @@ export const createWindow = ({
     frame?: boolean
     resizable?: boolean
     devTools?: boolean
+    webSecurity?: boolean
 } = {}) => {
     const icon = path.join(__dirname, 'assets', 'favicon.png')
     if (app.dock && process.platform == 'darwin') {
@@ -38,6 +40,7 @@ export const createWindow = ({
             partition,
             preload: path.join(__dirname, 'preload.js'),
             devTools,
+            webSecurity,
         },
         title: `${app.getName()} v${app.getVersion()}`,
         icon,

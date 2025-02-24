@@ -10,7 +10,7 @@ class History implements Crawler.IHistory {
     round: Crawler.IHistory['round']
     totalRound: Crawler.IHistory['totalRound']
     message: Crawler.IHistory['message']
-    downloads: Crawler.IHistory['downloads']
+    results: Crawler.IHistory['results']
     startedAt: Crawler.IHistory['startedAt']
     endedAt: Crawler.IHistory['endedAt']
     createdAt: Crawler.IHistory['createdAt']
@@ -24,7 +24,7 @@ class History implements Crawler.IHistory {
         round = 0,
         totalRound = 0,
         message = '',
-        downloads = [],
+        results = [],
         startedAt,
         endedAt = null,
     }: {
@@ -36,7 +36,7 @@ class History implements Crawler.IHistory {
         round?: number
         totalRound?: number
         message?: string
-        downloads?: string[]
+        results?: string[]
         startedAt: Date
         endedAt?: Date | null
     }) {
@@ -48,7 +48,7 @@ class History implements Crawler.IHistory {
         this.round = round
         this.totalRound = totalRound
         this.message = message
-        this.downloads = downloads
+        this.results = results
         this.startedAt = startedAt
         this.endedAt = endedAt
         this.createdAt = new Date()
@@ -82,8 +82,8 @@ class History implements Crawler.IHistory {
         }
         return this
     }
-    setDownloads(payload: string[] = []) {
-        this.downloads = payload
+    setResults(payload: string[] = []) {
+        this.results = payload
         return this
     }
     setEndedAt(payload: Date) {

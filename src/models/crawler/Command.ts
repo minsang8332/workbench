@@ -75,3 +75,23 @@ export class CursorCommand extends BaseCommand implements Crawler.Command.ICurso
         super(CRAWLER_COMMAND.CURSOR)
     }
 }
+export class ScrapCommand extends BaseCommand implements Crawler.Command.IScrap {
+    selector: Crawler.Command.IScrap['selector']
+    timeout: Crawler.Command.IScrap['timeout']
+    pointer?: number
+    constructor(
+        selector: string,
+        {
+            timeout = 5000,
+            pointer,
+        }: {
+            timeout?: number
+            pointer?: number
+        } = {}
+    ) {
+        super(CRAWLER_COMMAND.SCRAP)
+        this.selector = selector
+        this.timeout = timeout
+        this.pointer = pointer
+    }
+}
