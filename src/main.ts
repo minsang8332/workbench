@@ -1,7 +1,8 @@
-import { app } from 'electron'
 import _ from 'lodash'
+import { app } from 'electron'
 import windowUtil from '@/utils/window'
 import protocolUtil from '@/utils/protocol'
+import { SqliteDatasource } from '@/config/database'
 import { PROTOCOL } from '@/constants/app'
 import '@/controllers'
 if (app.requestSingleInstanceLock() == false) {
@@ -9,6 +10,7 @@ if (app.requestSingleInstanceLock() == false) {
     process.exit(0)
 }
 app.on('will-finish-launching', () => {
+    SqliteDatasource.connect()
     protocolUtil.registerMainWindow()
     protocolUtil.register(PROTOCOL.LOCAL, { stream: true })
 })

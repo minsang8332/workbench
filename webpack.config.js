@@ -9,6 +9,13 @@ module.exports = (env) => {
     const config = dotenv.config({
         path: '.env',
     })
+    let externals = {}
+    if (config && config?.parsed?.NATIVE_NODE_MODULES) {
+        externals = config?.parsed?.NATIVE_NODE_MODULES.split(',').reduce((acc, nodeModule) => {
+            acc[nodeModule] = `commonjs ${nodeModule}`
+            return acc
+        }, {})
+    }
     const commonWebpack = {
         mode: env.production ? 'production' : 'development',
         module: {
@@ -34,6 +41,7 @@ module.exports = (env) => {
             filename: 'bundle.js',
             path: path.resolve(__dirname, 'build'),
         },
+        externals,
         plugins: [new EnvironmentPlugin({ ...config.parsed })],
     })
     const preloadWebpack = Object.assign({}, commonWebpack, {
@@ -44,6 +52,7 @@ module.exports = (env) => {
             path: path.resolve(__dirname, 'build'),
         },
         plugins: [],
+        externals,
     })
     const fileManagerPlugin = new FileManagerPlugin({
         events: {

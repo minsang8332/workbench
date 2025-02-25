@@ -12,7 +12,8 @@
         "webpack:build": "webpack --env production",
         "webview": "cd webview && npm run serve",
         "webview:build": "cd webview && npm run build",
-        "icon": "electron-icon-builder --input=./src/assets/favicon.png --output=./src/assets -f"
+        "icon": "electron-icon-builder --input=./src/assets/favicon.png --output=./src/assets -f",
+        "rebuild": "electron-rebuild -f -w better-sqlite3"
     },
     "build": {
         "appId": "com.minsang8332.workbench",
@@ -50,10 +51,12 @@
     },
     "homepage": "https://github.com/minsang8332/workbench#readme",
     "devDependencies": {
+        "@types/better-sqlite3": "^7.6.12",
         "@types/lodash": "^4.14.200",
+        "@types/mime-types": "^2.1.4",
         "@types/node-schedule": "^2.1.7",
         "concurrently": "^8.2.0",
-        "electron": "^27.0.1",
+        "electron": "^27.3.11",
         "electron-builder": "^24.6.4",
         "electron-icon-builder": "^2.0.1",
         "filemanager-webpack-plugin": "^8.0.0",
@@ -63,11 +66,12 @@
         "webpack-cli": "^5.1.4"
     },
     "dependencies": {
-        "@types/mime-types": "^2.1.4",
+        "better-sqlite3": "^8.7.0",
         "crypto": "^1.0.1",
         "dayjs": "^1.11.9",
         "dotenv": "^16.3.1",
         "electron-log": "^5.0.0",
+        "electron-rebuild": "^3.2.9",
         "electron-store": "^8.1.0",
         "electron-updater": "^6.1.4",
         "fs-extra": "^11.1.1",
