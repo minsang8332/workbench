@@ -52,6 +52,7 @@
     "homepage": "https://github.com/minsang8332/workbench#readme",
     "devDependencies": {
         "@types/better-sqlite3": "^7.6.12",
+        "@types/knex": "^0.16.1",
         "@types/lodash": "^4.14.200",
         "@types/mime-types": "^2.1.4",
         "@types/node-schedule": "^2.1.7",
@@ -75,6 +76,7 @@
         "electron-store": "^8.1.0",
         "electron-updater": "^6.1.4",
         "fs-extra": "^11.1.1",
+        "knex": "^3.1.0",
         "lodash": "^4.17.21",
         "mime-types": "^2.1.35",
         "node-schedule": "^2.1.1",

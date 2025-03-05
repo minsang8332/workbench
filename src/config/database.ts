@@ -1,27 +1,36 @@
 import path from 'path'
-import { getAppData } from '@/utils/common'
 import Database from 'better-sqlite3'
-export class SqliteDatasource {
-    private static _datasource: Database.Database
+import Knex from 'knex'
+import { getAppData } from '@/utils/common'
+export class SqliteDatabase {
+    private static _database: string = 'workbench.db'
+    private static _instance: Database.Database
     private static _path: string
-    // private static _mapper?: Sequelize
+    private static _mapper?: Knex.Knex
     static connect() {
-        if (!SqliteDatasource._datasource) {
-            SqliteDatasource._path = path.join(getAppData('datasource'))
-            SqliteDatasource._datasource = new Database(path.join(SqliteDatasource._path, 'workbench.db'))
-            // 성능 최적화
-            SqliteDatasource._datasource.pragma('journal_mode = WAL')
-        }
-        return SqliteDatasource._datasource
-    }
-    /*
-    static useSequelize() {
-        SqliteDatasource._mapper = new Sequelize({
-            dialect: 'sqlite',
-            storage: path.join(SqliteDatasource._path, 'workbench.db'),
-            logging: true,
+        return new Promise((resolve) => {
+            if (!SqliteDatabase._instance) {
+                SqliteDatabase._path = path.join(getAppData('datasource'))
+                SqliteDatabase._instance = new Database(path.join(SqliteDatabase._path, SqliteDatabase._database))
+                // 성능 최적화
+                SqliteDatabase._instance.pragma('journal_mode = WAL')
+            }
+            resolve(SqliteDatabase._instance)
         })
-        SqliteDatasource._mapper.authenticate()
     }
-    */
+    static useKnex() {
+        SqliteDatabase._mapper = Knex({
+            client: 'better-sqlite',
+            connection: {
+                filename: path.join(SqliteDatabase._path, SqliteDatabase._database),
+            },
+            useNullAsDefault: true,
+        })
+    }
+    getInstance() {
+        return SqliteDatabase._instance
+    }
+    getMapper() {
+        return SqliteDatabase._mapper
+    }
 }
